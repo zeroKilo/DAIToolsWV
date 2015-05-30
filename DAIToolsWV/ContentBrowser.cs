@@ -6,18 +6,23 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DAILibWV.Frostbite;
 using DAILibWV;
+using Be.Windows.Forms;
 
 namespace DAIToolsWV
 {
     public partial class ContentBrowser : Form
     {
         DBAccess.BundleInformation[] blist = null;
-
+        DBAccess.EBXInformation[] ebxlist = null;
         List<DBAccess.BundleInformation> tblist = null;
+
+        Thread TbundleRefresh = null;
+        Thread TebxRefresh = null;
 
         public ContentBrowser()
         {
@@ -61,6 +66,7 @@ namespace DAIToolsWV
         {
             RefreshReal();
             RefreshBundles();
+            RefreshEBX();
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
@@ -142,15 +148,28 @@ namespace DAIToolsWV
 
         private void RefreshBundles()
         {
-            treeView3.Nodes.Clear();
-            Application.DoEvents();
-            bool withBase = toolStripButton6.Checked;
-            bool withDLC = toolStripButton7.Checked;
-            bool withPatch = toolStripButton8.Checked;
-            bool withIsBase = toolStripButton9.Checked;
-            bool withIsDelta = toolStripButton10.Checked;
+            TbundleRefresh = new Thread(RefreshBundlesThread);
+            TbundleRefresh.Start();
+        }
+
+        private void RefreshBundlesThread(object obj)
+        {
+            bool withBase, withDLC, withPatch, withIsBase, withIsDelta;
+            withBase = withDLC = withPatch = withIsBase = withIsDelta = false;
+            this.Invoke(new Action(delegate
+            {
+                bundletext.Text = "Refreshing...";
+                splitContainer2.Visible = false;
+                treeView3.Nodes.Clear();
+                withBase = toolStripButton6.Checked;
+                withDLC = toolStripButton7.Checked;
+                withPatch = toolStripButton8.Checked;
+                withIsBase = toolStripButton9.Checked;
+                withIsDelta = toolStripButton10.Checked;
+            }
+            ));
             if (blist == null)
-                blist = DBAccess.GetBundlesWithFilename();
+                blist = DBAccess.GetBundleInformation();
             tblist = new List<DBAccess.BundleInformation>();
             for (int i = 0; i < blist.Length; i++)
             {
@@ -167,16 +186,26 @@ namespace DAIToolsWV
                          (blist[i].isbase == withIsBase))
                         tblist.Add(blist[i]);
             }
-            statustext.Text = "Bundles loaded: " + tblist.Count();
-            treeView3.Nodes.Clear();
-            TreeNode t = new TreeNode();
-            foreach (DBAccess.BundleInformation bundle in tblist)
-                t = Helpers.AddPath(t, bundle.bundlepath, "", '/');
-            treeView3.Nodes.Add(t);
-            t.Expand();
-            treeView3.BringToFront();
+            this.Invoke(new Action(delegate
+            {
+                bundletext.Text = "Preparing...";
+                treeView3.Nodes.Clear();
+                TreeNode t = new TreeNode();
+                int count = 0;
+                foreach (DBAccess.BundleInformation bundle in tblist)
+                {
+                    t = Helpers.AddPath(t, bundle.bundlepath, "", '/');
+                    if (count++ % 1000 == 0)
+                        Application.DoEvents();
+                }
+                bundletext.Text = "Bundles loaded: " + tblist.Count();
+                treeView3.Nodes.Add(t);
+                t.Expand();
+                treeView3.BringToFront();
+                splitContainer2.Visible = true;
+            }
+            ));
         }
-
         private void toolStripButton7_Click(object sender, EventArgs e)
         {
             RefreshBundles();
@@ -301,7 +330,7 @@ namespace DAIToolsWV
             TreeNode t = treeView3.SelectedNode;
             if (t == null || t.Nodes == null || t.Nodes.Count != 0)
                 return;
-            string path = Helpers.GetPathFromNode(treeView3.SelectedNode, "/");
+            string path = Helpers.GetPathFromNode(t, "/");
             for (int i = 0; i < tblist.Count; i++)
                 if (path.Contains(tblist[i].bundlepath))
                 {
@@ -335,6 +364,95 @@ namespace DAIToolsWV
                     sb.AppendFormat("CHUNK count : {0}\n", b.chunk.Count);
                     rtb1.Text = sb.ToString();
 
+                }
+        }
+
+        public void RefreshEBX()
+        {
+            TebxRefresh = new Thread(RefreshEBXThread);
+            TebxRefresh.Start();
+        }
+
+        public void RefreshEBXThread(object obj)
+        {
+            this.Invoke(new Action(delegate
+            {
+                ebxstatus.Text = "Refreshing...";
+                splitContainer3.Visible = false;
+            }
+            ));
+            if (ebxlist == null)
+                ebxlist = DBAccess.GetEBXInformation();
+            this.Invoke(new Action(delegate
+            {
+                treeView4.Enabled = true;
+                hb1.Enabled = true;
+                treeView4.Nodes.Clear();
+                TreeNode t = new TreeNode();
+                ebxstatus.Text = "Preparing...";
+                int count = 0;
+                foreach (DBAccess.EBXInformation ebx in ebxlist)
+                {
+                    t = Helpers.AddPath(t, ebx.ebxname, "", '/');
+                    if (count++ % 1000 == 0)
+                        Application.DoEvents();
+                }
+                treeView4.Nodes.Add(t);
+                t.Expand();
+                ebxstatus.Text = "Loaded " + ebxlist.Length + " ebx";
+                splitContainer3.Visible = true;
+            }
+            ));
+        }
+
+        private void ContentBrowser_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                if (TbundleRefresh != null)
+                {
+                    TbundleRefresh.Abort();
+                    TbundleRefresh.Join();
+                }
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                if (TebxRefresh != null)
+                {
+                    TebxRefresh.Abort();
+                    TebxRefresh.Join();
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void treeView4_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            TreeNode t = treeView4.SelectedNode;
+            if (t == null || t.Nodes == null || t.Nodes.Count != 0)
+                return;
+            string path = Helpers.GetPathFromNode(t, "/");
+            foreach(DBAccess.EBXInformation ebx in ebxlist)
+                if (path.Contains(ebx.ebxname) && ebx.casPatchType == 0 && !ebx.isbase)
+                {
+                    byte[] data = new byte[0];
+                    if (ebx.incas)
+                        data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
+                    else
+                    {
+                        TOCFile toc = new TOCFile(ebx.tocfilepath);
+                        byte[] bundledata = toc.ExportBundleDataByPath(ebx.bundlepath);
+                        BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
+                        foreach (BinaryBundle.EbxEntry ebx2 in b.EbxList)
+                            if (path.Contains(ebx2._name))
+                                data = ebx2._data;
+                    }
+                    hb1.ByteProvider = new DynamicByteProvider(data);
                 }
         }
     }

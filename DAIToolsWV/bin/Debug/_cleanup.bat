@@ -1,2 +1,1 @@
 del database.*
-del *.pdb

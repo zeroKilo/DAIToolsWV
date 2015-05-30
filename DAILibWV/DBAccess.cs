@@ -32,6 +32,25 @@ namespace DAILibWV
             public bool isPatch;
         }
 
+        public struct EBXInformation
+        {
+            public string ebxname;
+            public string sha1;
+            public string basesha1;
+            public string deltasha1;
+            public int casPatchType;
+            public string bundlepath;
+            public int offset;
+            public int size;
+            public bool isbase;
+            public bool isdelta;
+            public string tocfilepath;
+            public bool incas;
+            public bool isbasegamefile;
+            public bool isDLC;
+            public bool isPatch;
+        }
+
         public static SQLiteConnection GetConnection()
         {
             return new SQLiteConnection("Data Source=" + dbpath + ";Version=3;");
@@ -128,6 +147,15 @@ namespace DAILibWV
             return command.ExecuteReader();
         }
 
+        public static SQLiteDataReader getAllJoined3(string table1, string table2, string table3, string key12, string key21, string key23,string  key32, SQLiteConnection con)
+        {
+            string sql = "SELECT * FROM " + table1 + " ";
+            sql += "JOIN " + table2 + " ON (" + table1 + "." + key12 + " = " + table2 + "." + key21 + ") ";
+            sql += "JOIN " + table3 + " ON (" + table2 + "." + key23 + " = " + table3 + "." + key32 + ") ";
+            SQLiteCommand command = new SQLiteCommand(sql, con);
+            return command.ExecuteReader();
+        }
+
         public static SQLiteDataReader getAllSorted(string table, string order, SQLiteConnection con)
         {
             SQLiteCommand command = new SQLiteCommand("SELECT * FROM " + table + " ORDER BY " + order, con);
@@ -198,14 +226,17 @@ namespace DAILibWV
             return result.ToArray();
         }
 
-        public static BundleInformation[] GetBundlesWithFilename()
+        public static BundleInformation[] GetBundleInformation()
         {
             List<BundleInformation> result = new List<BundleInformation>();
             SQLiteConnection con = GetConnection();
             con.Open();
             SQLiteDataReader reader = getAllJoined("bundles", "tocfiles", "tocfile", "id", con, "frostid");
+            int count = 0;
             while (reader.Read())
             {
+                if (count++ % 1000 == 0)
+                    Application.DoEvents();
                 BundleInformation bi = new BundleInformation();
                 bi.bundlepath = reader.GetString(2).ToLower();
                 bi.offset = reader.GetInt32(3);
@@ -227,6 +258,49 @@ namespace DAILibWV
                         break;
                 }
                 result.Add(bi);
+            }
+            con.Close();
+            return result.ToArray();
+        }
+
+        public static EBXInformation[] GetEBXInformation()
+        {
+            List<EBXInformation> result = new List<EBXInformation>();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader =
+                getAllJoined3("ebx", "bundles", "tocfiles", "bundle", "id", "tocfile", "id", con);
+            int count = 0;
+            while (reader.Read())
+            {
+                if (count++ % 1000 == 0)
+                    Application.DoEvents();
+                EBXInformation ebx = new EBXInformation();
+                ebx.ebxname = reader.GetString(0).ToLower();
+                ebx.sha1 = reader.GetString(1);
+                ebx.basesha1 = reader.GetString(2);
+                ebx.deltasha1 = reader.GetString(3);
+                ebx.casPatchType = reader.GetInt32(4);
+                ebx.bundlepath = reader.GetString(9);
+                ebx.offset = reader.GetInt32(10);
+                ebx.size = reader.GetInt32(11);
+                ebx.isbase = reader.GetString(12) == "True";
+                ebx.isdelta = reader.GetString(13) == "True";
+                ebx.tocfilepath = reader.GetString(15);
+                ebx.incas = reader.GetString(17) == "True";
+                switch (reader.GetString(18))
+                {
+                    case "b":
+                        ebx.isbasegamefile = true;
+                        break;
+                    case "u":
+                        ebx.isDLC = true;
+                        break;
+                    case "p":
+                        ebx.isPatch = true;
+                        break;
+                }
+                result.Add(ebx);
             }
             con.Close();
             return result.ToArray();
