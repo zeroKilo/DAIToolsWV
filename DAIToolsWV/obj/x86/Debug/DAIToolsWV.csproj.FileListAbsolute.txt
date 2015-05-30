@@ -1,0 +1,8 @@
+D:\CODE\c#\DAIToolsWV\DAIToolsWV\bin\x86\Debug\DAIToolsWV.exe.config
+D:\CODE\c#\DAIToolsWV\DAIToolsWV\bin\x86\Debug\DAIToolsWV.exe
+D:\CODE\c#\DAIToolsWV\DAIToolsWV\bin\x86\Debug\DAIToolsWV.pdb
+D:\CODE\c#\DAIToolsWV\DAIToolsWV\obj\x86\Debug\DAIToolsWV.MainForm.resources
+D:\CODE\c#\DAIToolsWV\DAIToolsWV\obj\x86\Debug\DAIToolsWV.Properties.Resources.resources
+D:\CODE\c#\DAIToolsWV\DAIToolsWV\obj\x86\Debug\DAIToolsWV.csproj.GenerateResource.Cache
+D:\CODE\c#\DAIToolsWV\DAIToolsWV\obj\x86\Debug\DAIToolsWV.exe
+D:\CODE\c#\DAIToolsWV\DAIToolsWV\obj\x86\Debug\DAIToolsWV.pdb

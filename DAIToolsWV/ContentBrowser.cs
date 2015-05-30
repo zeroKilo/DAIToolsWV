@@ -1,0 +1,341 @@
+﻿using System;
+using System.IO;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using DAILibWV.Frostbite;
+using DAILibWV;
+
+namespace DAIToolsWV
+{
+    public partial class ContentBrowser : Form
+    {
+        DBAccess.BundleInformation[] blist = null;
+
+        List<DBAccess.BundleInformation> tblist = null;
+
+        public ContentBrowser()
+        {
+            InitializeComponent();
+        }
+
+        private void RefreshReal()
+        {
+            bool pathlist = toolStripButton4.Checked;
+            bool withBase = toolStripButton1.Checked;
+            bool withDLC = toolStripButton2.Checked;
+            bool withPatch = toolStripButton3.Checked;
+            List<string> Files = new List<string>();
+            Files.AddRange(DBAccess.GetFiles("tocfiles", withBase, withDLC, withPatch));
+            Files.AddRange(DBAccess.GetFiles("sbfiles", withBase, withDLC, withPatch));
+            Files.Sort();
+            if (pathlist)
+            {
+                listBox1.Items.Clear();
+                listBox1.Items.AddRange(Files.ToArray());
+                listBox1.BringToFront();
+            }
+            else
+            {
+                treeView1.Nodes.Clear();
+                TreeNode t = new TreeNode();
+                foreach (string file in Files)
+                    t = Helpers.AddPath(t, file, "", '\\');
+                treeView1.Nodes.Add(t);
+                t.Expand();
+                treeView1.BringToFront();
+            }
+        }
+
+        private void toolStripButton1_Click_1(object sender, EventArgs e)
+        {
+            RefreshReal();
+        }
+
+        private void ContentBrowser_Load(object sender, EventArgs e)
+        {
+            RefreshReal();
+            RefreshBundles();
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            RefreshReal();
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            RefreshReal();
+        }
+
+        private void toolStripButton4_Click_1(object sender, EventArgs e)
+        {
+            toolStripButton4.Checked = true;
+            toolStripButton5.Checked = false;
+            RefreshReal();
+        }
+
+        private void toolStripButton5_Click_1(object sender, EventArgs e)
+        {
+            toolStripButton5.Checked = true;
+            toolStripButton4.Checked = false;
+            RefreshReal();
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            treeView2.Nodes.Clear();
+            if (treeView1.SelectedNode == null)
+                return;
+            string path = Path.GetDirectoryName(GlobalStuff.FindSetting("gamepath")) + Helpers.GetPathFromNode(treeView1.SelectedNode);
+            PreviewFile(path);
+        }
+
+        public void PreviewFile(string path)
+        {
+            string ext = Path.GetExtension(path).ToLower();
+            TOCFile toc;
+            switch (ext)
+            {
+                case ".toc":
+                    toc = new TOCFile(path);
+                    if (toc != null && toc.lines != null)
+                        Helpers.FillTreeFast(treeView2, toc.lines);
+                    break;
+                case ".sb":
+                    string tocpath = Helpers.GetFileNameWithOutExtension(path) + ".toc";
+                    if (File.Exists(tocpath))
+                    {
+                        toc = new TOCFile(tocpath);
+                        if (toc != null && toc.lines != null && toc.lines.Count != 0)
+                            foreach (BJSON.Field f in toc.lines[0].fields)
+                                if (f.fieldname == "cas" && (bool)f.data)
+                                {
+                                    SBFile sb = new SBFile(path);
+                                    if (sb != null && sb.lines != null)
+                                        Helpers.FillTreeFast(treeView2, sb.lines);
+                                    return;
+                                }
+                    }
+                    break;
+            }
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int n = listBox1.SelectedIndex;
+            if (n == -1)
+                return;
+            string path = GlobalStuff.FindSetting("gamepath") + listBox1.Items[n];
+            PreviewFile(path);
+        }
+
+        private void toolStripButton6_Click(object sender, EventArgs e)
+        {
+            RefreshBundles();
+        }
+
+        private void RefreshBundles()
+        {
+            treeView3.Nodes.Clear();
+            Application.DoEvents();
+            bool withBase = toolStripButton6.Checked;
+            bool withDLC = toolStripButton7.Checked;
+            bool withPatch = toolStripButton8.Checked;
+            bool withIsBase = toolStripButton9.Checked;
+            bool withIsDelta = toolStripButton10.Checked;
+            if (blist == null)
+                blist = DBAccess.GetBundlesWithFilename();
+            tblist = new List<DBAccess.BundleInformation>();
+            for (int i = 0; i < blist.Length; i++)
+            {
+                if (blist[i].isbasegamefile && withBase)
+                    if ((blist[i].isdelta == withIsDelta) &&
+                         (blist[i].isbase == withIsBase))
+                        tblist.Add(blist[i]);
+                if (blist[i].isDLC && withDLC)
+                    if ((blist[i].isdelta == withIsDelta) &&
+                         (blist[i].isbase == withIsBase))
+                        tblist.Add(blist[i]);
+                if (blist[i].isPatch && withPatch)
+                    if ((blist[i].isdelta == withIsDelta) &&
+                         (blist[i].isbase == withIsBase))
+                        tblist.Add(blist[i]);
+            }
+            statustext.Text = "Bundles loaded: " + tblist.Count();
+            treeView3.Nodes.Clear();
+            TreeNode t = new TreeNode();
+            foreach (DBAccess.BundleInformation bundle in tblist)
+                t = Helpers.AddPath(t, bundle.bundlepath, "", '/');
+            treeView3.Nodes.Add(t);
+            t.Expand();
+            treeView3.BringToFront();
+        }
+
+        private void toolStripButton7_Click(object sender, EventArgs e)
+        {
+            RefreshBundles();
+        }
+
+        private void toolStripButton8_Click(object sender, EventArgs e)
+        {
+            RefreshBundles();
+        }
+
+        private void contextMenuStrip1_Paint(object sender, PaintEventArgs e)
+        {
+            bool istoc = false;
+            if (toolStripButton4.Checked)
+            {
+                int n = listBox1.SelectedIndex;
+                if (n == -1)
+                    return;
+                if (listBox1.Items[n].ToString().EndsWith(".toc"))
+                    istoc = true;
+            }
+            else
+            {
+                TreeNode t = treeView1.SelectedNode;
+                if (t == null)
+                    return;
+                if (t.Text.EndsWith(".toc"))
+                    istoc = true;
+            }
+            if (istoc)
+            {
+                openInTOCToolToolStripMenuItem.Visible = true;
+                openInSBToolToolStripMenuItem.Visible = false;
+            }
+            else
+            {
+                openInTOCToolToolStripMenuItem.Visible = false;
+                openInSBToolToolStripMenuItem.Visible = true;
+            }
+        }
+
+        private void openInTOCToolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string path = Path.GetDirectoryName(GlobalStuff.FindSetting("gamepath"));
+            string path2 = "";
+            if (toolStripButton4.Checked)
+            {
+                int n = listBox1.SelectedIndex;
+                if (n == -1)
+                    return;
+                path2 = listBox1.Items[n].ToString();
+            }
+            else
+            {
+                TreeNode t = treeView1.SelectedNode;
+                if (t == null)
+                    return;
+                path2 = t.Text;
+                while (t.Parent != null)
+                {
+                    t = t.Parent;
+                    path2 = t.Text + "\\" + path2;
+                }
+            }
+            if (!path2.StartsWith("\\"))
+                path += "\\";
+            path += path2;
+            FileTools.TOCTool toc = new FileTools.TOCTool();
+            toc.toc = new TOCFile(path);
+            toc.RefreshTree();
+            toc.MdiParent = this.MdiParent;
+            toc.WindowState = FormWindowState.Maximized;
+            toc.Show();
+        }
+
+        private void openInSBToolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string path = Path.GetDirectoryName(GlobalStuff.FindSetting("gamepath"));
+            string path2 = "";
+            if (toolStripButton4.Checked)
+            {
+                int n = listBox1.SelectedIndex;
+                if (n == -1)
+                    return;
+                path2 = listBox1.Items[n].ToString();
+            }
+            else
+            {
+                TreeNode t = treeView1.SelectedNode;
+                if (t == null)
+                    return;
+                path2 = t.Text;
+                while (t.Parent != null)
+                {
+                    t = t.Parent;
+                    path2 = t.Text + "\\" + path2;
+                }
+            }
+            if (!path2.StartsWith("\\"))
+                path += "\\";
+            path += path2;
+            FileTools.SBTool sb = new FileTools.SBTool();
+            sb.LoadFile(path);
+            sb.MdiParent = this.MdiParent;
+            sb.WindowState = FormWindowState.Maximized;
+            sb.Show();
+
+        }
+
+        private void toolStripButton9_Click(object sender, EventArgs e)
+        {
+            RefreshBundles();
+        }
+
+        private void toolStripButton10_Click(object sender, EventArgs e)
+        {
+            RefreshBundles();
+        }
+
+        private void treeView3_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            TreeNode t = treeView3.SelectedNode;
+            if (t == null || t.Nodes == null || t.Nodes.Count != 0)
+                return;
+            string path = Helpers.GetPathFromNode(treeView3.SelectedNode, "/");
+            for (int i = 0; i < tblist.Count; i++)
+                if (path.Contains(tblist[i].bundlepath))
+                {
+                    DBAccess.BundleInformation bi = tblist[i];
+                    if (bi.isbase)
+                        return;
+                    TOCFile toc = new TOCFile(bi.filepath);
+                    byte[] data = toc.ExportBundleDataByPath(bi.bundlepath);
+                    Bundle b = null;
+                    if (bi.incas)
+                    {
+                        List<BJSON.Entry> tmp = new List<BJSON.Entry>();
+                        BJSON.ReadEntries(new MemoryStream(data), tmp);
+                        b = Bundle.Create(tmp[0]);
+                    }
+                    else
+                        b = Bundle.Create(data, true);
+                    if(b == null)
+                        return;
+                    if (b.ebx == null)
+                        b.ebx = new List<Bundle.ebxtype>();
+                    if (b.res == null)
+                        b.res = new List<Bundle.restype>();
+                    if (b.chunk == null)
+                        b.chunk = new List<Bundle.chunktype>();
+                    int total = b.ebx.Count + b.res.Count + b.chunk.Count;
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendFormat("Total count : {0}\n", total);
+                    sb.AppendFormat("EBX count   : {0}\n", b.ebx.Count);
+                    sb.AppendFormat("RES count   : {0}\n", b.res.Count);
+                    sb.AppendFormat("CHUNK count : {0}\n", b.chunk.Count);
+                    rtb1.Text = sb.ToString();
+
+                }
+        }
+    }
+}

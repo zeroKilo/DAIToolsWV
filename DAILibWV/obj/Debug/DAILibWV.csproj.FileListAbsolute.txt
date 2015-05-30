@@ -1,0 +1,16 @@
+D:\CODE\c#\DAIToolsWV\DAILibWV\bin\Debug\DAILibWV.dll
+D:\CODE\c#\DAIToolsWV\DAILibWV\bin\Debug\DAILibWV.pdb
+D:\CODE\c#\DAIToolsWV\DAILibWV\bin\Debug\ICSharpCode.SharpZipLib.dll
+D:\CODE\c#\DAIToolsWV\DAILibWV\bin\Debug\System.Data.SQLite.dll
+D:\CODE\c#\DAIToolsWV\DAILibWV\bin\Debug\System.Data.SQLite.xml
+D:\CODE\c#\DAIToolsWV\DAILibWV\obj\Debug\DAILibWV.dll
+D:\CODE\c#\DAIToolsWV\DAILibWV\obj\Debug\DAILibWV.pdb
+D:\CODE\c#\DAIToolsWV\DAILibWV\obj\Debug\DAILibWV.csprojResolveAssemblyReference.cache
+D:\CODE\SVN\DAIToolsWV\DAILibWV\bin\Debug\DAILibWV.dll
+D:\CODE\SVN\DAIToolsWV\DAILibWV\bin\Debug\DAILibWV.pdb
+D:\CODE\SVN\DAIToolsWV\DAILibWV\bin\Debug\ICSharpCode.SharpZipLib.dll
+D:\CODE\SVN\DAIToolsWV\DAILibWV\bin\Debug\System.Data.SQLite.dll
+D:\CODE\SVN\DAIToolsWV\DAILibWV\bin\Debug\System.Data.SQLite.xml
+D:\CODE\SVN\DAIToolsWV\DAILibWV\obj\Debug\DAILibWV.dll
+D:\CODE\SVN\DAIToolsWV\DAILibWV\obj\Debug\DAILibWV.pdb
+D:\CODE\SVN\DAIToolsWV\DAILibWV\obj\Debug\DAILibWV.csprojResolveAssemblyReference.cache

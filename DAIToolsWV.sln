@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAIToolsWV", "DAIToolsWV\DAIToolsWV.csproj", "{267210E7-BD7F-4FF6-9046-C61F943C5C03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAILibWV", "DAILibWV\DAILibWV.csproj", "{FDF25B35-6AA2-4A5B-B33C-37A215163F6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Be.Windows.Forms.HexBox", "Be.Windows.Forms.HexBox\Be.Windows.Forms.HexBox.csproj", "{26C5F25F-B450-4CAF-AD8B-B8D11AE73457}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{267210E7-BD7F-4FF6-9046-C61F943C5C03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{267210E7-BD7F-4FF6-9046-C61F943C5C03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{267210E7-BD7F-4FF6-9046-C61F943C5C03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{267210E7-BD7F-4FF6-9046-C61F943C5C03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDF25B35-6AA2-4A5B-B33C-37A215163F6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDF25B35-6AA2-4A5B-B33C-37A215163F6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDF25B35-6AA2-4A5B-B33C-37A215163F6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDF25B35-6AA2-4A5B-B33C-37A215163F6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26C5F25F-B450-4CAF-AD8B-B8D11AE73457}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26C5F25F-B450-4CAF-AD8B-B8D11AE73457}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26C5F25F-B450-4CAF-AD8B-B8D11AE73457}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26C5F25F-B450-4CAF-AD8B-B8D11AE73457}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
