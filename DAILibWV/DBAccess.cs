@@ -147,11 +147,13 @@ namespace DAILibWV
             return command.ExecuteReader();
         }
 
-        public static SQLiteDataReader getAllJoined3(string table1, string table2, string table3, string key12, string key21, string key23,string  key32, SQLiteConnection con)
+        public static SQLiteDataReader getAllJoined3(string table1, string table2, string table3, string key12, string key21, string key23, string key32, SQLiteConnection con, string sort = null)
         {
             string sql = "SELECT * FROM " + table1 + " ";
             sql += "JOIN " + table2 + " ON (" + table1 + "." + key12 + " = " + table2 + "." + key21 + ") ";
             sql += "JOIN " + table3 + " ON (" + table2 + "." + key23 + " = " + table3 + "." + key32 + ") ";
+            if (sort != null)
+                sql += " ORDER BY " + sort;
             SQLiteCommand command = new SQLiteCommand(sql, con);
             return command.ExecuteReader();
         }
@@ -263,18 +265,26 @@ namespace DAILibWV
             return result.ToArray();
         }
 
-        public static EBXInformation[] GetEBXInformation()
+        public static EBXInformation[] GetEBXInformation(ToolStripStatusLabel label = null)
         {
             List<EBXInformation> result = new List<EBXInformation>();
             SQLiteConnection con = GetConnection();
             con.Open();
+            label.Text = "Retrieving...";
             SQLiteDataReader reader =
-                getAllJoined3("ebx", "bundles", "tocfiles", "bundle", "id", "tocfile", "id", con);
+                getAllJoined3("ebx", "bundles", "tocfiles", "bundle", "id", "tocfile", "id", con, "ebx.name");
             int count = 0;
+            int waitcounter = 0;
             while (reader.Read())
             {
-                if (count++ % 1000 == 0)
+                if (count++ % 10000 == 0)
+                {
                     Application.DoEvents();
+                    if (label != null)
+                    {
+                        label.Text = "Refreshing... " + Helpers.GetWaiter(waitcounter++);
+                    }
+                }
                 EBXInformation ebx = new EBXInformation();
                 ebx.ebxname = reader.GetString(0).ToLower();
                 ebx.sha1 = reader.GetString(1);

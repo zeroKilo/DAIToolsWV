@@ -53,6 +53,7 @@
     <Compile Include="Frostbite\Bundle.cs" />
     <Compile Include="Frostbite\CASFile.cs" />
     <Compile Include="Frostbite\CATFile.cs" />
+    <Compile Include="Frostbite\EBXFile.cs" />
     <Compile Include="Frostbite\SBFile.cs" />
     <Compile Include="Frostbite\TOCFile.cs" />
     <Compile Include="GlobalStuff.cs" />

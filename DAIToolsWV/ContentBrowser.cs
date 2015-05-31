@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -19,7 +20,7 @@ namespace DAIToolsWV
     {
         DBAccess.BundleInformation[] blist = null;
         DBAccess.EBXInformation[] ebxlist = null;
-        List<DBAccess.BundleInformation> tblist = null;
+        List<DBAccess.BundleInformation> tblist = null;       
 
         Thread TbundleRefresh = null;
         Thread TebxRefresh = null;
@@ -64,6 +65,11 @@ namespace DAIToolsWV
 
         private void ContentBrowser_Load(object sender, EventArgs e)
         {
+            toolStripComboBox1.Items.Clear();
+            toolStripComboBox1.Items.Add("CAS Patch Type - 0 (Normal/None)");
+            toolStripComboBox1.Items.Add("CAS Patch Type - 1 (Replace)");
+            toolStripComboBox1.Items.Add("CAS Patch Type - 2 (Delta)");
+            toolStripComboBox1.SelectedIndex = 0;
             RefreshReal();
             RefreshBundles();
             RefreshEBX();
@@ -206,6 +212,7 @@ namespace DAIToolsWV
             }
             ));
         }
+
         private void toolStripButton7_Click(object sender, EventArgs e)
         {
             RefreshBundles();
@@ -369,40 +376,62 @@ namespace DAIToolsWV
 
         public void RefreshEBX()
         {
+            try
+            {
+                if (TebxRefresh != null)
+                {
+                    TebxRefresh.Abort();
+                    TebxRefresh.Join();
+                }
+            }
+            catch (Exception)
+            {
+            }
             TebxRefresh = new Thread(RefreshEBXThread);
             TebxRefresh.Start();
         }
 
         public void RefreshEBXThread(object obj)
         {
+            Stopwatch sp = new Stopwatch();
+            sp.Start();
+            int casptype = 0;
+            int waitcounter = 0;
             this.Invoke(new Action(delegate
             {
-                ebxstatus.Text = "Refreshing...";
                 splitContainer3.Visible = false;
+                casptype = toolStripComboBox1.SelectedIndex;
+                toolStrip3.Enabled = false;
             }
             ));
             if (ebxlist == null)
-                ebxlist = DBAccess.GetEBXInformation();
+                ebxlist = DBAccess.GetEBXInformation(ebxstatus);
             this.Invoke(new Action(delegate
             {
                 treeView4.Enabled = true;
                 hb1.Enabled = true;
                 treeView4.Nodes.Clear();
                 TreeNode t = new TreeNode();
-                ebxstatus.Text = "Preparing...";
                 int count = 0;
                 foreach (DBAccess.EBXInformation ebx in ebxlist)
-                {
-                    t = Helpers.AddPath(t, ebx.ebxname, "", '/');
-                    if (count++ % 1000 == 0)
-                        Application.DoEvents();
-                }
+                    if (ebx.casPatchType == casptype)
+                    {
+                        t = Helpers.AddPath(t, ebx.ebxname, "", '/');
+                        if (count++ % 10000 == 0)
+                        {
+                            ebxstatus.Text = "Preparing... " + Helpers.GetWaiter(waitcounter++);
+                            Application.DoEvents();
+                        }
+                    }
                 treeView4.Nodes.Add(t);
                 t.Expand();
-                ebxstatus.Text = "Loaded " + ebxlist.Length + " ebx";
+                sp.Stop();
+                ebxstatus.Text = "Loaded " + count + " ebx in " + sp.ElapsedMilliseconds + " ms";
                 splitContainer3.Visible = true;
+                toolStrip3.Enabled = true;
             }
             ));
+            sp.Stop();
         }
 
         private void ContentBrowser_FormClosing(object sender, FormClosingEventArgs e)
@@ -431,13 +460,63 @@ namespace DAIToolsWV
             }
         }
 
-        private void treeView4_AfterSelect(object sender, TreeViewEventArgs e)
+        private void CheckSelectionEBX()
         {
             TreeNode t = treeView4.SelectedNode;
             if (t == null || t.Nodes == null || t.Nodes.Count != 0)
                 return;
             string path = Helpers.GetPathFromNode(t, "/");
-            foreach(DBAccess.EBXInformation ebx in ebxlist)
+            foreach (DBAccess.EBXInformation ebx in ebxlist)
+                if (path.Contains(ebx.ebxname) && ebx.casPatchType != 2 && !ebx.isbase)
+                {
+                    byte[] data = new byte[0];
+                    if (ebx.incas)
+                        data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
+                    else
+                    {
+                        TOCFile toc = new TOCFile(ebx.tocfilepath);
+                        byte[] bundledata = toc.ExportBundleDataByPath(ebx.bundlepath);
+                        BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
+                        foreach (BinaryBundle.EbxEntry ebx2 in b.EbxList)
+                            if (path.Contains(ebx2._name))
+                                data = ebx2._data;
+                    }
+                    if (toolStripButton11.Checked)
+                    {
+                        hb1.BringToFront();
+                        hb1.ByteProvider = new DynamicByteProvider(data);
+                    }
+                    else if (toolStripComboBox1.SelectedIndex < 2)
+                    {
+                        rtb2.BringToFront();
+                        rtb2.Text = "";
+                        rtb2.Visible = false;
+                        try
+                        {
+                            EBXFile ebxf = new EBXFile(new MemoryStream(data));
+                            rtb2.Text = ebxf.toXML();
+                        }
+                        catch (Exception ex)
+                        {
+                            rtb2.Text = "Error:\n" + ex.Message;
+                        }
+                        rtb2.Visible = true;
+                    }
+                }
+        }
+
+        private void treeView4_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            CheckSelectionEBX();
+        }
+
+        private void openInEBXToolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TreeNode t = treeView4.SelectedNode;
+            if (t == null || t.Nodes == null || t.Nodes.Count != 0)
+                return;
+            string path = Helpers.GetPathFromNode(t, "/");
+            foreach (DBAccess.EBXInformation ebx in ebxlist)
                 if (path.Contains(ebx.ebxname) && ebx.casPatchType == 0 && !ebx.isbase)
                 {
                     byte[] data = new byte[0];
@@ -452,8 +531,32 @@ namespace DAIToolsWV
                             if (path.Contains(ebx2._name))
                                 data = ebx2._data;
                     }
-                    hb1.ByteProvider = new DynamicByteProvider(data);
+                    ContentTools.EBXTool ebxtool = new ContentTools.EBXTool();
+                    ebxtool.MdiParent = this.MdiParent;
+                    ebxtool.Show();
+                    ebxtool.WindowState = FormWindowState.Maximized;
+                    ebxtool.LoadEbx(data);
+                    break;
                 }
+        }
+
+        private void toolStripButton11_Click(object sender, EventArgs e)
+        {
+            toolStripButton11.Checked = true;
+            toolStripButton12.Checked = false;
+            CheckSelectionEBX();
+        }
+
+        private void toolStripButton12_Click(object sender, EventArgs e)
+        {
+            toolStripButton11.Checked = false;
+            toolStripButton12.Checked = true;
+            CheckSelectionEBX();
+        }
+
+        private void toolStripButton13_Click(object sender, EventArgs e)
+        {
+            RefreshEBX();
         }
     }
 }

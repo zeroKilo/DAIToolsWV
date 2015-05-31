@@ -36,10 +36,12 @@ namespace DAIToolsWV
             this.tOCToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sBToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mFTToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.initFsToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contentBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hexToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.initFsToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contentToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eBXToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,7 +49,8 @@ namespace DAIToolsWV
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolsToolStripMenuItem,
-            this.generalToolsToolStripMenuItem});
+            this.generalToolsToolStripMenuItem,
+            this.contentToolsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1119, 24);
@@ -68,23 +71,30 @@ namespace DAIToolsWV
             // tOCToolToolStripMenuItem
             // 
             this.tOCToolToolStripMenuItem.Name = "tOCToolToolStripMenuItem";
-            this.tOCToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tOCToolToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.tOCToolToolStripMenuItem.Text = "TOC Tool";
             this.tOCToolToolStripMenuItem.Click += new System.EventHandler(this.tOCToolToolStripMenuItem_Click);
             // 
             // sBToolToolStripMenuItem
             // 
             this.sBToolToolStripMenuItem.Name = "sBToolToolStripMenuItem";
-            this.sBToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sBToolToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.sBToolToolStripMenuItem.Text = "SB Tool";
             this.sBToolToolStripMenuItem.Click += new System.EventHandler(this.sBToolToolStripMenuItem_Click);
             // 
             // mFTToolToolStripMenuItem
             // 
             this.mFTToolToolStripMenuItem.Name = "mFTToolToolStripMenuItem";
-            this.mFTToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mFTToolToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.mFTToolToolStripMenuItem.Text = "MFT Tool";
             this.mFTToolToolStripMenuItem.Click += new System.EventHandler(this.mFTToolToolStripMenuItem_Click);
+            // 
+            // initFsToolToolStripMenuItem
+            // 
+            this.initFsToolToolStripMenuItem.Name = "initFsToolToolStripMenuItem";
+            this.initFsToolToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.initFsToolToolStripMenuItem.Text = "InitFs Tool";
+            this.initFsToolToolStripMenuItem.Click += new System.EventHandler(this.initFsToolToolStripMenuItem_Click);
             // 
             // generalToolsToolStripMenuItem
             // 
@@ -109,12 +119,20 @@ namespace DAIToolsWV
             this.hexToolToolStripMenuItem.Text = "Hex Tool";
             this.hexToolToolStripMenuItem.Click += new System.EventHandler(this.hexToolToolStripMenuItem_Click_1);
             // 
-            // initFsToolToolStripMenuItem
+            // contentToolsToolStripMenuItem
             // 
-            this.initFsToolToolStripMenuItem.Name = "initFsToolToolStripMenuItem";
-            this.initFsToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.initFsToolToolStripMenuItem.Text = "InitFs Tool";
-            this.initFsToolToolStripMenuItem.Click += new System.EventHandler(this.initFsToolToolStripMenuItem_Click);
+            this.contentToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.eBXToolToolStripMenuItem});
+            this.contentToolsToolStripMenuItem.Name = "contentToolsToolStripMenuItem";
+            this.contentToolsToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
+            this.contentToolsToolStripMenuItem.Text = "Content Tools";
+            // 
+            // eBXToolToolStripMenuItem
+            // 
+            this.eBXToolToolStripMenuItem.Name = "eBXToolToolStripMenuItem";
+            this.eBXToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.eBXToolToolStripMenuItem.Text = "EBX Tool";
+            this.eBXToolToolStripMenuItem.Click += new System.EventHandler(this.eBXToolToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -146,6 +164,8 @@ namespace DAIToolsWV
         private ToolStripMenuItem contentBrowserToolStripMenuItem;
         private ToolStripMenuItem hexToolToolStripMenuItem;
         private ToolStripMenuItem initFsToolToolStripMenuItem;
+        private ToolStripMenuItem contentToolsToolStripMenuItem;
+        private ToolStripMenuItem eBXToolToolStripMenuItem;
     }
 }
 

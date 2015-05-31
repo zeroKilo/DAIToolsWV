@@ -113,5 +113,10 @@ namespace DAIToolsWV
         {
             OpenMaxed(new FileTools.INITFSTool());
         }
+
+        private void eBXToolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new ContentTools.EBXTool());
+        }
     }
 }

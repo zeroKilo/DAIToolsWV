@@ -226,7 +226,6 @@ namespace DAILibWV
             return m.ToArray();
         }
 
-
         public static string ByteArrayToString(byte[] data)
         {
             if (data == null)
@@ -234,6 +233,14 @@ namespace DAILibWV
             StringBuilder sb = new StringBuilder();
             foreach (byte b in data)
                 sb.Append(b.ToString("X2"));
+            return sb.ToString();
+        }
+
+        public static string MakeTabs(int count)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < count; i++)
+                sb.Append("  ");
             return sb.ToString();
         }
 
@@ -353,6 +360,18 @@ namespace DAILibWV
                 return md5.ComputeHash(File.ReadAllBytes(filePath));
             }
         }
+
+        public static int HashFNV1(string StrToHash, int hashseed = 5381, int hashprime = 33)
+        {
+            int Hash = hashseed;
+            for (int i = 0; i < StrToHash.Length; i++)
+            {
+                byte b = (byte)StrToHash[i];
+                Hash = (int)(Hash * hashprime) ^ b;
+            }
+            return Hash;
+        }
+
         public static string DecompileLUAC(byte[] data)
         {
             MemoryStream m = new MemoryStream(data);
@@ -410,7 +429,14 @@ namespace DAILibWV
             else
                 return "";
         }
-        
+
+        public static string GetWaiter(int x)
+        {
+            string waiter = @"_./*\._./*\._./";
+            int sublen = 8;
+            return waiter.Substring(x % (waiter.Length - sublen) , sublen);
+        }
+
         public static TreeNode AddPath(TreeNode t, string path, string sha1, char splitter = '/')
         {
             string[] parts = path.Split(splitter);

@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ContentBrowser));
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openInTOCToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openInSBToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,9 +62,17 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.treeView4 = new System.Windows.Forms.TreeView();
-            this.hb1 = new Be.Windows.Forms.HexBox();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.ebxstatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.ebxcontext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.openInEBXToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStrip3 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton11 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton12 = new System.Windows.Forms.ToolStripButton();
+            this.rtb2 = new System.Windows.Forms.RichTextBox();
+            this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
+            this.hb1 = new Be.Windows.Forms.HexBox();
             this.contextMenuStrip1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -87,16 +94,9 @@
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             this.statusStrip2.SuspendLayout();
+            this.ebxcontext.SuspendLayout();
+            this.toolStrip3.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(549, 24);
-            this.menuStrip1.TabIndex = 0;
-            this.menuStrip1.Text = "menuStrip1";
-            this.menuStrip1.Visible = false;
             // 
             // contextMenuStrip1
             // 
@@ -268,6 +268,7 @@
             // 
             // bundletext
             // 
+            this.bundletext.Font = new System.Drawing.Font("Courier New", 10F);
             this.bundletext.Name = "bundletext";
             this.bundletext.Size = new System.Drawing.Size(0, 17);
             // 
@@ -433,6 +434,7 @@
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.splitContainer3);
+            this.tabPage3.Controls.Add(this.toolStrip3);
             this.tabPage3.Controls.Add(this.statusStrip2);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
@@ -445,7 +447,7 @@
             // splitContainer3
             // 
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer3.Location = new System.Drawing.Point(3, 3);
+            this.splitContainer3.Location = new System.Drawing.Point(3, 28);
             this.splitContainer3.Name = "splitContainer3";
             // 
             // splitContainer3.Panel1
@@ -455,36 +457,22 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.hb1);
-            this.splitContainer3.Size = new System.Drawing.Size(535, 326);
+            this.splitContainer3.Panel2.Controls.Add(this.rtb2);
+            this.splitContainer3.Size = new System.Drawing.Size(535, 301);
             this.splitContainer3.SplitterDistance = 240;
             this.splitContainer3.TabIndex = 0;
             // 
             // treeView4
             // 
+            this.treeView4.ContextMenuStrip = this.ebxcontext;
             this.treeView4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView4.Font = new System.Drawing.Font("Courier New", 10F);
             this.treeView4.HideSelection = false;
             this.treeView4.Location = new System.Drawing.Point(0, 0);
             this.treeView4.Name = "treeView4";
-            this.treeView4.Size = new System.Drawing.Size(240, 326);
+            this.treeView4.Size = new System.Drawing.Size(240, 301);
             this.treeView4.TabIndex = 0;
             this.treeView4.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView4_AfterSelect);
-            // 
-            // hb1
-            // 
-            this.hb1.BoldFont = null;
-            this.hb1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hb1.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hb1.LineInfoForeColor = System.Drawing.Color.Empty;
-            this.hb1.LineInfoVisible = true;
-            this.hb1.Location = new System.Drawing.Point(0, 0);
-            this.hb1.Name = "hb1";
-            this.hb1.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hb1.Size = new System.Drawing.Size(291, 326);
-            this.hb1.StringViewVisible = true;
-            this.hb1.TabIndex = 0;
-            this.hb1.UseFixedBytesPerLine = true;
-            this.hb1.VScrollBarVisible = true;
             // 
             // statusStrip2
             // 
@@ -498,8 +486,101 @@
             // 
             // ebxstatus
             // 
+            this.ebxstatus.Font = new System.Drawing.Font("Courier New", 10F);
             this.ebxstatus.Name = "ebxstatus";
             this.ebxstatus.Size = new System.Drawing.Size(0, 17);
+            // 
+            // ebxcontext
+            // 
+            this.ebxcontext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openInEBXToolToolStripMenuItem});
+            this.ebxcontext.Name = "ebxcontext";
+            this.ebxcontext.Size = new System.Drawing.Size(156, 26);
+            // 
+            // openInEBXToolToolStripMenuItem
+            // 
+            this.openInEBXToolToolStripMenuItem.Name = "openInEBXToolToolStripMenuItem";
+            this.openInEBXToolToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.openInEBXToolToolStripMenuItem.Text = "Open in EBX Tool";
+            this.openInEBXToolToolStripMenuItem.Click += new System.EventHandler(this.openInEBXToolToolStripMenuItem_Click);
+            // 
+            // toolStrip3
+            // 
+            this.toolStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton11,
+            this.toolStripButton12,
+            this.toolStripComboBox1,
+            this.toolStripButton13});
+            this.toolStrip3.Location = new System.Drawing.Point(3, 3);
+            this.toolStrip3.Name = "toolStrip3";
+            this.toolStrip3.Size = new System.Drawing.Size(535, 25);
+            this.toolStrip3.TabIndex = 2;
+            this.toolStrip3.Text = "toolStrip3";
+            // 
+            // toolStripButton11
+            // 
+            this.toolStripButton11.Checked = true;
+            this.toolStripButton11.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.toolStripButton11.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton11.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton11.Image")));
+            this.toolStripButton11.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton11.Name = "toolStripButton11";
+            this.toolStripButton11.Size = new System.Drawing.Size(30, 22);
+            this.toolStripButton11.Text = "Hex";
+            this.toolStripButton11.Click += new System.EventHandler(this.toolStripButton11_Click);
+            // 
+            // toolStripButton12
+            // 
+            this.toolStripButton12.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton12.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton12.Image")));
+            this.toolStripButton12.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton12.Name = "toolStripButton12";
+            this.toolStripButton12.Size = new System.Drawing.Size(30, 22);
+            this.toolStripButton12.Text = "XML";
+            this.toolStripButton12.Click += new System.EventHandler(this.toolStripButton12_Click);
+            // 
+            // rtb2
+            // 
+            this.rtb2.DetectUrls = false;
+            this.rtb2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtb2.Font = new System.Drawing.Font("Courier New", 10F);
+            this.rtb2.Location = new System.Drawing.Point(0, 0);
+            this.rtb2.Name = "rtb2";
+            this.rtb2.Size = new System.Drawing.Size(291, 301);
+            this.rtb2.TabIndex = 1;
+            this.rtb2.Text = "";
+            this.rtb2.WordWrap = false;
+            // 
+            // toolStripComboBox1
+            // 
+            this.toolStripComboBox1.Name = "toolStripComboBox1";
+            this.toolStripComboBox1.Size = new System.Drawing.Size(200, 25);
+            // 
+            // toolStripButton13
+            // 
+            this.toolStripButton13.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton13.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton13.Image")));
+            this.toolStripButton13.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton13.Name = "toolStripButton13";
+            this.toolStripButton13.Size = new System.Drawing.Size(49, 22);
+            this.toolStripButton13.Text = "Refresh";
+            this.toolStripButton13.Click += new System.EventHandler(this.toolStripButton13_Click);
+            // 
+            // hb1
+            // 
+            this.hb1.BoldFont = null;
+            this.hb1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hb1.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.hb1.LineInfoForeColor = System.Drawing.Color.Empty;
+            this.hb1.LineInfoVisible = true;
+            this.hb1.Location = new System.Drawing.Point(0, 0);
+            this.hb1.Name = "hb1";
+            this.hb1.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
+            this.hb1.Size = new System.Drawing.Size(291, 301);
+            this.hb1.StringViewVisible = true;
+            this.hb1.TabIndex = 0;
+            this.hb1.UseFixedBytesPerLine = true;
+            this.hb1.VScrollBarVisible = true;
             // 
             // ContentBrowser
             // 
@@ -507,8 +588,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(549, 380);
             this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.menuStrip1);
-            this.MainMenuStrip = this.menuStrip1;
             this.Name = "ContentBrowser";
             this.Text = "Content Browser";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ContentBrowser_FormClosing);
@@ -541,14 +620,15 @@
             this.splitContainer3.ResumeLayout(false);
             this.statusStrip2.ResumeLayout(false);
             this.statusStrip2.PerformLayout();
+            this.ebxcontext.ResumeLayout(false);
+            this.toolStrip3.ResumeLayout(false);
+            this.toolStrip3.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem openInTOCToolToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openInSBToolToolStripMenuItem;
@@ -584,5 +664,13 @@
         private Be.Windows.Forms.HexBox hb1;
         private System.Windows.Forms.StatusStrip statusStrip2;
         private System.Windows.Forms.ToolStripStatusLabel ebxstatus;
+        private System.Windows.Forms.ContextMenuStrip ebxcontext;
+        private System.Windows.Forms.ToolStripMenuItem openInEBXToolToolStripMenuItem;
+        private System.Windows.Forms.ToolStrip toolStrip3;
+        private System.Windows.Forms.ToolStripButton toolStripButton11;
+        private System.Windows.Forms.ToolStripButton toolStripButton12;
+        private System.Windows.Forms.RichTextBox rtb2;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
+        private System.Windows.Forms.ToolStripButton toolStripButton13;
     }
 }

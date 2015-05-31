@@ -78,3 +78,11 @@ D:\CODE\SVN\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox
 D:\CODE\SVN\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox.dll
 D:\CODE\SVN\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox.pdb
 D:\CODE\SVN\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox.csprojResolveAssemblyReference.cache
+D:\CODE\GitHub\DAIToolsWV\Be.Windows.Forms.HexBox\bin\Debug\Be.Windows.Forms.HexBox.dll
+D:\CODE\GitHub\DAIToolsWV\Be.Windows.Forms.HexBox\bin\Debug\Be.Windows.Forms.HexBox.pdb
+D:\CODE\GitHub\DAIToolsWV\Be.Windows.Forms.HexBox\bin\Debug\Be.Windows.Forms.HexBox.xml
+D:\CODE\GitHub\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox.resources
+D:\CODE\GitHub\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.Properties.Resources.resources
+D:\CODE\GitHub\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox.csproj.GenerateResource.Cache
+D:\CODE\GitHub\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox.dll
+D:\CODE\GitHub\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox.pdb
