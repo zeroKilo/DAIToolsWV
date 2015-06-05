@@ -118,5 +118,16 @@ namespace DAIToolsWV
         {
             OpenMaxed(new ContentTools.EBXTool());
         }
+
+        private void rESETALLToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Do you really want to reset the database and restart?", "Database", MessageBoxButtons.YesNo);
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            { 
+                if(File.Exists("database.sqlite"))
+                    File.Delete("database.sqlite");
+                Application.Restart();
+            }
+        }
     }
 }

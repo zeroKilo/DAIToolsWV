@@ -75,12 +75,11 @@ namespace DAILibWV
             con.Open();
             SQLCommand("CREATE TABLE settings (key TEXT, value TEXT)", con);
             SQLCommand("INSERT INTO settings (key, value) values ('isNew', '1')", con);
-            ClearSHA1db(con);
             ClearGlobalChunkdb(con);
             ClearSBFilesdb(con);
             ClearTOCFilesdb(con);
-            ClearCASFilesdb(con);
             ClearBundlesdb(con);
+            ClearEBXLookUpTabledb(con);
             con.Close();
         }
 
@@ -169,14 +168,7 @@ namespace DAILibWV
             SQLiteCommand command = new SQLiteCommand("SELECT * FROM " + table + " WHERE " + where, con);
             return command.ExecuteReader();
         }
-
-
-        public static void ClearSHA1db(SQLiteConnection con)
-        {
-            SQLCommand("DROP TABLE IF EXISTS sha1db", con);
-            SQLCommand("CREATE TABLE sha1db (line TEXT, type TEXT)", con);
-        }
-
+        
         public static void ClearSBFilesdb(SQLiteConnection con)
         {
             SQLCommand("DROP TABLE IF EXISTS sbfiles", con);
@@ -189,12 +181,14 @@ namespace DAILibWV
             SQLCommand("CREATE TABLE tocfiles (id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, md5 TEXT, incas TEXT, type TEXT)", con);
         }
 
-        public static void ClearCASFilesdb(SQLiteConnection con)
+        public static void ClearEBXLookUpTabledb(SQLiteConnection con)
         {
-            SQLCommand("DROP TABLE IF EXISTS casfiles", con);
-            SQLCommand("CREATE TABLE casfiles (path TEXT, type TEXT)", con);
+            SQLCommand("DROP TABLE IF EXISTS ebxlut", con);
+            SQLCommand("CREATE TABLE ebxlut (id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + "path TEXT, sha1 TEXT, basesha1 TEXT, deltasha1 TEXT, casptype INT, "
+            + "bundlepath TEXT, offset INT, size INT, isbase TEXT, isdelta TEXT, tocpath TEXT, incas TEXT, filetype TEXT)", con);
         }
-
+        
         public static void ClearGlobalChunkdb(SQLiteConnection con)
         {
             SQLCommand("DROP TABLE IF EXISTS globalchunks", con);
@@ -213,9 +207,6 @@ namespace DAILibWV
             SQLCommand("CREATE TABLE chunks (id TEXT, sha1 TEXT, bundle INT, FOREIGN KEY (bundle) REFERENCES bundles (id))", con);
         }
 
-        private static string[] exceptions = { "win32/da3/configurations/online/webbrowser/webbrowserbundle",
-                                               "win32/da3/designcontent/prefabs/general/conversations/partybanter_listenerbundle"};
-
         public static string[] GetGameFiles(string table)
         {
             List<string> result = new List<string>();
@@ -226,6 +217,39 @@ namespace DAILibWV
                 result.Add(reader.GetString(1));
             con.Close();
             return result.ToArray();
+        }
+
+        public static string[] GetFiles(string type, bool withBase, bool withDLC, bool withPatch)
+        {
+            string[] list = DBAccess.GetGameFiles(type);
+            string basepath = GlobalStuff.FindSetting("gamepath");
+            List<string> tmp = new List<string>(list);
+            for (int i = 0; i < tmp.Count; i++)
+            {
+                if (!withBase)
+                    if (!tmp[i].Contains("Update"))
+                    {
+                        tmp.RemoveAt(i--);
+                        continue;
+                    }
+                if (!withDLC)
+                    if (tmp[i].Contains("Update") && !tmp[i].Contains("Patch"))
+                    {
+                        tmp.RemoveAt(i--);
+                        continue;
+                    }
+                if (!withPatch)
+                    if (tmp[i].Contains("Update") && tmp[i].Contains("Patch"))
+                    {
+                        tmp.RemoveAt(i--);
+                        continue;
+                    }
+
+            }
+            list = tmp.ToArray();
+            for (int i = 0; i < list.Length; i++)
+                list[i] = list[i].Substring(basepath.Length, list[i].Length - basepath.Length);
+            return list;
         }
 
         public static BundleInformation[] GetBundleInformation()
@@ -265,26 +289,19 @@ namespace DAILibWV
             return result.ToArray();
         }
 
-        public static EBXInformation[] GetEBXInformation(ToolStripStatusLabel label = null)
+        private static EBXInformation[] GetInitialEBXInformation()
         {
             List<EBXInformation> result = new List<EBXInformation>();
             SQLiteConnection con = GetConnection();
             con.Open();
-            label.Text = "Retrieving...";
+            Debug.LogLn("Generating sorted ebx lookup table, this takes a while and freezes the program in the meantime,\n thats normal, please stand by...");
             SQLiteDataReader reader =
                 getAllJoined3("ebx", "bundles", "tocfiles", "bundle", "id", "tocfile", "id", con, "ebx.name");
             int count = 0;
-            int waitcounter = 0;
             while (reader.Read())
             {
                 if (count++ % 10000 == 0)
-                {
-                    Application.DoEvents();
-                    if (label != null)
-                    {
-                        label.Text = "Refreshing... " + Helpers.GetWaiter(waitcounter++);
-                    }
-                }
+                    Debug.LogLn("Read " + (count - 1) + " ebx...");
                 EBXInformation ebx = new EBXInformation();
                 ebx.ebxname = reader.GetString(0).ToLower();
                 ebx.sha1 = reader.GetString(1);
@@ -316,39 +333,52 @@ namespace DAILibWV
             return result.ToArray();
         }
 
-        public static string[] GetFiles(string type, bool withBase, bool withDLC, bool withPatch)
+        public static EBXInformation[] GetEBXInformation(ToolStripStatusLabel label)
         {
-            string[] list = DBAccess.GetGameFiles(type);
-            string basepath = GlobalStuff.FindSetting("gamepath");
-            List<string> tmp = new List<string>(list);
-            for (int i = 0; i < tmp.Count; i++)
+            List<EBXInformation> result = new List<EBXInformation>();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAll("ebxlut", con);
+            int count = 0;
+            int animcount = 0;
+            while (reader.Read())
             {
-                if (!withBase)
-                    if (!tmp[i].Contains("Update"))
-                    {
-                        tmp.RemoveAt(i--);
-                        continue;
-                    }
-                if (!withDLC)
-                    if (tmp[i].Contains("Update") && !tmp[i].Contains("Patch"))
-                    {
-                        tmp.RemoveAt(i--);
-                        continue;
-                    }
-                if (!withPatch)
-                    if (tmp[i].Contains("Update") && tmp[i].Contains("Patch"))
-                    {
-                        tmp.RemoveAt(i--);
-                        continue;
-                    }
-
+                EBXInformation ebx = new EBXInformation();
+                ebx.ebxname = reader.GetString(1);
+                ebx.sha1 = reader.GetString(2);
+                ebx.basesha1 = reader.GetString(3);
+                ebx.deltasha1 = reader.GetString(4);
+                ebx.casPatchType = reader.GetInt32(5);
+                ebx.bundlepath = reader.GetString(6);
+                ebx.offset = reader.GetInt32(7);
+                ebx.size = reader.GetInt32(8);
+                ebx.isbase = reader.GetString(9) == "True";
+                ebx.isdelta = reader.GetString(10) == "True";
+                ebx.tocfilepath = reader.GetString(11);
+                ebx.incas = reader.GetString(12) == "True";
+                switch (reader.GetString(13))
+                {
+                    default:
+                        ebx.isbasegamefile = true;
+                        break;
+                    case "u":
+                        ebx.isDLC = true;
+                        break;
+                    case "p":
+                        ebx.isPatch = true;
+                        break;
+                }
+                result.Add(ebx);
+                if (count++ % 10000 == 0)
+                {
+                    Application.DoEvents();
+                    label.Text = "Refreshing... " + Helpers.GetWaiter(animcount++);
+                }
             }
-            list = tmp.ToArray();
-            for (int i = 0; i < list.Length; i++)
-                list[i] = list[i].Substring(basepath.Length, list[i].Length - basepath.Length);
-            return list;
+            con.Close();
+            return result.ToArray();
         }
-
+        
         public static void AddSHA1(uint[] entry, string type, SQLiteConnection con)
         {
             StringBuilder sb = new StringBuilder();
@@ -427,25 +457,27 @@ namespace DAILibWV
                     AddChunk(chunk.id, chunk.SHA1, bundleid, con);
         }
 
-        public static byte[] getDataBySHA1(string sha1, SQLiteConnection con)
+        public static void AddEBXLUTFile(EBXInformation ebx, SQLiteConnection con)
         {
-            SQLiteDataReader reader = getAllWhere("sha1db", "line LIKE '" + sha1 + "%'", con);
-            if (!reader.Read())
-                return new byte[0];
-            string lines = reader.GetString(0);
-            byte[] buff = Helpers.HexStringToByteArray(lines);
-            uint[] line = new uint[9];
-            MemoryStream m = new MemoryStream(buff);
-            m.Seek(20, 0);
-            uint offset = Helpers.ReadLEUInt(m);
-            uint size = Helpers.ReadLEUInt(m);
-            uint casn = Helpers.ReadLEUInt(m);
-            reader = getAllWhere("casfiles", "path LIKE '%cas_" + casn.ToString("d2") + ".cas'", con);
-            if (!reader.Read())
-                return new byte[0];
-            CASFile cas = new CASFile(reader.GetString(0));
-            CASFile.CASEntry entry = cas.ReadEntry(offset, size);
-            return entry.data;
+            string ftype = "b";
+            if (ebx.isDLC)
+                ftype = "u";
+            if (ebx.isPatch)
+                ftype = "p";
+            SQLCommand("INSERT INTO ebxlut (path,sha1,basesha1,deltasha1,casptype,bundlepath,offset,size,isbase,isdelta,tocpath,incas,filetype) VALUES ('"
+                + ebx.ebxname + "','"
+                + ebx.sha1 + "','"
+                + ebx.basesha1 + "','"
+                + ebx.deltasha1 + "',"
+                + ebx.casPatchType + ",'"
+                + ebx.bundlepath + "',"
+                + ebx.offset + ","
+                + ebx.size + ",'"
+                + ebx.isbase + "','"
+                + ebx.isdelta + "','"
+                + ebx.tocfilepath + "','"
+                + ebx.incas + "','"
+                + ftype + "')", con);
         }
 
         public static void StartScan(string path)
@@ -458,9 +490,9 @@ namespace DAILibWV
                 GlobalStuff.AssignSetting("isNew", "0");
                 GlobalStuff.settings.Add("gamepath", path);
                 SaveSettings();
-                ScanCAT();
                 ScanFiles();
                 ScanTOCsForBundles();
+                PrepareEbxLookup();
             }
             catch (Exception ex)
             {
@@ -469,50 +501,6 @@ namespace DAILibWV
             }
             sp.Stop();
             Debug.LogLn("\n\n===============\nTime : " + sp.Elapsed.ToString() + "\n");
-        }
-
-        private static void ScanCAT()
-        {
-            Debug.LogLn("Loading CAT...");
-            string path = GlobalStuff.FindSetting("gamepath") + "Data\\cas.cat";
-            CATFile cat = new CATFile(path);
-            SQLiteConnection con = GetConnection();
-            con.Open();
-            var transaction = con.BeginTransaction();
-            int counter = 0;
-            Debug.LogLn("Saving sha1s into db...");
-            foreach (uint[] line in cat.lines)
-            {
-                AddSHA1(line, TYPE_BASEGAME, con);
-                if ((counter % 100000) == 0)
-                {
-                    Debug.LogLn(counter + "/" + cat.lines.Count);
-                    transaction.Commit();
-                    transaction = con.BeginTransaction();
-                }
-                counter++;
-            }
-            transaction.Commit();
-            path = GlobalStuff.FindSetting("gamepath") + "Update\\Patch\\Data\\cas.cat";
-            if (!File.Exists(path))
-                return;
-            cat = new CATFile(path);
-            transaction = con.BeginTransaction();
-            counter = 0;
-            Debug.LogLn("Saving patch sha1s into db...");
-            foreach (uint[] line in cat.lines)
-            {
-                AddSHA1(line, TYPE_PATCH, con);
-                if ((counter % 100000) == 0)
-                {
-                    Debug.LogLn(counter + "/" + cat.lines.Count);
-                    transaction.Commit();
-                    transaction = con.BeginTransaction();
-                }
-                counter++;
-            }
-            transaction.Commit();
-            con.Close();
         }
         
         private static void ScanFiles()
@@ -541,17 +529,6 @@ namespace DAILibWV
                     AddTOCFile(file, TYPE_UPDATE, con);
                 else
                     AddTOCFile(file, TYPE_PATCH, con);
-            transaction.Commit();
-            transaction = con.BeginTransaction();
-            Debug.LogLn("CAS files...");
-            files = Directory.GetFiles(GlobalStuff.FindSetting("gamepath"), "*.cas", SearchOption.AllDirectories);
-            foreach (string file in files)
-                if (!file.ToLower().Contains("\\update\\"))
-                    AddCASFile(file, TYPE_BASEGAME, con);
-                else if (!file.ToLower().Contains("\\update\\patch\\"))
-                    AddCASFile(file, TYPE_UPDATE, con);
-                else
-                    AddCASFile(file, TYPE_PATCH, con);
             transaction.Commit();
             con.Close();
         }
@@ -623,9 +600,14 @@ namespace DAILibWV
                 transaction = con.BeginTransaction();
                 foreach (TOCFile.TOCChunkInfoStruct info in tocfile.chunks)
                 {
-                    counter2++;
-                    Debug.LogLn(" adding chunk: " + (counter2) + "/" + tocfile.chunks.Count + " " + Helpers.ByteArrayToString(info.id), counter2 % 1000 == 0);
                     AddGlobalChunk(fileids[counter - 1], info.id, info.sha1, info.offset, info.size, con);
+                    Debug.LogLn(" adding chunk: " + (counter2) + "/" + tocfile.chunks.Count + " " + Helpers.ByteArrayToString(info.id), counter2 % 1000 == 0);
+                    if (counter2 % 1000 == 0)
+                    {
+                        transaction.Commit();
+                        transaction = con.BeginTransaction();
+                    }
+                    counter2++;
                 }
                 transaction.Commit();
                 long elapsed = sp.ElapsedMilliseconds;
@@ -633,6 +615,28 @@ namespace DAILibWV
                 TimeSpan ETAt = TimeSpan.FromMilliseconds(ETA);
                 Debug.LogLn((counter) + "/" + files.Count + " files done." + " - Elapsed: " + sp.Elapsed.ToString() + " ETA: " + ETAt.ToString());
             }
+            con.Close();
+        }
+
+        private static void PrepareEbxLookup()
+        {
+            EBXInformation[] list = GetInitialEBXInformation();
+            int count = 0;
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            var transaction = con.BeginTransaction();
+            foreach (EBXInformation ebx in list)
+            {
+                AddEBXLUTFile(ebx, con);
+                if (count % 10000 == 0)
+                {
+                    transaction.Commit();
+                    Debug.LogLn("Saving ebx lookup table...(" + count + " / " + list.Length + ")", true);
+                    transaction = con.BeginTransaction();
+                }
+                count++;
+            }
+            transaction.Commit();
             con.Close();
         }
     }

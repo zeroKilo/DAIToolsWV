@@ -80,7 +80,7 @@ namespace DAIToolsWV
             // rtb1
             // 
             this.rtb1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtb1.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtb1.Font = new System.Drawing.Font("Courier New", 10, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtb1.Location = new System.Drawing.Point(0, 0);
             this.rtb1.Name = "rtb1";
             this.rtb1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;

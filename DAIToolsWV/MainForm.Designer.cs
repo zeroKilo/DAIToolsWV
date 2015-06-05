@@ -42,6 +42,7 @@ namespace DAIToolsWV
             this.hexToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contentToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eBXToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -50,7 +51,8 @@ namespace DAIToolsWV
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolsToolStripMenuItem,
             this.generalToolsToolStripMenuItem,
-            this.contentToolsToolStripMenuItem});
+            this.contentToolsToolStripMenuItem,
+            this.rESETALLToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1119, 24);
@@ -130,9 +132,16 @@ namespace DAIToolsWV
             // eBXToolToolStripMenuItem
             // 
             this.eBXToolToolStripMenuItem.Name = "eBXToolToolStripMenuItem";
-            this.eBXToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.eBXToolToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.eBXToolToolStripMenuItem.Text = "EBX Tool";
             this.eBXToolToolStripMenuItem.Click += new System.EventHandler(this.eBXToolToolStripMenuItem_Click);
+            // 
+            // rESETALLToolStripMenuItem
+            // 
+            this.rESETALLToolStripMenuItem.Name = "rESETALLToolStripMenuItem";
+            this.rESETALLToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
+            this.rESETALLToolStripMenuItem.Text = "RESET ALL";
+            this.rESETALLToolStripMenuItem.Click += new System.EventHandler(this.rESETALLToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -166,6 +175,7 @@ namespace DAIToolsWV
         private ToolStripMenuItem initFsToolToolStripMenuItem;
         private ToolStripMenuItem contentToolsToolStripMenuItem;
         private ToolStripMenuItem eBXToolToolStripMenuItem;
+        private ToolStripMenuItem rESETALLToolStripMenuItem;
     }
 }
 
