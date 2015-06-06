@@ -407,7 +407,7 @@ namespace DAILibWV
 
         public static void AddTOCFile(string path, string type, SQLiteConnection con)
         {
-            string md5 = Helpers.ByteArrayToString(Helpers.ComputeHash(path));
+            string md5 = Helpers.ByteArrayToHexString(Helpers.ComputeHash(path));
             Debug.LogLn(" MD5: " + md5 + " Filename: " + Path.GetFileName(path));
             TOCFile toc = new TOCFile(path);
             bool incas = false;
@@ -425,18 +425,18 @@ namespace DAILibWV
         public static void AddEBXFile(string name, byte[] sha1, byte[] basesha1, byte[] deltasha1, int casPatchType, int bundleid,  string guid, SQLiteConnection con)
         {
             name = name.Replace("'", "");//lolfix
-            SQLCommand("INSERT INTO ebx VALUES ('" + name + "','" + Helpers.ByteArrayToString(sha1) + "','" + Helpers.ByteArrayToString(basesha1) + "','" + Helpers.ByteArrayToString(deltasha1) + "'," + casPatchType + "," + bundleid + ", '" + guid + "')", con);
+            SQLCommand("INSERT INTO ebx VALUES ('" + name + "','" + Helpers.ByteArrayToHexString(sha1) + "','" + Helpers.ByteArrayToHexString(basesha1) + "','" + Helpers.ByteArrayToHexString(deltasha1) + "'," + casPatchType + "," + bundleid + ", '" + guid + "')", con);
         }
 
         public static void AddRESFile(string name, byte[] sha1, byte[] rtype, int bundleid, SQLiteConnection con)
         {
             name = name.Replace("'", "");//lolfix
-            SQLCommand("INSERT INTO res VALUES ('" + name + "','" + Helpers.ByteArrayToString(sha1) + "', '" + Helpers.ByteArrayToString(rtype) + "', " + bundleid + ")", con);
+            SQLCommand("INSERT INTO res VALUES ('" + name + "','" + Helpers.ByteArrayToHexString(sha1) + "', '" + Helpers.ByteArrayToHexString(rtype) + "', " + bundleid + ")", con);
         }
 
         public static void AddChunk(byte[] id, byte[] sha1, int bundleid, SQLiteConnection con)
         {
-            SQLCommand("INSERT INTO chunks VALUES ('" + Helpers.ByteArrayToString(id) + "','" + Helpers.ByteArrayToString(sha1) + "'," + bundleid + ")", con);
+            SQLCommand("INSERT INTO chunks VALUES ('" + Helpers.ByteArrayToHexString(id) + "','" + Helpers.ByteArrayToHexString(sha1) + "'," + bundleid + ")", con);
         }
              
         public static void AddBundle(int tocid, bool incas, Bundle b, TOCFile.TOCBundleInfoStruct info, SQLiteConnection con)
@@ -601,7 +601,7 @@ namespace DAILibWV
                 foreach (TOCFile.TOCChunkInfoStruct info in tocfile.chunks)
                 {
                     AddGlobalChunk(fileids[counter - 1], info.id, info.sha1, info.offset, info.size, con);
-                    Debug.LogLn(" adding chunk: " + (counter2) + "/" + tocfile.chunks.Count + " " + Helpers.ByteArrayToString(info.id), counter2 % 1000 == 0);
+                    Debug.LogLn(" adding chunk: " + (counter2) + "/" + tocfile.chunks.Count + " " + Helpers.ByteArrayToHexString(info.id), counter2 % 1000 == 0);
                     if (counter2 % 1000 == 0)
                     {
                         transaction.Commit();

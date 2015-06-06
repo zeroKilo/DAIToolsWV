@@ -45,6 +45,7 @@ namespace DAILibWV.Frostbite
         public struct FieldDescriptor
         {
             public string _name;
+            public int _index;
             public int hash;
             public ushort type;
             public ushort reference;
@@ -52,9 +53,10 @@ namespace DAILibWV.Frostbite
             public int secondaryOffset;
         }
 
-        public struct ComplexDescriptor
+        public struct ComplexTypeDescriptor
         {
             public string _name;
+            public int _index;
             public int hash;
             public int fieldStartIndex;
             public byte numField;
@@ -84,17 +86,19 @@ namespace DAILibWV.Frostbite
             public object data;
         }
 
-        public struct ComplexField
+        public struct ComplexType
         {
+            public List<byte[]> _wtfhash;
             public int offset;
-            public ComplexDescriptor Descriptor;
+            public ComplexTypeDescriptor Descriptor;
             public List<Field> Fields;
         }
 
         public struct InstanceStruct
         {
             public byte[] GUID;
-            public ComplexField field;
+            public string name;
+            public ComplexType field;
         }
 
 
@@ -103,25 +107,33 @@ namespace DAILibWV.Frostbite
         public List<ExternalGUIDStruct> externalGUIDs;
         public List<KeyWordDicStruct> keyWordDic;
         public List<FieldDescriptor> fieldDescriptors;
-        public List<ComplexDescriptor> complexFieldDescriptors;
+        public List<ComplexTypeDescriptor> complexTypeDescriptors;
         public List<InstanceRepeater> instanceRepeaterList;
         public List<ArrayRepeater> arrayRepeaterList;
         public byte[] keywordarea;
+        public List<string> typeNames;
         public List<InstanceStruct> instancesList;
 
         public EBXFile(Stream s)
         {
-            ReadHeader(s);
-            GUID = new byte[16];
-            s.Read(GUID, 0, 16);
-            ulong zero = Helpers.ReadULong(s);
-            ReadExternalGUIDs(s);
-            ReadKeyWords(s);
-            ReadFieldDescriptors(s);
-            ReadComplexFieldDescriptors(s);
-            ReadInstanceRepeaters(s);
-            ReadArrayRepeaterList(s);
-            ReadInstances(s);
+            try
+            {
+                ReadHeader(s);
+                GUID = new byte[16];
+                s.Read(GUID, 0, 16);
+                ulong zero = Helpers.ReadULong(s);
+                ReadExternalGUIDs(s);
+                ReadKeyWords(s);
+                ReadFieldDescriptors(s);
+                ReadComplexTypeDescriptors(s);
+                ReadInstanceRepeaters(s);
+                ReadArrayRepeaterList(s);
+                ReadInstanceNames(s);
+                ReadInstances(s);
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public void ReadHeader(Stream s)
@@ -210,16 +222,17 @@ namespace DAILibWV.Frostbite
                 f.secondaryOffset = Helpers.ReadInt(s);
                 if (f._name == "$")
                     f.offset -= 8;
+                f._index = i;
                 fieldDescriptors.Add(f);
             }
         }
 
-        public void ReadComplexFieldDescriptors(Stream s)
+        public void ReadComplexTypeDescriptors(Stream s)
         {
-            complexFieldDescriptors = new List<ComplexDescriptor>();
+            complexTypeDescriptors = new List<ComplexTypeDescriptor>();
             for (int i = 0; i < Header.numComplex; i++)
             {
-                ComplexDescriptor f = new ComplexDescriptor();
+                ComplexTypeDescriptor f = new ComplexTypeDescriptor();
                 f.hash = Helpers.ReadInt(s);
                 foreach (KeyWordDicStruct key in keyWordDic)
                     if (key.hash == f.hash)
@@ -233,7 +246,8 @@ namespace DAILibWV.Frostbite
                 f.type = Helpers.ReadUShort(s);
                 f.size = Helpers.ReadUShort(s);
                 f.secondarySize = Helpers.ReadUShort(s);
-                complexFieldDescriptors.Add(f);
+                f._index = i;
+                complexTypeDescriptors.Add(f);
             }
         }
 
@@ -252,7 +266,7 @@ namespace DAILibWV.Frostbite
         public void ReadArrayRepeaterList(Stream s)
         {
             arrayRepeaterList = new List<ArrayRepeater>();
-            for (int i = 0; i < Header.numArrayRepeater; i++)
+            for (int i = 0; i < Header.numArrayRepeater + 1; i++)
             {
                 ArrayRepeater ar = new ArrayRepeater();
                 ar.offset = Helpers.ReadInt(s);
@@ -260,6 +274,15 @@ namespace DAILibWV.Frostbite
                 ar.complexIndex = Helpers.ReadInt(s);
                 arrayRepeaterList.Add(ar);
             }
+        }
+
+        public void ReadInstanceNames(Stream s)
+        {
+            s.Seek(Header.absStringOffset, 0);
+            byte[] buff = new byte[Header.lenString];
+            s.Read(buff, 0, Header.lenString);
+            string t = Helpers.ByteArrayAsString(buff);
+            typeNames = new List<string>(t.Split(new char[] { '\0' }, StringSplitOptions.RemoveEmptyEntries));
         }
 
         public void ReadInstances(Stream s)
@@ -272,7 +295,7 @@ namespace DAILibWV.Frostbite
                 InstanceRepeater curRep = instanceRepeaterList[i];
                 for (int j = 0; j < curRep.repetitions; j++)
                 {
-                    int align = complexFieldDescriptors[curRep.complexIndex].alignment;
+                    int align = complexTypeDescriptors[curRep.complexIndex].alignment;
                     while (s.Position % align != 0)
                         s.ReadByte();
                     InstanceStruct instance = new InstanceStruct();
@@ -291,26 +314,48 @@ namespace DAILibWV.Frostbite
                             instance.GUID[12 + k] = b[k];
                         NonGuidIndex++;
                     }
-                    instance.field = ReadComplexField(s, curRep.complexIndex, true);
+                    instance.name = typeNames[i];
+                    instance.field = ReadComplexType(s, curRep.complexIndex, new Field(), true);
                     instancesList.Add(instance);
                 }
             }
         }
 
-        public ComplexField ReadComplexField(Stream s, int ComplexIndex, bool isInstance = false)
+        public ComplexType ReadComplexType(Stream s, int ComplexIndex, Field parent, bool isInstance = false)
         {
-            ComplexField result = new ComplexField();
+            ComplexType result = new ComplexType();
             result.offset = (int)s.Position;
-            ComplexDescriptor desc = complexFieldDescriptors[ComplexIndex];
+            ComplexTypeDescriptor desc = complexTypeDescriptors[ComplexIndex];
             result.Descriptor = desc;
             result.Fields = new List<Field>();
-            int ObfuscationShift = (isInstance && desc.alignment == 4) ? 8 : 0;
-            for (int i = desc.fieldStartIndex; i < desc.fieldStartIndex + desc.numField; i++)
+            //if (desc.type == 0x35)
+            //{
+
+            //}
             {
-                s.Seek(result.offset + fieldDescriptors[i].offset - ObfuscationShift, 0);
-                result.Fields.Add(ReadField(s, i));
+                ////int ObfuscationShift = (isInstance && desc.alignment == 4) ? 8 : 0;
+
+                //if (desc.numField == 0)
+                //{
+                //    s.Seek(desc.size, SeekOrigin.Current);
+                //    int index = Helpers.ReadInt(s);
+                //    ArrayRepeater arr = arrayRepeaterList[index];
+                //    s.Seek(Header._arraySectionstart + arr.offset, 0);
+                //    result._wtfhash = new List<byte[]>();
+                //    for (int i = 0; i < arr.repetitions; i++)
+                //    {
+                //        byte[] buff = new byte[0x14];
+                //        s.Read(buff, 0, 0x14);
+                //        result._wtfhash.Add(buff);
+                //    }
+                //}
+                for (int i = desc.fieldStartIndex; i < desc.fieldStartIndex + desc.numField; i++)
+                {
+                    s.Seek(result.offset + fieldDescriptors[i].offset, 0);
+                    result.Fields.Add(ReadField(s, i));
+                }
+                s.Seek(result.offset + desc.size, 0);
             }
-            s.Seek(result.offset +desc.size - ObfuscationShift,0);
             return result;
         }
 
@@ -321,16 +366,20 @@ namespace DAILibWV.Frostbite
             FieldDescriptor desc = fieldDescriptors[Index];
             result.Descriptor = desc;
             int offset, index;
-            ComplexDescriptor cdesc;
+            ComplexTypeDescriptor cdesc;
             switch (desc.type)
             {
+                case 0:
+                case 0x41:
                 case 0x29:
                 case 0xd029:
-                case 0x00:
                 case 0x8029:
-                    result.data = ReadComplexField(s, desc.reference);
+                    result.data = ReadComplexType(s, desc.reference, result);
                     break;
                 case 0x407d:
+                    index = Helpers.ReadInt(s);
+                    result.data = keyWordDic.ElementAt(index).keyword;
+                    break;
                 case 0x409d:
                     offset = Helpers.ReadInt(s);
                     result.data = "";
@@ -349,12 +398,12 @@ namespace DAILibWV.Frostbite
                     result.data = Helpers.ReadShort(s);
                     break;
                 case 0x35:
-                case 0xc10d:
                 case 0xc0fd:
                     result.data = Helpers.ReadInt(s);
                     break;
                 case 0xc15d:
                 case 0x417d:
+                case 0xc10d:
                     result.data = Helpers.ReadLong(s);
                     break;
                 case 0xc13d:
@@ -363,7 +412,7 @@ namespace DAILibWV.Frostbite
                 case 0x89:
                 case 0xc089:
                     offset = Helpers.ReadInt(s);
-                    cdesc = complexFieldDescriptors[desc.reference];
+                    cdesc = complexTypeDescriptors[desc.reference];
                     string value = "";
                     if(cdesc.numField != 0)
                         for(int i = cdesc.fieldStartIndex; i<cdesc.fieldStartIndex + cdesc.numField;i++)
@@ -374,19 +423,18 @@ namespace DAILibWV.Frostbite
                             }
                     result.data = value;
                     break;
-                case 0x41:
-                    index = Helpers.ReadInt(s);
-                    ArrayRepeater arep = arrayRepeaterList[index];
-                    cdesc = complexFieldDescriptors[desc.reference];
-                    s.Seek(Header._arraySectionstart + arep.offset, 0);
-                    ComplexField acomp = new ComplexField();
-                    acomp.offset = (int)s.Position;
-                    acomp.Descriptor = cdesc;
-                    acomp.Fields = new List<Field>();
-                    for (int i = 0; i < arep.repetitions; i++)
-                        acomp.Fields.Add(ReadField(s, cdesc.fieldStartIndex));
-                    result.data = acomp;
-                    break;
+                    //index = Helpers.ReadInt(s);
+                    //cdesc = complexTypeDescriptors[desc.reference];
+                    //ArrayRepeater arep = arrayRepeaterList[index];
+                    //s.Seek(Header._arraySectionstart + arep.offset, 0);
+                    //ComplexType acomp = new ComplexType();
+                    //acomp.offset = (int)s.Position;
+                    //acomp.Descriptor = cdesc;
+                    //acomp.Fields = new List<Field>();
+                    //for (int i = 0; i < arep.repetitions; i++)
+                    //    acomp.Fields.Add(ReadField(s, cdesc.fieldStartIndex));
+                    //result.data = acomp;
+                    //break;
             }
             return result;
         }
@@ -409,24 +457,30 @@ namespace DAILibWV.Frostbite
             sb.Append("NumArrayRepeater    : 0x" + Header.numArrayRepeater.ToString("X8") + "\n");
             sb.Append("LenPayload          : 0x" + Header.lenPayload.ToString("X8") + "\n");
             sb.Append("ArraySectionstart   : 0x" + Header._arraySectionstart.ToString("X8") + "\n");
-            sb.Append("\nGUID\n" + Helpers.ByteArrayToString(GUID));
+            sb.Append("\nGUID\n" + Helpers.ByteArrayToHexString(GUID));
             return sb.ToString();
         }
 
         public TreeNode InstanceTotree(TreeNode t, InstanceStruct ins, int index)
         {
-            TreeNode result = new TreeNode(index.ToString());
+            TreeNode result = new TreeNode(ins.name);
             TreeNode t2 = new TreeNode("GUID");
-            t2.Nodes.Add(Helpers.ByteArrayToString(ins.GUID));
+            t2.Nodes.Add(Helpers.ByteArrayToHexString(ins.GUID));
             result.Nodes.Add(t2);
             result.Nodes.Add(MakeComplexFieldNode(ins.field));
             t.Nodes.Add(result);
             return t;
         }
 
-        public TreeNode MakeComplexFieldNode(ComplexField cfield)
+        public TreeNode MakeComplexFieldNode(ComplexType cfield)
         {
-            TreeNode result = new TreeNode("CF: " + cfield.Descriptor._name + "(type 0x" + cfield.Descriptor.type.ToString("X4") + ")");
+            TreeNode result = new TreeNode("CT[" + cfield.Descriptor._index.ToString("X") + "][" + cfield.Descriptor.type.ToString("X4") + "]: " + cfield.Descriptor._name + "(size 0x" + cfield.Descriptor.size.ToString("X4") + " numfields = " + cfield.Descriptor.numField + ")");
+            TreeNode wtf = new TreeNode("WTFSHA1s");
+            if (cfield._wtfhash != null)
+                foreach (byte[] buff in cfield._wtfhash)
+                    wtf.Nodes.Add(Helpers.ByteArrayToHexString(buff));
+            if (wtf.Nodes.Count != 0)
+                result.Nodes.Add(wtf);
             foreach (Field f in cfield.Fields)
                 result.Nodes.Add(MakeFieldNode(f));
             return result;
@@ -434,7 +488,7 @@ namespace DAILibWV.Frostbite
 
         public TreeNode MakeFieldNode(Field field)
         {
-            TreeNode result = new TreeNode("F: " + field.Descriptor._name + " (type 0x" + field.Descriptor.type.ToString("X4") + ")");
+            TreeNode result = new TreeNode("F[" + field.Descriptor._index.ToString("X") + "][" + field.Descriptor.type.ToString("X4") + "]: " + field.Descriptor._name + " (offset 0x" + field.Descriptor.offset.ToString("X4") + " 2nd offset 0x" + field.Descriptor.secondaryOffset.ToString("X8") + ")");
             switch (field.Descriptor.type)
             {
                 case 0x41:
@@ -442,7 +496,7 @@ namespace DAILibWV.Frostbite
                 case 0xd029:
                 case 0x00:
                 case 0x8029:
-                    result.Nodes.Add(MakeComplexFieldNode((ComplexField)field.data));
+                    result.Nodes.Add(MakeComplexFieldNode((ComplexType)field.data));
                     break;
                 case 0x407d:
                 case 0x409d:
@@ -460,11 +514,11 @@ namespace DAILibWV.Frostbite
                     result.Nodes.Add(((short)field.data).ToString("X4"));
                     break;
                 case 0x35:
-                case 0xc10d:
                 case 0xc0fd:
                     result.Nodes.Add(((int)field.data).ToString("X8"));
                     break;
                 case 0x417d:
+                case 0xc10d:
                 case 0xc15d:
                     result.Nodes.Add(((long)field.data).ToString("X16"));
                     break;
@@ -479,7 +533,7 @@ namespace DAILibWV.Frostbite
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("<EbxFile Guid=\"");
-            sb.Append(Helpers.ByteArrayToString(GUID));
+            sb.Append(Helpers.ByteArrayToHexString(GUID));
             sb.Append("\">\n");
             foreach (InstanceStruct ins in instancesList)
                 sb.Append(InstanceToXML(ins));
@@ -490,14 +544,14 @@ namespace DAILibWV.Frostbite
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(Helpers.MakeTabs(1) + "<" + ins.field.Descriptor._name + " Guid=\"");
-            sb.Append(Helpers.ByteArrayToString(ins.GUID));
+            sb.Append(Helpers.ByteArrayToHexString(ins.GUID));
             sb.Append("\">\n");
             sb.Append(MakeComplexFieldXML(ins.field, 2));
             sb.Append(Helpers.MakeTabs(1) + "</" + ins.field.Descriptor._name + ">\n");
             return sb.ToString();
         }
 
-        public string MakeComplexFieldXML(ComplexField cfield, int tab)
+        public string MakeComplexFieldXML(ComplexType cfield, int tab)
         {
             StringBuilder sb = new StringBuilder();
             string tabs = Helpers.MakeTabs(tab);
@@ -517,7 +571,7 @@ namespace DAILibWV.Frostbite
             string tabs2 = Helpers.MakeTabs(tab + 1);
             FieldDescriptor desc = field.Descriptor;
             if (desc._name == "$")
-                return MakeComplexFieldXML((ComplexField)field.data, tab);
+                return MakeComplexFieldXML((ComplexType)field.data, tab);
             sb.AppendFormat(tabs + "<{0}>\n", desc._name);
             switch (desc.type)
             {
@@ -526,7 +580,7 @@ namespace DAILibWV.Frostbite
                 case 0xd029:
                 case 0x00:
                 case 0x8029:
-                    sb.Append(MakeComplexFieldXML((ComplexField)field.data, tab + 1));
+                    sb.Append(MakeComplexFieldXML((ComplexType)field.data, tab + 1));
                     break;
                 case 0x407d:
                 case 0x409d:
@@ -544,11 +598,11 @@ namespace DAILibWV.Frostbite
                     sb.AppendFormat(tabs2 + "0x{0}\n", ((short)field.data).ToString("X4"));
                     break;
                 case 0x35:
-                case 0xc10d:
                 case 0xc0fd:
                     sb.AppendFormat(tabs2 + "0x{0}\n", ((int)field.data).ToString("X8"));
                     break;
                 case 0x417d:
+                case 0xc10d:
                 case 0xc15d:
                     sb.AppendFormat(tabs2 + "0x{0}\n", ((long)field.data).ToString("X16"));
                     break;

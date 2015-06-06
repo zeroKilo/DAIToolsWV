@@ -81,7 +81,7 @@ namespace DAIToolsWV.FileTools
                 listBox3.Items.Add(res._name);
             listBox4.Items.Clear();
             foreach (BinaryBundle.ChunkEntry chunk in binBundle.ChunkList)
-                listBox4.Items.Add(Helpers.ByteArrayToString(chunk.id));
+                listBox4.Items.Add(Helpers.ByteArrayToHexString(chunk.id));
             treeView2.Nodes.Clear();
             TreeNode t = new TreeNode("Meta");
             if (binBundle.ChunkMeta != null)
