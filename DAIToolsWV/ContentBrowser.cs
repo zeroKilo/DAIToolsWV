@@ -401,7 +401,7 @@ namespace DAIToolsWV
             {
                 splitContainer3.Visible = false;
                 casptype = toolStripComboBox1.SelectedIndex;
-                toolStrip3.Enabled = false;
+                //toolStrip3.Enabled = false;
             }
             ));
             if (ebxlist == null)
@@ -469,6 +469,12 @@ namespace DAIToolsWV
             foreach (DBAccess.EBXInformation ebx in ebxlist)
                 if (path.Contains(ebx.ebxname) && ebx.casPatchType != 2 && !ebx.isbase)
                 {
+                    string c = "b";
+                    if (ebx.isDLC)
+                        c = "u";
+                    if (ebx.isPatch)
+                        c = "p";
+                    ebxstatus.Text = c;
                     byte[] data = new byte[0];
                     if (ebx.incas)
                         data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
@@ -557,6 +563,76 @@ namespace DAIToolsWV
         private void toolStripButton13_Click(object sender, EventArgs e)
         {
             RefreshEBX();
+        }
+
+        private void toolStripButton14_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog d = new SaveFileDialog();
+            d.Filter = "*.bin|*.bin";
+            TreeNode t = treeView4.SelectedNode;
+            if (t == null || t.Nodes == null || t.Nodes.Count != 0)
+                return;
+            string path = Helpers.GetPathFromNode(t, "/");
+            d.FileName = t.Text + ".bin";
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                foreach (DBAccess.EBXInformation ebx in ebxlist)
+                    if (path.Contains(ebx.ebxname) && ebx.casPatchType == 0 && !ebx.isbase)
+                    {
+                        byte[] data = new byte[0];
+                        if (ebx.incas)
+                            data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
+                        else
+                        {
+                            TOCFile toc = new TOCFile(ebx.tocfilepath);
+                            byte[] bundledata = toc.ExportBundleDataByPath(ebx.bundlepath);
+                            BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
+                            foreach (BinaryBundle.EbxEntry ebx2 in b.EbxList)
+                                if (path.Contains(ebx2._name))
+                                    data = ebx2._data;
+                        }
+                        File.WriteAllBytes(d.FileName, data);
+                        MessageBox.Show("Done.");
+                        return;
+                    }
+            }
+        }
+
+        private void toolStripButton15_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string basepath = fbd.SelectedPath + "\\";
+                int casptype = toolStripComboBox1.SelectedIndex;
+                int count = 0;
+                foreach (DBAccess.EBXInformation ebx in ebxlist)
+                    if (ebx.casPatchType == casptype)
+                    {
+                        byte[] data = new byte[0];
+                        if (ebx.incas)
+                            data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
+                        else
+                        {
+                            TOCFile toc = new TOCFile(ebx.tocfilepath);
+                            byte[] bundledata = toc.ExportBundleDataByPath(ebx.bundlepath);
+                            BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
+                            foreach (BinaryBundle.EbxEntry ebx2 in b.EbxList)
+                                if (ebx.ebxname == ebx2._name)
+                                    data = ebx2._data;
+                        }
+                        string subfilename = ebx.ebxname.Replace("/", "\\").Replace("'","") + ".ebx";
+                        string subpath = Path.GetDirectoryName(subfilename) + "\\";
+                        if (!Directory.Exists(basepath + subpath))
+                            Directory.CreateDirectory(basepath + subpath);
+                        File.WriteAllBytes(basepath + subfilename, data);
+                        if (count++ % 123 == 0)
+                        {
+                            ebxstatus.Text = "Writing #" + count + " " + basepath + subfilename + " ...";
+                            Application.DoEvents();
+                        }
+                    }
+            }
         }
     }
 }

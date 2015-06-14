@@ -30,11 +30,8 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.hb1 = new Be.Windows.Forms.HexBox();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadFromBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.rtb1 = new System.Windows.Forms.RichTextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.listBox1 = new System.Windows.Forms.ListBox();
@@ -54,10 +51,12 @@
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.tabPage11 = new System.Windows.Forms.TabPage();
             this.rtb2 = new System.Windows.Forms.RichTextBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadFromBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabPage5.SuspendLayout();
@@ -67,6 +66,7 @@
             this.tabPage9.SuspendLayout();
             this.tabPage10.SuspendLayout();
             this.tabPage11.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -95,21 +95,10 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(521, 365);
+            this.tabPage1.Size = new System.Drawing.Size(1026, 365);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Hex";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.rtb1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1026, 365);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Header";
-            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // hb1
             // 
@@ -121,37 +110,22 @@
             this.hb1.Location = new System.Drawing.Point(3, 3);
             this.hb1.Name = "hb1";
             this.hb1.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hb1.Size = new System.Drawing.Size(515, 359);
+            this.hb1.Size = new System.Drawing.Size(1020, 359);
             this.hb1.StringViewVisible = true;
             this.hb1.TabIndex = 1;
             this.hb1.UseFixedBytesPerLine = true;
             this.hb1.VScrollBarVisible = true;
             // 
-            // menuStrip1
+            // tabPage2
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(292, 24);
-            this.menuStrip1.TabIndex = 1;
-            this.menuStrip1.Text = "menuStrip1";
-            this.menuStrip1.Visible = false;
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadFromBinaryToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // loadFromBinaryToolStripMenuItem
-            // 
-            this.loadFromBinaryToolStripMenuItem.Name = "loadFromBinaryToolStripMenuItem";
-            this.loadFromBinaryToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.loadFromBinaryToolStripMenuItem.Text = "Load from binary...";
-            this.loadFromBinaryToolStripMenuItem.Click += new System.EventHandler(this.loadFromBinaryToolStripMenuItem_Click);
+            this.tabPage2.Controls.Add(this.rtb1);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(1026, 365);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Header";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // rtb1
             // 
@@ -173,7 +147,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(796, 365);
+            this.tabPage3.Size = new System.Drawing.Size(1026, 365);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "External GUIDs";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -187,7 +161,7 @@
             this.listBox1.ItemHeight = 16;
             this.listBox1.Location = new System.Drawing.Point(3, 3);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(790, 359);
+            this.listBox1.Size = new System.Drawing.Size(1020, 359);
             this.listBox1.TabIndex = 2;
             // 
             // tabPage4
@@ -196,7 +170,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(521, 365);
+            this.tabPage4.Size = new System.Drawing.Size(1026, 365);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Keyword Area";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -211,7 +185,7 @@
             this.hb2.Location = new System.Drawing.Point(3, 3);
             this.hb2.Name = "hb2";
             this.hb2.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hb2.Size = new System.Drawing.Size(515, 359);
+            this.hb2.Size = new System.Drawing.Size(1020, 359);
             this.hb2.StringViewVisible = true;
             this.hb2.TabIndex = 2;
             this.hb2.UseFixedBytesPerLine = true;
@@ -223,7 +197,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(679, 365);
+            this.tabPage5.Size = new System.Drawing.Size(1026, 365);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Keyword Dictionary";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -237,7 +211,7 @@
             this.listBox2.ItemHeight = 16;
             this.listBox2.Location = new System.Drawing.Point(3, 3);
             this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(673, 359);
+            this.listBox2.Size = new System.Drawing.Size(1020, 359);
             this.listBox2.TabIndex = 3;
             // 
             // tabPage6
@@ -246,7 +220,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(679, 365);
+            this.tabPage6.Size = new System.Drawing.Size(1026, 365);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Fields";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -260,7 +234,7 @@
             this.listBox3.ItemHeight = 16;
             this.listBox3.Location = new System.Drawing.Point(3, 3);
             this.listBox3.Name = "listBox3";
-            this.listBox3.Size = new System.Drawing.Size(673, 359);
+            this.listBox3.Size = new System.Drawing.Size(1020, 359);
             this.listBox3.TabIndex = 4;
             // 
             // tabPage7
@@ -269,9 +243,9 @@
             this.tabPage7.Location = new System.Drawing.Point(4, 22);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(679, 365);
+            this.tabPage7.Size = new System.Drawing.Size(1026, 365);
             this.tabPage7.TabIndex = 6;
-            this.tabPage7.Text = "Complex Fields";
+            this.tabPage7.Text = "Complex Types";
             this.tabPage7.UseVisualStyleBackColor = true;
             // 
             // listBox4
@@ -283,7 +257,7 @@
             this.listBox4.ItemHeight = 16;
             this.listBox4.Location = new System.Drawing.Point(3, 3);
             this.listBox4.Name = "listBox4";
-            this.listBox4.Size = new System.Drawing.Size(673, 359);
+            this.listBox4.Size = new System.Drawing.Size(1020, 359);
             this.listBox4.TabIndex = 5;
             // 
             // tabPage8
@@ -292,7 +266,7 @@
             this.tabPage8.Location = new System.Drawing.Point(4, 22);
             this.tabPage8.Name = "tabPage8";
             this.tabPage8.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage8.Size = new System.Drawing.Size(679, 365);
+            this.tabPage8.Size = new System.Drawing.Size(1026, 365);
             this.tabPage8.TabIndex = 7;
             this.tabPage8.Text = "Instance Repeater";
             this.tabPage8.UseVisualStyleBackColor = true;
@@ -306,7 +280,7 @@
             this.listBox5.ItemHeight = 16;
             this.listBox5.Location = new System.Drawing.Point(3, 3);
             this.listBox5.Name = "listBox5";
-            this.listBox5.Size = new System.Drawing.Size(673, 359);
+            this.listBox5.Size = new System.Drawing.Size(1020, 359);
             this.listBox5.TabIndex = 6;
             // 
             // tabPage9
@@ -315,7 +289,7 @@
             this.tabPage9.Location = new System.Drawing.Point(4, 22);
             this.tabPage9.Name = "tabPage9";
             this.tabPage9.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage9.Size = new System.Drawing.Size(796, 365);
+            this.tabPage9.Size = new System.Drawing.Size(1026, 365);
             this.tabPage9.TabIndex = 8;
             this.tabPage9.Text = "Array Repeater";
             this.tabPage9.UseVisualStyleBackColor = true;
@@ -329,7 +303,7 @@
             this.listBox6.ItemHeight = 16;
             this.listBox6.Location = new System.Drawing.Point(3, 3);
             this.listBox6.Name = "listBox6";
-            this.listBox6.Size = new System.Drawing.Size(790, 359);
+            this.listBox6.Size = new System.Drawing.Size(1020, 359);
             this.listBox6.TabIndex = 7;
             // 
             // tabPage10
@@ -377,6 +351,32 @@
             this.rtb2.Text = "";
             this.rtb2.WordWrap = false;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(292, 24);
+            this.menuStrip1.TabIndex = 1;
+            this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.Visible = false;
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadFromBinaryToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // loadFromBinaryToolStripMenuItem
+            // 
+            this.loadFromBinaryToolStripMenuItem.Name = "loadFromBinaryToolStripMenuItem";
+            this.loadFromBinaryToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.loadFromBinaryToolStripMenuItem.Text = "Load from binary...";
+            this.loadFromBinaryToolStripMenuItem.Click += new System.EventHandler(this.loadFromBinaryToolStripMenuItem_Click);
+            // 
             // EBXTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -389,8 +389,6 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
@@ -400,6 +398,8 @@
             this.tabPage9.ResumeLayout(false);
             this.tabPage10.ResumeLayout(false);
             this.tabPage11.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

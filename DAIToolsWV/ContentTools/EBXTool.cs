@@ -46,58 +46,58 @@ namespace DAIToolsWV.ContentTools
             rtb1.Text = ebx.HeaderToString();
             listBox1.Items.Clear();
             int count = 0;
-            foreach (EBXFile.ExternalGUIDStruct exguid in ebx.externalGUIDs)
-                listBox1.Items.Add((count++).ToString("X4") + " : " + Helpers.ByteArrayToString(exguid.GUID1) + " - " + Helpers.ByteArrayToString(exguid.GUID2));
+            foreach (EBXFile.StreamingPartitionImportEntry exguid in ebx.externalGUIDs)
+                listBox1.Items.Add((count++).ToString("X4") + " : " + Helpers.ByteArrayToHexString(exguid.partitionGuid.data4) + " - " + Helpers.ByteArrayToHexString(exguid.instanceGuid.data4));
             count = 0;
             listBox2.Items.Clear();
             foreach (EBXFile.KeyWordDicStruct entry in ebx.keyWordDic)
                 listBox2.Items.Add((count++).ToString("X4") + " : Offset = 0x" + entry.offset.ToString("X8") + " Hash = 0x" + entry.hash.ToString("X8") + " Keyword = '" + entry.keyword + "'");
             count = 0;
             listBox3.Items.Clear();
-            foreach (EBXFile.FieldDescriptor f in ebx.fieldDescriptors)
+            foreach (EBXFile.StreamingPartitionFieldDescriptor f in ebx.fieldDescriptors)
                 listBox3.Items.Add(
                     (count++).ToString("X4")
                     + " : Hash = 0x"
-                    + f.hash.ToString("X8")
+                    + f.fieldNameHash.ToString("X8")
                     + " Type = 0x"
-                    + f.type.ToString("X4")
+                    + f.flagBits.ToString("X4")
                     + " Reference = 0x"
-                    + f.reference.ToString("X4")
+                    + f.fieldTypeIndex.ToString("X4")
                     + " Offset = 0x"
-                    + f.offset.ToString("X8")
+                    + f.fieldOffset.ToString("X8")
                     + " Secondary Offset = 0x"
                     + f.secondaryOffset.ToString("X8")
                     + " Name ='"
                     + f._name + "'");
             count = 0;
             listBox4.Items.Clear();
-            foreach (EBXFile.ComplexDescriptor f in ebx.complexFieldDescriptors)
+            foreach (EBXFile.StreamingPartitionTypeDescriptor f in ebx.complexTypeDescriptors)
                 listBox4.Items.Add(
                     (count++).ToString("X4")
                     + " : Hash = 0x"
-                    + f.hash.ToString("X8")
+                    + f.typeNameHash.ToString("X8")
                     + " StartIndex = 0x"
-                    + f.fieldStartIndex.ToString("X8")
+                    + f.layoutDescriptorIndex.ToString("X8")
                     + " NumField = 0x"
-                    + f.numField.ToString("X2")
+                    + f.fieldCount.ToString("X2")
                     + " Alignment = 0x"
                     + f.alignment.ToString("X2")
                     + " Type = 0x"
-                    + f.type.ToString("X4")
+                    + f.typeFlags.ToString("X4")
                     + " Size = 0x"
-                    + f.size.ToString("X4")
+                    + f.instanceSize.ToString("X4")
                     + " Secondary Size = 0x"
-                    + f.secondarySize.ToString("X8")
+                    + f.secondaryInstanceSize.ToString("X8")
                     + " Name ='"
                     + f._name + "'");
             count = 0;
             listBox5.Items.Clear();
-            foreach (EBXFile.InstanceRepeater i in ebx.instanceRepeaterList)
-                listBox5.Items.Add((count++).ToString("X4") + " : Complex Index = 0x" + i.complexIndex.ToString("X4") + " Repeats = 0x" + i.repetitions.ToString("X4"));
+            foreach (EBXFile.StreamingPartitionInstanceEntry i in ebx.instanceRepeaterList)
+                listBox5.Items.Add((count++).ToString("X4") + " : Complex Index = 0x" + i.typeDescriptorIndex.ToString("X4") + " Repeats = 0x" + i.repetitions.ToString("X4"));
             count = 0;
             listBox6.Items.Clear();
-            foreach (EBXFile.ArrayRepeater a in ebx.arrayRepeaterList)
-                listBox6.Items.Add((count++).ToString("X4") + " : Offset = 0x" +a.offset.ToString("X8") + " Complex Index = 0x" + a.complexIndex.ToString("X8") + " Repeats = 0x" + a.repetitions.ToString("X8"));
+            foreach (EBXFile.StreamingPartitionArrayEntry a in ebx.arrayRepeaterList)
+                listBox6.Items.Add((count++).ToString("X4") + " : Offset = 0x" +a.offset.ToString("X8") + " Complex Index = 0x" + a.typeDescriptorIndex.ToString("X8") + " Repeats = 0x" + a.elementCount.ToString("X8"));
             treeView1.Nodes.Clear();
             count = 0;
             TreeNode t = new TreeNode("Instances");
