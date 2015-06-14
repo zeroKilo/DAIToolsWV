@@ -138,7 +138,6 @@ namespace DAIToolsWV
             // 
             // rESETALLToolStripMenuItem
             // 
-            this.rESETALLToolStripMenuItem.ForeColor = System.Drawing.Color.Red;
             this.rESETALLToolStripMenuItem.Name = "rESETALLToolStripMenuItem";
             this.rESETALLToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
             this.rESETALLToolStripMenuItem.Text = "RESET ALL";

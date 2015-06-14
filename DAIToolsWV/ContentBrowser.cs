@@ -469,12 +469,6 @@ namespace DAIToolsWV
             foreach (DBAccess.EBXInformation ebx in ebxlist)
                 if (path.Contains(ebx.ebxname) && ebx.casPatchType != 2 && !ebx.isbase)
                 {
-                    string c = "b";
-                    if (ebx.isDLC)
-                        c = "u";
-                    if (ebx.isPatch)
-                        c = "p";
-                    ebxstatus.Text = c;
                     byte[] data = new byte[0];
                     if (ebx.incas)
                         data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
@@ -563,39 +557,6 @@ namespace DAIToolsWV
         private void toolStripButton13_Click(object sender, EventArgs e)
         {
             RefreshEBX();
-        }
-
-        private void toolStripButton14_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog d = new SaveFileDialog();
-            d.Filter = "*.bin|*.bin";
-            TreeNode t = treeView4.SelectedNode;
-            if (t == null || t.Nodes == null || t.Nodes.Count != 0)
-                return;
-            string path = Helpers.GetPathFromNode(t, "/");
-            d.FileName = t.Text + ".bin";
-            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                foreach (DBAccess.EBXInformation ebx in ebxlist)
-                    if (path.Contains(ebx.ebxname) && ebx.casPatchType == 0 && !ebx.isbase)
-                    {
-                        byte[] data = new byte[0];
-                        if (ebx.incas)
-                            data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
-                        else
-                        {
-                            TOCFile toc = new TOCFile(ebx.tocfilepath);
-                            byte[] bundledata = toc.ExportBundleDataByPath(ebx.bundlepath);
-                            BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
-                            foreach (BinaryBundle.EbxEntry ebx2 in b.EbxList)
-                                if (path.Contains(ebx2._name))
-                                    data = ebx2._data;
-                        }
-                        File.WriteAllBytes(d.FileName, data);
-                        MessageBox.Show("Done.");
-                        return;
-                    }
-            }
         }
     }
 }

@@ -47,7 +47,7 @@ namespace DAIToolsWV.ContentTools
             listBox1.Items.Clear();
             int count = 0;
             foreach (EBXFile.ExternalGUIDStruct exguid in ebx.externalGUIDs)
-                listBox1.Items.Add((count++).ToString("X4") + " : " + Helpers.ByteArrayToHexString(exguid.GUID1) + " - " + Helpers.ByteArrayToHexString(exguid.GUID2));
+                listBox1.Items.Add((count++).ToString("X4") + " : " + Helpers.ByteArrayToString(exguid.GUID1) + " - " + Helpers.ByteArrayToString(exguid.GUID2));
             count = 0;
             listBox2.Items.Clear();
             foreach (EBXFile.KeyWordDicStruct entry in ebx.keyWordDic)
@@ -71,7 +71,7 @@ namespace DAIToolsWV.ContentTools
                     + f._name + "'");
             count = 0;
             listBox4.Items.Clear();
-            foreach (EBXFile.ComplexTypeDescriptor f in ebx.complexTypeDescriptors)
+            foreach (EBXFile.ComplexDescriptor f in ebx.complexFieldDescriptors)
                 listBox4.Items.Add(
                     (count++).ToString("X4")
                     + " : Hash = 0x"

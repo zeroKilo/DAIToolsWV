@@ -226,23 +226,13 @@ namespace DAILibWV
             return m.ToArray();
         }
 
-        public static string ByteArrayToHexString(byte[] data)
+        public static string ByteArrayToString(byte[] data)
         {
             if (data == null)
                 data = new byte[0];
             StringBuilder sb = new StringBuilder();
             foreach (byte b in data)
                 sb.Append(b.ToString("X2"));
-            return sb.ToString();
-        }
-
-        public static string ByteArrayAsString(byte[] data)
-        {
-            if (data == null)
-                data = new byte[0];
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in data)
-                sb.Append((char)b);
             return sb.ToString();
         }
 
