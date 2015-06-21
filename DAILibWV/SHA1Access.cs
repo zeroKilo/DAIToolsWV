@@ -14,7 +14,7 @@ namespace DAILibWV
         public static CATFile cat_patch = null;
         public static CASFile cas;
 
-        public static byte[] GetDataBySha1(byte[] sha1)
+        public static byte[] GetDataBySha1(byte[] sha1, int maxsize = 0x7FFFFFFF)
         {
             CATFile cat = null;
             if (cat_base == null)
@@ -49,7 +49,7 @@ namespace DAILibWV
                 }
                 if (cas != null && cas.casnumber == casline[7])
                 {
-                    CASFile.CASEntry ce = cas.ReadEntry(casline.ToArray());
+                    CASFile.CASEntry ce = cas.ReadEntry(casline.ToArray(), maxsize);
                     return ce.data;
                 }
             }

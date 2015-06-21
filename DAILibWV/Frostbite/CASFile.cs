@@ -22,7 +22,6 @@ namespace DAILibWV.Frostbite
             public uint unk1;
             public uint unk2;
             public byte[] data;
-            public byte[] compressed;
         }
         public CATFile cat;
         public List<int> Indexes;
@@ -55,18 +54,18 @@ namespace DAILibWV.Frostbite
             Indexes = GetIndexes(cat);
         }
 
-        public CASEntry ReadEntry(uint[] line)
+        public CASEntry ReadEntry(uint[] line, int maxsize = 0x7FFFFFFF)
         {
-            return ReadEntry(line[5], line[6]);
+            return ReadEntry(line[5], line[6], maxsize);
         }
 
-        public CASEntry ReadEntry(int index)
+        public CASEntry ReadEntry(int index, int maxsize = 0x7FFFFFFF)
         {
             uint[] line = cat.lines[Indexes[index]];
-            return ReadEntry(line[5], line[6]);
+            return ReadEntry(line[5], line[6], maxsize);
         }
 
-        public CASEntry ReadEntry(uint offset, uint size_)
+        public CASEntry ReadEntry(uint offset, uint size_, int maxsize)
         {
             CASEntry result = new CASEntry();
             MemoryStream s = new MemoryStream(ReadBlock(offset - 0x20, size_ + 0x20));
@@ -77,13 +76,13 @@ namespace DAILibWV.Frostbite
             result.padding = Helpers.ReadUInt(s);
             long totalread = 0;
             MemoryStream res = new MemoryStream();
-            while (totalread < result.datasize)
+            while (totalread < result.datasize && totalread < maxsize)
             {
                 int ucsize = Helpers.ReadLEInt(s);
                 int csize = Helpers.ReadLEInt(s);
                 totalread += 8;
                 int size = csize & 0xFFFF;
-                int type = (int)((csize & 0xFFFF0000) >> 16);
+                int type = (int)(csize >> 16);
                 if (type == 0x270)
                 {
                     byte[] buff = new byte[size];
@@ -101,10 +100,6 @@ namespace DAILibWV.Frostbite
                 }
             }
             result.data = res.ToArray();
-            byte[] buf = new byte[s.Length - 0x20];
-            s.Seek(0x20, 0);
-            s.Read(buf, 0, (int)(s.Length - 0x20));
-            result.compressed = buf;
             return result;
         }
 

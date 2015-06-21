@@ -17,7 +17,7 @@ namespace DAIToolsWV.ContentTools
     public partial class EBXTool : Form
     {
         public byte[] ebxdata = null;
-        public EBXFile ebx = null;
+        public EBXStream ebx = null;
 
         public EBXTool()
         {
@@ -27,7 +27,7 @@ namespace DAIToolsWV.ContentTools
         public void LoadEbx(byte[] data)
         {
             ebxdata = data;
-            ebx = new EBXFile(new MemoryStream(ebxdata));
+            ebx = new EBXStream(new MemoryStream(ebxdata), pb1);
             RefreshDisplay();
         }
 
@@ -43,18 +43,17 @@ namespace DAIToolsWV.ContentTools
         {
             hb1.ByteProvider = new DynamicByteProvider(ebxdata);
             hb2.ByteProvider = new DynamicByteProvider(ebx.keywordarea);
-            rtb1.Text = ebx.HeaderToString();
             listBox1.Items.Clear();
             int count = 0;
-            foreach (EBXFile.StreamingPartitionImportEntry exguid in ebx.externalGUIDs)
-                listBox1.Items.Add((count++).ToString("X4") + " : " + Helpers.ByteArrayToHexString(exguid.partitionGuid.data4) + " - " + Helpers.ByteArrayToHexString(exguid.instanceGuid.data4));
+            foreach (EBXStream.StreamingPartitionImportEntry exguid in ebx.imports)
+                listBox1.Items.Add((count++).ToString("X4") + " : " + exguid.partitionGuid.ToString() + " -> " + exguid.instanceGuid.ToString());
             count = 0;
             listBox2.Items.Clear();
-            foreach (EBXFile.KeyWordDicStruct entry in ebx.keyWordDic)
+            foreach (EBXStream.KeyWordDicStruct entry in ebx.keyWordDic)
                 listBox2.Items.Add((count++).ToString("X4") + " : Offset = 0x" + entry.offset.ToString("X8") + " Hash = 0x" + entry.hash.ToString("X8") + " Keyword = '" + entry.keyword + "'");
             count = 0;
             listBox3.Items.Clear();
-            foreach (EBXFile.StreamingPartitionFieldDescriptor f in ebx.fieldDescriptors)
+            foreach (EBXStream.StreamingPartitionFieldDescriptor f in ebx.fieldDescriptors)
                 listBox3.Items.Add(
                     (count++).ToString("X4")
                     + " : Hash = 0x"
@@ -71,7 +70,7 @@ namespace DAIToolsWV.ContentTools
                     + f._name + "'");
             count = 0;
             listBox4.Items.Clear();
-            foreach (EBXFile.StreamingPartitionTypeDescriptor f in ebx.complexTypeDescriptors)
+            foreach (EBXStream.StreamingPartitionTypeDescriptor f in ebx.typeDescriptors)
                 listBox4.Items.Add(
                     (count++).ToString("X4")
                     + " : Hash = 0x"
@@ -92,17 +91,18 @@ namespace DAIToolsWV.ContentTools
                     + f._name + "'");
             count = 0;
             listBox5.Items.Clear();
-            foreach (EBXFile.StreamingPartitionInstanceEntry i in ebx.instanceRepeaterList)
-                listBox5.Items.Add((count++).ToString("X4") + " : Complex Index = 0x" + i.typeDescriptorIndex.ToString("X4") + " Repeats = 0x" + i.repetitions.ToString("X4"));
+            foreach (EBXStream.StreamingPartitionTypeEntry i in ebx.typeList)
+                listBox5.Items.Add((count++).ToString("X4") + " : Type Desc Index = 0x" + i.typeDescriptorIndex.ToString("X4") + " Repeats = 0x" + i.repetitions.ToString("X4"));
             count = 0;
             listBox6.Items.Clear();
-            foreach (EBXFile.StreamingPartitionArrayEntry a in ebx.arrayRepeaterList)
-                listBox6.Items.Add((count++).ToString("X4") + " : Offset = 0x" +a.offset.ToString("X8") + " Complex Index = 0x" + a.typeDescriptorIndex.ToString("X8") + " Repeats = 0x" + a.elementCount.ToString("X8"));
+            foreach (EBXStream.StreamingPartitionArrayEntry a in ebx.arrayList)
+                listBox6.Items.Add((count++).ToString("X4") + " : Offset = 0x" + a.offset.ToString("X8") + " Type Desc Index = 0x" + a.typeDescriptorIndex.ToString("X8") + " Repeats = 0x" + a.elementCount.ToString("X8"));
             treeView1.Nodes.Clear();
             count = 0;
-            TreeNode t = new TreeNode("Instances");
-            foreach (EBXFile.InstanceStruct ins in ebx.instancesList)
-                t = ebx.InstanceTotree(t, ins, count++);
+            TreeNode t = new TreeNode("Types");
+            if (ebx.typeEntryList != null)
+                foreach (EBXStream.TypeEntryStruct typ in ebx.typeEntryList)
+                    t.Nodes.Add(EBXStream.TypeToNode(typ.type));
             t.ExpandAll();
             treeView1.Nodes.Add(t);
             rtb2.Text = ebx.toXML();

@@ -185,7 +185,7 @@ namespace DAILibWV
         {
             SQLCommand("DROP TABLE IF EXISTS ebxlut", con);
             SQLCommand("CREATE TABLE ebxlut (id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "path TEXT, sha1 TEXT, basesha1 TEXT, deltasha1 TEXT, casptype INT, "
+            + "path TEXT, sha1 TEXT, basesha1 TEXT, deltasha1 TEXT, casptype INT, guid TEXT, "
             + "bundlepath TEXT, offset INT, size INT, isbase TEXT, isdelta TEXT, tocpath TEXT, incas TEXT, filetype TEXT)", con);
         }
         
@@ -464,12 +464,27 @@ namespace DAILibWV
                 ftype = "u";
             if (ebx.isPatch)
                 ftype = "p";
-            SQLCommand("INSERT INTO ebxlut (path,sha1,basesha1,deltasha1,casptype,bundlepath,offset,size,isbase,isdelta,tocpath,incas,filetype) VALUES ('"
+            string guid = "";
+            byte[] data = new byte[0];
+            if (ebx.incas)
+                data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
+            else
+            {
+                TOCFile toc = new TOCFile(ebx.tocfilepath);
+                byte[] bundledata = toc.ExportBundleDataByPath(ebx.bundlepath);
+                BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
+                foreach (BinaryBundle.EbxEntry ebx2 in b.EbxList)
+                    if (ebx.ebxname == ebx2._name)
+                        data = ebx2._data;
+            }
+            guid = Helpers.ByteArrayToHexString(data, 0x28, 0x10);
+            SQLCommand("INSERT INTO ebxlut (path,sha1,basesha1,deltasha1,casptype,guid,bundlepath,offset,size,isbase,isdelta,tocpath,incas,filetype) VALUES ('"
                 + ebx.ebxname + "','"
                 + ebx.sha1 + "','"
                 + ebx.basesha1 + "','"
                 + ebx.deltasha1 + "',"
                 + ebx.casPatchType + ",'"
+                + guid + "','"
                 + ebx.bundlepath + "',"
                 + ebx.offset + ","
                 + ebx.size + ",'"
@@ -628,7 +643,7 @@ namespace DAILibWV
             foreach (EBXInformation ebx in list)
             {
                 AddEBXLUTFile(ebx, con);
-                if (count % 10000 == 0)
+                if (count % 1000 == 0)
                 {
                     transaction.Commit();
                     Debug.LogLn("Saving ebx lookup table...(" + count + " / " + list.Length + ")", true);

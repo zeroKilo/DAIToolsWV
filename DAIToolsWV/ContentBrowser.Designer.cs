@@ -64,7 +64,6 @@
             this.treeView4 = new System.Windows.Forms.TreeView();
             this.ebxcontext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openInEBXToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hb1 = new Be.Windows.Forms.HexBox();
             this.rtb2 = new System.Windows.Forms.RichTextBox();
             this.toolStrip3 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton11 = new System.Windows.Forms.ToolStripButton();
@@ -72,9 +71,11 @@
             this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton14 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton15 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.ebxstatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripButton15 = new System.Windows.Forms.ToolStripButton();
+            this.hb1 = new Be.Windows.Forms.HexBox();
+            this.ebxpb1 = new System.Windows.Forms.ToolStripProgressBar();
             this.contextMenuStrip1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -490,22 +491,6 @@
             this.openInEBXToolToolStripMenuItem.Text = "Open in EBX Tool";
             this.openInEBXToolToolStripMenuItem.Click += new System.EventHandler(this.openInEBXToolToolStripMenuItem_Click);
             // 
-            // hb1
-            // 
-            this.hb1.BoldFont = null;
-            this.hb1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hb1.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hb1.LineInfoForeColor = System.Drawing.Color.Empty;
-            this.hb1.LineInfoVisible = true;
-            this.hb1.Location = new System.Drawing.Point(0, 0);
-            this.hb1.Name = "hb1";
-            this.hb1.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hb1.Size = new System.Drawing.Size(291, 301);
-            this.hb1.StringViewVisible = true;
-            this.hb1.TabIndex = 0;
-            this.hb1.UseFixedBytesPerLine = true;
-            this.hb1.VScrollBarVisible = true;
-            // 
             // rtb2
             // 
             this.rtb2.DetectUrls = false;
@@ -580,10 +565,21 @@
             this.toolStripButton14.Text = "Export Hex";
             this.toolStripButton14.Click += new System.EventHandler(this.toolStripButton14_Click);
             // 
+            // toolStripButton15
+            // 
+            this.toolStripButton15.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton15.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton15.Image")));
+            this.toolStripButton15.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton15.Name = "toolStripButton15";
+            this.toolStripButton15.Size = new System.Drawing.Size(105, 22);
+            this.toolStripButton15.Text = "Export All as XML...";
+            this.toolStripButton15.Click += new System.EventHandler(this.toolStripButton15_Click);
+            // 
             // statusStrip2
             // 
             this.statusStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ebxstatus});
+            this.ebxstatus,
+            this.ebxpb1});
             this.statusStrip2.Location = new System.Drawing.Point(3, 329);
             this.statusStrip2.Name = "statusStrip2";
             this.statusStrip2.Size = new System.Drawing.Size(535, 22);
@@ -596,15 +592,27 @@
             this.ebxstatus.Name = "ebxstatus";
             this.ebxstatus.Size = new System.Drawing.Size(0, 17);
             // 
-            // toolStripButton15
+            // hb1
             // 
-            this.toolStripButton15.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton15.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton15.Image")));
-            this.toolStripButton15.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton15.Name = "toolStripButton15";
-            this.toolStripButton15.Size = new System.Drawing.Size(105, 22);
-            this.toolStripButton15.Text = "Export All as Hex...";
-            this.toolStripButton15.Click += new System.EventHandler(this.toolStripButton15_Click);
+            this.hb1.BoldFont = null;
+            this.hb1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hb1.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.hb1.LineInfoForeColor = System.Drawing.Color.Empty;
+            this.hb1.LineInfoVisible = true;
+            this.hb1.Location = new System.Drawing.Point(0, 0);
+            this.hb1.Name = "hb1";
+            this.hb1.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
+            this.hb1.Size = new System.Drawing.Size(291, 301);
+            this.hb1.StringViewVisible = true;
+            this.hb1.TabIndex = 0;
+            this.hb1.UseFixedBytesPerLine = true;
+            this.hb1.VScrollBarVisible = true;
+            // 
+            // ebxpb1
+            // 
+            this.ebxpb1.Name = "ebxpb1";
+            this.ebxpb1.Size = new System.Drawing.Size(100, 16);
+            this.ebxpb1.Visible = false;
             // 
             // ContentBrowser
             // 
@@ -698,5 +706,6 @@
         private System.Windows.Forms.ToolStripButton toolStripButton13;
         private System.Windows.Forms.ToolStripButton toolStripButton14;
         private System.Windows.Forms.ToolStripButton toolStripButton15;
+        private System.Windows.Forms.ToolStripProgressBar ebxpb1;
     }
 }

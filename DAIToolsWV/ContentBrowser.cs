@@ -401,7 +401,7 @@ namespace DAIToolsWV
             {
                 splitContainer3.Visible = false;
                 casptype = toolStripComboBox1.SelectedIndex;
-                //toolStrip3.Enabled = false;
+                toolStrip3.Enabled = false;
             }
             ));
             if (ebxlist == null)
@@ -460,21 +460,26 @@ namespace DAIToolsWV
             }
         }
 
+        private string lastpath = "";
+
         private void CheckSelectionEBX()
         {
             TreeNode t = treeView4.SelectedNode;
             if (t == null || t.Nodes == null || t.Nodes.Count != 0)
                 return;
-            string path = Helpers.GetPathFromNode(t, "/");
+            string path = Helpers.GetPathFromNode(t, "/");            
+            path = path.Substring(1, path.Length - 1);
+            if (path == lastpath)
+                return;
+            lastpath = path;
             foreach (DBAccess.EBXInformation ebx in ebxlist)
-                if (path.Contains(ebx.ebxname) && ebx.casPatchType != 2 && !ebx.isbase)
+                if (path == ebx.ebxname && ebx.casPatchType != 2 && !ebx.isbase)
                 {
                     string c = "b";
                     if (ebx.isDLC)
                         c = "u";
                     if (ebx.isPatch)
                         c = "p";
-                    ebxstatus.Text = c;
                     byte[] data = new byte[0];
                     if (ebx.incas)
                         data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
@@ -499,8 +504,12 @@ namespace DAIToolsWV
                         rtb2.Visible = false;
                         try
                         {
-                            EBXFile ebxf = new EBXFile(new MemoryStream(data));
+                            ebxstatus.Text = "Processing...";
+                            Application.DoEvents();
+                            EBXStream ebxf = new EBXStream(new MemoryStream(data), ebxpb1);
+                            ebxstatus.Text = "Displaying...";
                             rtb2.Text = ebxf.toXML();
+                            ebxstatus.Text = "Ready (Type is " + c + ")";
                         }
                         catch (Exception ex)
                         {
@@ -508,6 +517,7 @@ namespace DAIToolsWV
                         }
                         rtb2.Visible = true;
                     }
+                    return;
                 }
         }
 
@@ -522,8 +532,9 @@ namespace DAIToolsWV
             if (t == null || t.Nodes == null || t.Nodes.Count != 0)
                 return;
             string path = Helpers.GetPathFromNode(t, "/");
+            path = path.Substring(1, path.Length - 1);
             foreach (DBAccess.EBXInformation ebx in ebxlist)
-                if (path.Contains(ebx.ebxname) && ebx.casPatchType == 0 && !ebx.isbase)
+                if (path == ebx.ebxname && ebx.casPatchType == 0 && !ebx.isbase)
                 {
                     byte[] data = new byte[0];
                     if (ebx.incas)
@@ -534,7 +545,7 @@ namespace DAIToolsWV
                         byte[] bundledata = toc.ExportBundleDataByPath(ebx.bundlepath);
                         BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
                         foreach (BinaryBundle.EbxEntry ebx2 in b.EbxList)
-                            if (path.Contains(ebx2._name))
+                            if (path == ebx2._name)
                                 data = ebx2._data;
                     }
                     ContentTools.EBXTool ebxtool = new ContentTools.EBXTool();
@@ -573,11 +584,12 @@ namespace DAIToolsWV
             if (t == null || t.Nodes == null || t.Nodes.Count != 0)
                 return;
             string path = Helpers.GetPathFromNode(t, "/");
+            path = path.Substring(1, path.Length - 1);
             d.FileName = t.Text + ".bin";
             if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 foreach (DBAccess.EBXInformation ebx in ebxlist)
-                    if (path.Contains(ebx.ebxname) && ebx.casPatchType == 0 && !ebx.isbase)
+                    if (path == ebx.ebxname && ebx.casPatchType == 0 && !ebx.isbase)
                     {
                         byte[] data = new byte[0];
                         if (ebx.incas)
@@ -588,7 +600,7 @@ namespace DAIToolsWV
                             byte[] bundledata = toc.ExportBundleDataByPath(ebx.bundlepath);
                             BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
                             foreach (BinaryBundle.EbxEntry ebx2 in b.EbxList)
-                                if (path.Contains(ebx2._name))
+                                if (path == ebx2._name)
                                     data = ebx2._data;
                         }
                         File.WriteAllBytes(d.FileName, data);
@@ -600,6 +612,7 @@ namespace DAIToolsWV
 
         private void toolStripButton15_Click(object sender, EventArgs e)
         {
+            int errorcount = 0;
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -611,7 +624,7 @@ namespace DAIToolsWV
                     {
                         byte[] data = new byte[0];
                         if (ebx.incas)
-                            data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
+                            data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1), 0x40);
                         else
                         {
                             TOCFile toc = new TOCFile(ebx.tocfilepath);
@@ -621,17 +634,32 @@ namespace DAIToolsWV
                                 if (ebx.ebxname == ebx2._name)
                                     data = ebx2._data;
                         }
-                        string subfilename = ebx.ebxname.Replace("/", "\\").Replace("'","") + ".ebx";
-                        string subpath = Path.GetDirectoryName(subfilename) + "\\";
-                        if (!Directory.Exists(basepath + subpath))
-                            Directory.CreateDirectory(basepath + subpath);
-                        File.WriteAllBytes(basepath + subfilename, data);
-                        if (count++ % 123 == 0)
+                        EBXStream ex = new EBXStream(new MemoryStream(data));
+                        if (!ex.ErrorLoading)
                         {
-                            ebxstatus.Text = "Writing #" + count + " " + basepath + subfilename + " ...";
-                            Application.DoEvents();
+                            string subfilename = ebx.ebxname.Replace("/", "\\").Replace("'", "") + ".xml";
+                            string subpath = Path.GetDirectoryName(subfilename) + "\\";
+                            if (!Directory.Exists(basepath + subpath))
+                                Directory.CreateDirectory(basepath + subpath);
+                            File.WriteAllText(basepath + subfilename, ex.toXML());
+                            if (count++ % 123 == 0)
+                            {
+                                ebxstatus.Text = "Writing #" + count + " " + basepath + subfilename + " ...";
+                                Application.DoEvents();
+                            }
+                        }
+                        else
+                        {
+                            errorcount++;
+                            if (count++ % 123 == 0)
+                            {
+                                this.Text = "Errors exporting : " + errorcount.ToString() + " =(" + ((float)errorcount / (float)count) * 100f + "%) Last:" + ebx.ebxname;
+                                Application.DoEvents();
+                            }
                         }
                     }
+                this.Text = "Content Browser";
+                ebxstatus.Text = "Ready. Processed Ebx:" + count + " Errors: " + errorcount + " (" + ((float)errorcount / (float)count) * 100f + "%)";
             }
         }
     }

@@ -168,7 +168,7 @@ namespace DAILibWV
         {
             string res = "";
             byte b;
-            while ((b = (byte)s.ReadByte()) > 0 && s.Position != s.Length) res += (char)b;
+            while ((b = (byte)s.ReadByte()) > 0 && s.Position < s.Length) res += (char)b;
             return res;
         }
 
@@ -226,13 +226,20 @@ namespace DAILibWV
             return m.ToArray();
         }
 
-        public static string ByteArrayToHexString(byte[] data)
+        public static string ByteArrayToHexString(byte[] data, int start = 0, int len = 0)
         {
             if (data == null)
                 data = new byte[0];
             StringBuilder sb = new StringBuilder();
-            foreach (byte b in data)
-                sb.Append(b.ToString("X2"));
+            if (start == 0)
+                foreach (byte b in data)
+                    sb.Append(b.ToString("X2"));
+            else
+                if (start > 0 && start + len <= data.Length)
+                    for (int i = start; i < start + len; i++)
+                        sb.Append(data[i].ToString("X2"));
+                else
+                    return "";
             return sb.ToString();
         }
 
