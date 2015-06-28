@@ -781,76 +781,107 @@ namespace DAIToolsWV
                     DBAccess.BundleInformation buni = DBAccess.GetBundleInformationByIndex(tmp.bundleIndex);
                     listBox2.Items.Add((count++) + " : " + buni.filepath.Substring(DAIpath.Length, buni.filepath.Length - DAIpath.Length) + " -> " + buni.bundlepath);
                 }
+            if (listBox2.Items.Count > 0)
+                listBox2.SelectedIndex = 0;
         }
 
         private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int n = listBox2.SelectedIndex;
-            if (n == -1)
-                return;
-            if (File.Exists("tmp\\tmp.dds"))
-                File.Delete("tmp\\tmp.dds");
-            DBAccess.TextureInformation ti = ttprevlist[n];
-            DBAccess.BundleInformation buni = DBAccess.GetBundleInformationByIndex(ti.bundleIndex);
-            DBAccess.TOCInformation toci = DBAccess.GetTocInformationByIndex(buni.tocIndex);
-            byte[] resdata = new byte[0];
-            if (toci.incas)
-                resdata = SHA1Access.GetDataBySha1(ti.sha1);
-            else
+            try
             {
-                TOCFile toc = new TOCFile(toci.path);
-                byte[] bundledata = toc.ExportBundleDataByPath(buni.bundlepath);
-                BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
-                foreach (BinaryBundle.ResEntry res in b.ResList)
-                    if (res._name == ti.name)
-                    {
-                        resdata = res._data;
-                        break;
-                    }
-            }
-            hb2.ByteProvider = new DynamicByteProvider(resdata);
-            TextureMetaResource tmr = new TextureMetaResource(resdata);
-            DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(tmr.chunkid);
-            if (ci.bundleIndex == -1)
-                return;
-            DBAccess.BundleInformation buni2 = DBAccess.GetBundleInformationByIndex(ci.bundleIndex);
-            DBAccess.TOCInformation toci2 = DBAccess.GetTocInformationByIndex(buni2.tocIndex);
-            byte[] texdata = new byte[0];
-            if (toci2.incas)
-                texdata = SHA1Access.GetDataBySha1(ci.sha1);
-            else
-            {
-                TOCFile toc = new TOCFile(toci2.path);
-                byte[] bundledata = toc.ExportBundleDataByPath(buni2.bundlepath);
-                BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
-                foreach (BinaryBundle.ChunkEntry chunk in b.ChunkList)
-                    if (Helpers.MatchByteArray(chunk.id, ci.id))
-                    {
-                        texdata = chunk._data;
-                        break;
-                    }
-            }
-            if (toolStripButton16.Checked)
-            {
-                hb3.ByteProvider = new DynamicByteProvider(texdata);
+                int n = listBox2.SelectedIndex;
+                if (n == -1)
+                    return;
+                statustextures.Text = "Getting header infos from db...";
+                Application.DoEvents();
+                hb3.ByteProvider = new DynamicByteProvider(new byte[0]);
                 hb3.BringToFront();
-            }
-            else
-            {
-                MemoryStream m = new MemoryStream();
-                tmr.WriteTextureHeader(m);
-                m.Write(texdata, 0, texdata.Length);
-                File.WriteAllBytes("tmp\\tmp.dds", m.ToArray());
-                try
+                if (File.Exists("tmp\\tmp.dds"))
+                    File.Delete("tmp\\tmp.dds");
+                DBAccess.TextureInformation ti = ttprevlist[n];
+                DBAccess.BundleInformation buni = DBAccess.GetBundleInformationByIndex(ti.bundleIndex);
+                DBAccess.TOCInformation toci = DBAccess.GetTocInformationByIndex(buni.tocIndex);
+                byte[] resdata = new byte[0];
+                if (toci.incas)
                 {
-                    pb1.Image = DevIL.DevIL.LoadBitmap("tmp\\tmp.dds");
-                    pb1.BringToFront();
+                    statustextures.Text = "Getting header data from sha1...";
+                    Application.DoEvents();
+                    resdata = SHA1Access.GetDataBySha1(ti.sha1);
                 }
-                catch (Exception)
+                else
+                {
+                    statustextures.Text = "Getting header data from binary bundle...";
+                    Application.DoEvents();
+                    TOCFile toc = new TOCFile(toci.path);
+                    byte[] bundledata = toc.ExportBundleDataByPath(buni.bundlepath);
+                    BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
+                    foreach (BinaryBundle.ResEntry res in b.ResList)
+                        if (res._name == ti.name)
+                        {
+                            resdata = res._data;
+                            break;
+                        }
+                }
+                hb2.ByteProvider = new DynamicByteProvider(resdata);
+                statustextures.Text = "Getting texture infos from db...";
+                Application.DoEvents();
+                TextureMetaResource tmr = new TextureMetaResource(resdata);
+                DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(tmr.chunkid);
+                if (ci.bundleIndex == -1)
+                    return;
+                DBAccess.BundleInformation buni2 = DBAccess.GetBundleInformationByIndex(ci.bundleIndex);
+                DBAccess.TOCInformation toci2 = DBAccess.GetTocInformationByIndex(buni2.tocIndex);
+                byte[] texdata = new byte[0];
+                if (toci2.incas)
+                {
+                    statustextures.Text = "Getting texture data from sha1...";
+                    Application.DoEvents();
+                    texdata = SHA1Access.GetDataBySha1(ci.sha1);
+                }
+                else
+                {
+                    statustextures.Text = "Getting texture data from binary bundle...";
+                    Application.DoEvents();
+                    TOCFile toc = new TOCFile(toci2.path);
+                    byte[] bundledata = toc.ExportBundleDataByPath(buni2.bundlepath);
+                    BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
+                    foreach (BinaryBundle.ChunkEntry chunk in b.ChunkList)
+                        if (Helpers.MatchByteArray(chunk.id, ci.id))
+                        {
+                            texdata = chunk._data;
+                            break;
+                        }
+                }
+                if (toolStripButton16.Checked)
                 {
                     hb3.ByteProvider = new DynamicByteProvider(texdata);
                     hb3.BringToFront();
                 }
+                else
+                {
+                    statustextures.Text = "Making Preview...";
+                    Application.DoEvents();
+                    MemoryStream m = new MemoryStream();
+                    tmr.WriteTextureHeader(m);
+                    m.Write(texdata, 0, texdata.Length);
+                    File.WriteAllBytes("tmp\\tmp.dds", m.ToArray());
+                    try
+                    {
+                        pb1.Image = DevIL.DevIL.LoadBitmap("tmp\\tmp.dds");
+                        pb1.BringToFront();
+                    }
+                    catch (Exception)
+                    {
+                        statustextures.Text = "Error loading dds, after state '" + statustextures.Text + "'";
+                        hb3.ByteProvider = new DynamicByteProvider(texdata);
+                        hb3.BringToFront();
+                    }
+                }
+                statustextures.Text = "Ready";
+            }
+            catch (Exception)
+            {
+                statustextures.Text = "General error, after state '" + statustextures.Text + "'";
             }
         }
 
@@ -881,6 +912,39 @@ namespace DAIToolsWV
                     MessageBox.Show("Done.");
                 }
             }
+        }
+
+        private void toolStripButton19_Click(object sender, EventArgs e)
+        {
+            Helpers.SelectNext(toolStripTextBox1.Text, treeView5);
+        }
+
+        private void toolStripButton20_Click(object sender, EventArgs e)
+        {
+            Helpers.SelectNext(toolStripTextBox2.Text, treeView4);
+        }
+
+        private void toolStripButton21_Click(object sender, EventArgs e)
+        {
+            Helpers.SelectNext(toolStripTextBox3.Text, treeView3);
+        }
+
+        private void toolStripTextBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)
+                Helpers.SelectNext(toolStripTextBox1.Text, treeView5);
+        }
+
+        private void toolStripTextBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)
+                Helpers.SelectNext(toolStripTextBox2.Text, treeView4);
+        }
+
+        private void toolStripTextBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)
+                Helpers.SelectNext(toolStripTextBox3.Text, treeView3);
         }
     }
 }

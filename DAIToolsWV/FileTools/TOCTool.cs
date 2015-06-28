@@ -169,58 +169,7 @@ namespace DAIToolsWV.FileTools
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            string text = toolStripTextBox1.Text;
-            SelectNext(text);
-        }
-
-        private void SelectNext(string text)
-        {
-            if (toc == null)
-                return;
-            TreeNode t = treeView1.SelectedNode;
-            if (t == null && treeView1.Nodes.Count != 0)
-                t = treeView1.Nodes[0];
-            while (true)
-            {
-                TreeNode t2 = FindNext(t, text);
-                if (t2 != null)
-                {
-                    treeView1.SelectedNode = t2;
-                    return;
-                }
-                else if (t.NextNode != null)
-                    t = t.NextNode;
-                else if (t.Parent != null && t.Parent.NextNode != null)
-                    t = t.Parent.NextNode;
-                else if (t.Parent != null && t.Parent.NextNode == null)
-                    while (t.Parent != null)
-                    {
-                        t = t.Parent;
-                        if (t.Parent != null && t.Parent.NextNode != null)
-                        {
-                            t = t.Parent.NextNode;
-                            break;
-                        }
-                    }
-                else
-                    return;
-            }
-        }
-
-        private TreeNode FindNext(TreeNode t, string text)
-        {
-            foreach (TreeNode t2 in t.Nodes)
-            {
-                if (t2.Text.Contains(text))
-                    return t2;
-                if (t2.Nodes.Count != 0)
-                {
-                    TreeNode t3 = FindNext(t2, text);
-                    if (t3 != null)
-                        return t3;
-                }
-            }
-            return null;
+            Helpers.SelectNext(toolStripTextBox1.Text, treeView1);
         }
     }
     

@@ -517,6 +517,60 @@ namespace DAILibWV
                 foreach (TreeNode t in node.Nodes)
                     ExpandTreeByLevel(t, level - 1);
         }
+
+        public static void SelectNext(string text, TreeView tree)
+        {
+            TreeNode t = tree.SelectedNode;
+            if (t == null && tree.Nodes.Count != 0)
+                t = tree.Nodes[0];
+            while (true)
+            {
+                TreeNode t2 = FindNext(t, text);
+                if (t2 != null)
+                {
+                    tree.SelectedNode = t2;
+                    return;
+                }
+                else if (t.NextNode != null)
+                    t = t.NextNode;
+                else if (t.Parent != null && t.Parent.NextNode != null)
+                    t = t.Parent.NextNode;
+                else if (t.Parent != null && t.Parent.NextNode == null)
+                    while (t.Parent != null)
+                    {
+                        t = t.Parent;
+                        if (t.Parent != null && t.Parent.NextNode != null)
+                        {
+                            t = t.Parent.NextNode;
+                            break;
+                        }
+                    }
+                else
+                    return;
+                if (t.Text.Contains(text))
+                {
+                    tree.SelectedNode = t;
+                    return;
+                }
+            }
+        }
+
+        public static TreeNode FindNext(TreeNode t, string text)
+        {
+            foreach (TreeNode t2 in t.Nodes)
+            {
+                if (t2.Text.Contains(text))
+                    return t2;
+                if (t2.Nodes.Count != 0)
+                {
+                    TreeNode t3 = FindNext(t2, text);
+                    if (t3 != null)
+                        return t3;
+                }
+            }
+            return null;
+        }
+
         public static Dictionary<uint, string> ResTypes = new Dictionary<uint, string>()
         #region data
         {
