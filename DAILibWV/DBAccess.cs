@@ -18,8 +18,19 @@ namespace DAILibWV
         public static readonly string TYPE_UPDATE = "u";
         public static readonly string TYPE_PATCH = "p";
 
+        public struct TOCInformation
+        {
+            public int index;
+            public string path;
+            public string md5;
+            public bool incas;
+            public string type;
+        }
+
         public struct BundleInformation
         {
+            public int index;
+            public int tocIndex;
             public string bundlepath;
             public string filepath;
             public int offset;
@@ -39,6 +50,7 @@ namespace DAILibWV
             public string basesha1;
             public string deltasha1;
             public int casPatchType;
+            public string guid;
             public string bundlepath;
             public int offset;
             public int size;
@@ -51,60 +63,14 @@ namespace DAILibWV
             public bool isPatch;
         }
 
-        public static SQLiteConnection GetConnection()
+        public struct TextureInformation
         {
-            return new SQLiteConnection("Data Source=" + dbpath + ";Version=3;");
+            public string name;
+            public byte[] sha1;
+            public int bundleIndex;
         }
-
-        public static bool CheckIfScanIsNeeded()
-        {
-            return (GlobalStuff.FindSetting("isNew") == "1");
-        }
-
-        public static bool CheckIfDBExists()
-        {
-            return (File.Exists(dbpath));
-        }
-
-        public static void CreateDataBase()
-        {
-            if (!File.Exists(dbpath))
-                File.Delete(dbpath);
-            SQLiteConnection.CreateFile(dbpath);
-            SQLiteConnection con = GetConnection();
-            con.Open();
-            SQLCommand("CREATE TABLE settings (key TEXT, value TEXT)", con);
-            SQLCommand("INSERT INTO settings (key, value) values ('isNew', '1')", con);
-            ClearGlobalChunkdb(con);
-            ClearSBFilesdb(con);
-            ClearTOCFilesdb(con);
-            ClearBundlesdb(con);
-            ClearEBXLookUpTabledb(con);
-            con.Close();
-        }
-
-        public static void LoadSettings()
-        {
-            SQLiteConnection con = GetConnection();
-            con.Open();
-            SQLiteDataReader reader = getAll("settings", con);
-            GlobalStuff.settings = new Dictionary<string, string>();
-            while (reader.Read())
-                GlobalStuff.settings.Add(reader.GetString(0), reader.GetString(1));
-            con.Close();
-        }
-
-        public static void SaveSettings()
-        {
-            SQLiteConnection con = GetConnection();
-            con.Open();
-            SQLCommand("DROP TABLE settings", con);
-            SQLCommand("CREATE TABLE settings (key TEXT, value TEXT)", con);
-            foreach (KeyValuePair<string, string> setting in GlobalStuff.settings)
-                SQLCommand("INSERT INTO settings (key, value) values ('" + setting.Key + "', '" + setting.Value + "')", con);
-            con.Close();
-            LoadSettings();
-        }
+        
+        #region get SQL stuff
 
         public static void SQLCommand(string sql, SQLiteConnection con)
         {
@@ -112,7 +78,12 @@ namespace DAILibWV
             command.ExecuteNonQuery();
         }
 
-        public static long  GetLastRowId(SQLiteConnection con)
+        public static SQLiteConnection GetConnection()
+        {
+            return new SQLiteConnection("Data Source=" + dbpath + ";Version=3;");
+        }
+
+        public static long GetLastRowId(SQLiteConnection con)
         {
             return con.LastInsertRowId;
         }
@@ -168,7 +139,71 @@ namespace DAILibWV
             SQLiteCommand command = new SQLiteCommand("SELECT * FROM " + table + " WHERE " + where, con);
             return command.ExecuteReader();
         }
-        
+
+        public static SQLiteDataReader getAllJoinedWhere(string table1, string table2, string key1, string key2, string where, SQLiteConnection con, string sort = null)
+        {
+            string sql = "SELECT * FROM " + table1 + " JOIN " + table2 + " ON (" + table1 + "." + key1 + " = " + table2 + "." + key2 + ") WHERE " + where + " ";
+            if (sort != null)
+                sql += " ORDER BY " + sort;
+            SQLiteCommand command = new SQLiteCommand(sql, con);
+            return command.ExecuteReader();
+        }
+
+
+        #endregion
+
+        #region database init and settings
+
+        public static bool CheckIfScanIsNeeded()
+        {
+            return (GlobalStuff.FindSetting("isNew") == "1");
+        }
+
+        public static bool CheckIfDBExists()
+        {
+            return (File.Exists(dbpath));
+        }
+
+        public static void CreateDataBase()
+        {
+            if (!File.Exists(dbpath))
+                File.Delete(dbpath);
+            SQLiteConnection.CreateFile(dbpath);
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLCommand("CREATE TABLE settings (key TEXT, value TEXT)", con);
+            SQLCommand("INSERT INTO settings (key, value) values ('isNew', '1')", con);
+            ClearGlobalChunkdb(con);
+            ClearSBFilesdb(con);
+            ClearTOCFilesdb(con);
+            ClearBundlesdb(con);
+            ClearEBXLookUpTabledb(con);
+            con.Close();
+        }
+
+        public static void LoadSettings()
+        {
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAll("settings", con);
+            GlobalStuff.settings = new Dictionary<string, string>();
+            while (reader.Read())
+                GlobalStuff.settings.Add(reader.GetString(0), reader.GetString(1));
+            con.Close();
+        }
+
+        public static void SaveSettings()
+        {
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLCommand("DROP TABLE settings", con);
+            SQLCommand("CREATE TABLE settings (key TEXT, value TEXT)", con);
+            foreach (KeyValuePair<string, string> setting in GlobalStuff.settings)
+                SQLCommand("INSERT INTO settings (key, value) values ('" + setting.Key + "', '" + setting.Value + "')", con);
+            con.Close();
+            LoadSettings();
+        }
+
         public static void ClearSBFilesdb(SQLiteConnection con)
         {
             SQLCommand("DROP TABLE IF EXISTS sbfiles", con);
@@ -188,7 +223,7 @@ namespace DAILibWV
             + "path TEXT, sha1 TEXT, basesha1 TEXT, deltasha1 TEXT, casptype INT, guid TEXT, "
             + "bundlepath TEXT, offset INT, size INT, isbase TEXT, isdelta TEXT, tocpath TEXT, incas TEXT, filetype TEXT)", con);
         }
-        
+
         public static void ClearGlobalChunkdb(SQLiteConnection con)
         {
             SQLCommand("DROP TABLE IF EXISTS globalchunks", con);
@@ -206,6 +241,155 @@ namespace DAILibWV
             SQLCommand("CREATE TABLE res (name TEXT, sha1 TEXT, rtype TEXT, bundle INT, FOREIGN KEY (bundle) REFERENCES bundles (id))", con);
             SQLCommand("CREATE TABLE chunks (id TEXT, sha1 TEXT, bundle INT, FOREIGN KEY (bundle) REFERENCES bundles (id))", con);
         }
+
+        #endregion
+
+        #region add stuff
+
+        public static void AddSHA1(uint[] entry, string type, SQLiteConnection con)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (uint u in entry)
+                sb.Append(u.ToString("X8"));
+            SQLCommand("INSERT INTO sha1db VALUES ('" + sb.ToString() + "', '" + type + "')", con);
+        }
+
+        public static void AddGlobalChunk(int tocid, byte[] id, byte[] sha1, int offset, int size, SQLiteConnection con)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (id != null)
+                foreach (byte b in id)
+                    sb.Append(b.ToString("X2"));
+            StringBuilder sb2 = new StringBuilder();
+            if (sha1 != null)
+                foreach (byte b in sha1)
+                    sb2.Append(b.ToString("X2"));
+            SQLCommand("INSERT INTO globalchunks (tocfile, id, sha1, offset, size) VALUES (" + tocid + ",'" + sb.ToString() + "','" + sb2.ToString() + "', " + offset + "," + size + ")", con);
+        }
+
+        public static void AddSBFile(string path, string type, SQLiteConnection con)
+        {
+            SQLCommand("INSERT INTO sbfiles (path, type) VALUES ('" + path + "','" + type + "')", con);
+        }
+
+        public static void AddTOCFile(string path, string type, SQLiteConnection con)
+        {
+            string md5 = Helpers.ByteArrayToHexString(Helpers.ComputeHash(path));
+            Debug.LogLn(" MD5: " + md5 + " Filename: " + Path.GetFileName(path));
+            TOCFile toc = new TOCFile(path);
+            bool incas = false;
+            foreach (BJSON.Field f1 in toc.lines[0].fields)
+                if (f1.fieldname == "cas")
+                    incas = (bool)f1.data;
+            SQLCommand("INSERT INTO tocfiles (path, md5, incas, type) VALUES ('" + path + "', '" + md5 + "','" + incas + "','" + type + "')", con);
+        }
+
+        public static void AddCASFile(string path, string type, SQLiteConnection con)
+        {
+            SQLCommand("INSERT INTO casfiles VALUES ('" + path + "','" + type + "')", con);
+        }
+
+        public static void AddEBXFile(string name, byte[] sha1, byte[] basesha1, byte[] deltasha1, int casPatchType, int bundleid, string guid, SQLiteConnection con)
+        {
+            name = name.Replace("'", "");//lolfix
+            SQLCommand("INSERT INTO ebx VALUES ('" + name + "','" + Helpers.ByteArrayToHexString(sha1) + "','" + Helpers.ByteArrayToHexString(basesha1) + "','" + Helpers.ByteArrayToHexString(deltasha1) + "'," + casPatchType + "," + bundleid + ", '" + guid + "')", con);
+        }
+
+        public static void AddRESFile(string name, byte[] sha1, byte[] rtype, int bundleid, SQLiteConnection con)
+        {
+            name = name.Replace("'", "");//lolfix
+            SQLCommand("INSERT INTO res VALUES ('" + name + "','" + Helpers.ByteArrayToHexString(sha1) + "', '" + Helpers.ByteArrayToHexString(rtype) + "', " + bundleid + ")", con);
+        }
+
+        public static void AddChunk(byte[] id, byte[] sha1, int bundleid, SQLiteConnection con)
+        {
+            SQLCommand("INSERT INTO chunks VALUES ('" + Helpers.ByteArrayToHexString(id) + "','" + Helpers.ByteArrayToHexString(sha1) + "'," + bundleid + ")", con);
+        }
+
+        public static void AddBundle(int tocid, bool incas, Bundle b, TOCFile.TOCBundleInfoStruct info, SQLiteConnection con)
+        {
+            Debug.LogLn(" EBX:" + b.ebx.Count + " RES:" + b.res.Count + " CHUNK:" + b.chunk.Count, false);
+            SQLCommand("INSERT INTO bundles (tocfile, frostid, offset, size, base, delta) VALUES (" + tocid + ",'" + info.id + "'," + info.offset + ", " + info.size + ", '" + info.isbase + "', '" + info.isdelta + "' )", con);
+            int bundleid = (int)GetLastRowId(con);
+            if (b.ebx != null)
+                foreach (Bundle.ebxtype ebx in b.ebx)
+                    if (ebx.name != null && ebx.originalSize != null && ebx.size != null)
+                        AddEBXFile(ebx.name, ebx.Sha1, ebx.baseSha1, ebx.deltaSha1, ebx.casPatchType, bundleid, "", con);
+            if (b.res != null)
+                foreach (Bundle.restype res in b.res)
+                    if (res.name != null)
+                        AddRESFile(res.name, res.SHA1, res.rtype, bundleid, con);
+            if (b.chunk != null)
+                foreach (Bundle.chunktype chunk in b.chunk)
+                    AddChunk(chunk.id, chunk.SHA1, bundleid, con);
+        }
+
+        private struct AddEBXHelpStruct
+        {
+            public string tocpath;
+            public string bpath;
+            public BinaryBundle b;
+        }
+
+        private static List<AddEBXHelpStruct> aehelp;
+
+        public static void AddEBXLUTFile(EBXInformation ebx, SQLiteConnection con)
+        {
+            string ftype = "b";
+            if (ebx.isDLC)
+                ftype = "u";
+            if (ebx.isPatch)
+                ftype = "p";
+            string guid = "";
+            byte[] data = new byte[0];
+            if (ebx.incas)
+                data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
+            else
+            {
+                BinaryBundle b  = null;
+                foreach(AddEBXHelpStruct h in aehelp)
+                    if (h.tocpath == ebx.tocfilepath && h.bpath == ebx.bundlepath)
+                    {
+                        b = h.b;
+                        break;
+                    }
+                if (b == null)
+                {
+                    TOCFile toc = new TOCFile(ebx.tocfilepath);
+                    byte[] bundledata = toc.ExportBundleDataByPath(ebx.bundlepath);
+                    b = new BinaryBundle(new MemoryStream(bundledata));
+                    AddEBXHelpStruct h = new AddEBXHelpStruct();
+                    h.tocpath = ebx.tocfilepath;
+                    h.bpath = ebx.bundlepath;
+                    h.b = b;
+                    if (aehelp.Count > 10)
+                        aehelp.RemoveAt(0);
+                }
+                foreach (BinaryBundle.EbxEntry ebx2 in b.EbxList)
+                    if (ebx.ebxname == ebx2._name)
+                        data = ebx2._data;
+            }
+            guid = Helpers.ByteArrayToHexString(data, 0x28, 0x10);
+            SQLCommand("INSERT INTO ebxlut (path,sha1,basesha1,deltasha1,casptype,guid,bundlepath,offset,size,isbase,isdelta,tocpath,incas,filetype) VALUES ('"
+                + ebx.ebxname + "','"
+                + ebx.sha1 + "','"
+                + ebx.basesha1 + "','"
+                + ebx.deltasha1 + "',"
+                + ebx.casPatchType + ",'"
+                + guid + "','"
+                + ebx.bundlepath + "',"
+                + ebx.offset + ","
+                + ebx.size + ",'"
+                + ebx.isbase + "','"
+                + ebx.isdelta + "','"
+                + ebx.tocfilepath + "','"
+                + ebx.incas + "','"
+                + ftype + "')", con);
+        }
+
+        #endregion
+
+        #region get specific stuff
 
         public static string[] GetGameFiles(string table)
         {
@@ -264,6 +448,8 @@ namespace DAILibWV
                 if (count++ % 1000 == 0)
                     Application.DoEvents();
                 BundleInformation bi = new BundleInformation();
+                bi.index = reader.GetInt32(0);
+                bi.tocIndex = reader.GetInt32(1);
                 bi.bundlepath = reader.GetString(2).ToLower();
                 bi.offset = reader.GetInt32(3);
                 bi.size = reader.GetInt32(4);
@@ -287,6 +473,45 @@ namespace DAILibWV
             }
             con.Close();
             return result.ToArray();
+        }
+
+        public static BundleInformation GetBundleInformationByIndex(int index)
+        {
+            BundleInformation result = new BundleInformation();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllJoinedWhere("bundles", "tocfiles", "tocfile", "id", "bundles.id = " + index, con, "frostid");
+            int count = 0;
+            while (reader.Read())
+            {
+                if (count++ % 1000 == 0)
+                    Application.DoEvents();
+                BundleInformation bi = new BundleInformation();
+                bi.index = reader.GetInt32(0);
+                bi.tocIndex = reader.GetInt32(1);
+                bi.bundlepath = reader.GetString(2).ToLower();
+                bi.offset = reader.GetInt32(3);
+                bi.size = reader.GetInt32(4);
+                bi.isbase = reader.GetString(5) == "True";
+                bi.isdelta = reader.GetString(6) == "True";
+                bi.filepath = reader.GetString(8).ToLower();
+                bi.incas = reader.GetString(10) == "True";
+                switch (reader.GetString(11))
+                {
+                    case "b":
+                        bi.isbasegamefile = true;
+                        break;
+                    case "u":
+                        bi.isDLC = true;
+                        break;
+                    case "p":
+                        bi.isPatch = true;
+                        break;
+                }
+                result = bi;
+            }
+            con.Close();
+            return result;
         }
 
         private static EBXInformation[] GetInitialEBXInformation()
@@ -349,14 +574,15 @@ namespace DAILibWV
                 ebx.basesha1 = reader.GetString(3);
                 ebx.deltasha1 = reader.GetString(4);
                 ebx.casPatchType = reader.GetInt32(5);
-                ebx.bundlepath = reader.GetString(6);
-                ebx.offset = reader.GetInt32(7);
-                ebx.size = reader.GetInt32(8);
-                ebx.isbase = reader.GetString(9) == "True";
-                ebx.isdelta = reader.GetString(10) == "True";
-                ebx.tocfilepath = reader.GetString(11);
-                ebx.incas = reader.GetString(12) == "True";
-                switch (reader.GetString(13))
+                ebx.guid = reader.GetString(6);
+                ebx.bundlepath = reader.GetString(7);
+                ebx.offset = reader.GetInt32(8);
+                ebx.size = reader.GetInt32(9);
+                ebx.isbase = reader.GetString(10) == "True";
+                ebx.isdelta = reader.GetString(11) == "True";
+                ebx.tocfilepath = reader.GetString(12);
+                ebx.incas = reader.GetString(13) == "True";
+                switch (reader.GetString(14))
                 {
                     default:
                         ebx.isbasegamefile = true;
@@ -378,122 +604,49 @@ namespace DAILibWV
             con.Close();
             return result.ToArray();
         }
-        
-        public static void AddSHA1(uint[] entry, string type, SQLiteConnection con)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (uint u in entry)
-                sb.Append(u.ToString("X8"));
-            SQLCommand("INSERT INTO sha1db VALUES ('" + sb.ToString() + "', '" + type + "')", con);
-        }
 
-        public static void AddGlobalChunk(int tocid, byte[] id, byte[] sha1, int offset, int size, SQLiteConnection con)
+        public static TextureInformation[] GetTextureInformations()
         {
-            StringBuilder sb = new StringBuilder();
-            if (id != null)
-            foreach (byte b in id)
-                sb.Append(b.ToString("X2"));
-            StringBuilder sb2 = new StringBuilder();
-            if (sha1 != null)
-            foreach (byte b in sha1)
-                sb2.Append(b.ToString("X2"));
-            SQLCommand("INSERT INTO globalchunks (tocfile, id, sha1, offset, size) VALUES (" + tocid + ",'" + sb.ToString() + "','" + sb2.ToString() + "', " + offset + "," + size + ")", con);
-          }
-
-        public static void AddSBFile(string path, string type, SQLiteConnection con)
-        {
-            SQLCommand("INSERT INTO sbfiles (path, type) VALUES ('" + path + "','" + type + "')", con); 
-        }
-
-        public static void AddTOCFile(string path, string type, SQLiteConnection con)
-        {
-            string md5 = Helpers.ByteArrayToHexString(Helpers.ComputeHash(path));
-            Debug.LogLn(" MD5: " + md5 + " Filename: " + Path.GetFileName(path));
-            TOCFile toc = new TOCFile(path);
-            bool incas = false;
-            foreach (BJSON.Field f1 in toc.lines[0].fields)
-                if (f1.fieldname == "cas")
-                    incas = (bool)f1.data;
-            SQLCommand("INSERT INTO tocfiles (path, md5, incas, type) VALUES ('" + path + "', '" + md5 + "','" + incas + "','" + type + "')", con);
-        }
-
-        public static void AddCASFile(string path, string type, SQLiteConnection con)
-        {
-            SQLCommand("INSERT INTO casfiles VALUES ('" + path + "','" + type + "')", con);
-        }
-
-        public static void AddEBXFile(string name, byte[] sha1, byte[] basesha1, byte[] deltasha1, int casPatchType, int bundleid,  string guid, SQLiteConnection con)
-        {
-            name = name.Replace("'", "");//lolfix
-            SQLCommand("INSERT INTO ebx VALUES ('" + name + "','" + Helpers.ByteArrayToHexString(sha1) + "','" + Helpers.ByteArrayToHexString(basesha1) + "','" + Helpers.ByteArrayToHexString(deltasha1) + "'," + casPatchType + "," + bundleid + ", '" + guid + "')", con);
-        }
-
-        public static void AddRESFile(string name, byte[] sha1, byte[] rtype, int bundleid, SQLiteConnection con)
-        {
-            name = name.Replace("'", "");//lolfix
-            SQLCommand("INSERT INTO res VALUES ('" + name + "','" + Helpers.ByteArrayToHexString(sha1) + "', '" + Helpers.ByteArrayToHexString(rtype) + "', " + bundleid + ")", con);
-        }
-
-        public static void AddChunk(byte[] id, byte[] sha1, int bundleid, SQLiteConnection con)
-        {
-            SQLCommand("INSERT INTO chunks VALUES ('" + Helpers.ByteArrayToHexString(id) + "','" + Helpers.ByteArrayToHexString(sha1) + "'," + bundleid + ")", con);
-        }
-             
-        public static void AddBundle(int tocid, bool incas, Bundle b, TOCFile.TOCBundleInfoStruct info, SQLiteConnection con)
-        {
-            Debug.LogLn(" EBX:" + b.ebx.Count + " RES:" + b.res.Count + " CHUNK:" + b.chunk.Count, false);
-            SQLCommand("INSERT INTO bundles (tocfile, frostid, offset, size, base, delta) VALUES (" + tocid + ",'" + info.id + "'," + info.offset + ", " + info.size + ", '" + info.isbase + "', '" + info.isdelta + "' )", con);
-            int bundleid = (int)GetLastRowId(con);
-            if (b.ebx != null)
-                foreach (Bundle.ebxtype ebx in b.ebx)
-                    if (ebx.name != null && ebx.originalSize != null && ebx.size != null)
-                        AddEBXFile(ebx.name, ebx.Sha1, ebx.baseSha1, ebx.deltaSha1, ebx.casPatchType, bundleid, "", con);
-            if (b.res != null)
-                foreach (Bundle.restype res in b.res)
-                    if (res.name != null)
-                        AddRESFile(res.name, res.SHA1, res.rtype, bundleid, con);
-            if (b.chunk != null)
-                foreach (Bundle.chunktype chunk in b.chunk)
-                    AddChunk(chunk.id, chunk.SHA1, bundleid, con);
-        }
-
-        public static void AddEBXLUTFile(EBXInformation ebx, SQLiteConnection con)
-        {
-            string ftype = "b";
-            if (ebx.isDLC)
-                ftype = "u";
-            if (ebx.isPatch)
-                ftype = "p";
-            string guid = "";
-            byte[] data = new byte[0];
-            if (ebx.incas)
-                data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(ebx.sha1));
-            else
+            List<TextureInformation> result = new List<TextureInformation>();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllWhere("res", "rtype = 'A654495C'", con);
+            int count = 0;
+            while (reader.Read())
             {
-                TOCFile toc = new TOCFile(ebx.tocfilepath);
-                byte[] bundledata = toc.ExportBundleDataByPath(ebx.bundlepath);
-                BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
-                foreach (BinaryBundle.EbxEntry ebx2 in b.EbxList)
-                    if (ebx.ebxname == ebx2._name)
-                        data = ebx2._data;
+                if (count++ % 1000 == 0)
+                    Application.DoEvents();
+                TextureInformation ti = new TextureInformation();
+                ti.name = reader.GetString(0);
+                ti.sha1 = Helpers.HexStringToByteArray(reader.GetString(1));
+                ti.bundleIndex = reader.GetInt32(3);
+                result.Add(ti);
             }
-            guid = Helpers.ByteArrayToHexString(data, 0x28, 0x10);
-            SQLCommand("INSERT INTO ebxlut (path,sha1,basesha1,deltasha1,casptype,guid,bundlepath,offset,size,isbase,isdelta,tocpath,incas,filetype) VALUES ('"
-                + ebx.ebxname + "','"
-                + ebx.sha1 + "','"
-                + ebx.basesha1 + "','"
-                + ebx.deltasha1 + "',"
-                + ebx.casPatchType + ",'"
-                + guid + "','"
-                + ebx.bundlepath + "',"
-                + ebx.offset + ","
-                + ebx.size + ",'"
-                + ebx.isbase + "','"
-                + ebx.isdelta + "','"
-                + ebx.tocfilepath + "','"
-                + ebx.incas + "','"
-                + ftype + "')", con);
+            con.Close();
+            return result.ToArray();
         }
+
+        public static TOCInformation GetTocInformationbyIndex(int index)
+        {
+            TOCInformation res = new TOCInformation();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllWhere("tocfiles", "id = " + index, con);
+            if (reader.Read())
+            {
+                res.index = index;
+                res.path = reader.GetString(1);
+                res.md5 = reader.GetString(2);
+                res.incas = reader.GetString(3) == "True";
+                res.type = reader.GetString(4);
+            }
+            con.Close();
+            return res;
+        }
+
+        #endregion
+
+        #region initial scan stuff
 
         public static void StartScan(string path)
         {
@@ -637,6 +790,7 @@ namespace DAILibWV
         {
             EBXInformation[] list = GetInitialEBXInformation();
             int count = 0;
+            aehelp = new List<AddEBXHelpStruct>();
             SQLiteConnection con = GetConnection();
             con.Open();
             var transaction = con.BeginTransaction();
@@ -654,5 +808,7 @@ namespace DAILibWV
             transaction.Commit();
             con.Close();
         }
+
+        #endregion
     }
 }

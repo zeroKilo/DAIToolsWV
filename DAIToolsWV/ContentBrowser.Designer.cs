@@ -74,8 +74,17 @@
             this.toolStripButton15 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.ebxstatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.hb1 = new Be.Windows.Forms.HexBox();
             this.ebxpb1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.toolStrip4 = new System.Windows.Forms.ToolStrip();
+            this.statusStrip3 = new System.Windows.Forms.StatusStrip();
+            this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer5 = new System.Windows.Forms.SplitContainer();
+            this.listBox2 = new System.Windows.Forms.ListBox();
+            this.treeView5 = new System.Windows.Forms.TreeView();
+            this.hb1 = new Be.Windows.Forms.HexBox();
+            this.hb2 = new Be.Windows.Forms.HexBox();
+            this.statustextures = new System.Windows.Forms.ToolStripStatusLabel();
             this.contextMenuStrip1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -99,6 +108,16 @@
             this.ebxcontext.SuspendLayout();
             this.toolStrip3.SuspendLayout();
             this.statusStrip2.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            this.statusStrip3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).BeginInit();
+            this.splitContainer4.Panel1.SuspendLayout();
+            this.splitContainer4.Panel2.SuspendLayout();
+            this.splitContainer4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).BeginInit();
+            this.splitContainer5.Panel1.SuspendLayout();
+            this.splitContainer5.Panel2.SuspendLayout();
+            this.splitContainer5.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -427,6 +446,7 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -592,6 +612,106 @@
             this.ebxstatus.Name = "ebxstatus";
             this.ebxstatus.Size = new System.Drawing.Size(0, 17);
             // 
+            // ebxpb1
+            // 
+            this.ebxpb1.Name = "ebxpb1";
+            this.ebxpb1.Size = new System.Drawing.Size(100, 16);
+            this.ebxpb1.Visible = false;
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.splitContainer4);
+            this.tabPage4.Controls.Add(this.statusStrip3);
+            this.tabPage4.Controls.Add(this.toolStrip4);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(541, 354);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Texture Browser";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // toolStrip4
+            // 
+            this.toolStrip4.Location = new System.Drawing.Point(3, 3);
+            this.toolStrip4.Name = "toolStrip4";
+            this.toolStrip4.Size = new System.Drawing.Size(535, 25);
+            this.toolStrip4.TabIndex = 0;
+            this.toolStrip4.Text = "toolStrip4";
+            // 
+            // statusStrip3
+            // 
+            this.statusStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statustextures});
+            this.statusStrip3.Location = new System.Drawing.Point(3, 329);
+            this.statusStrip3.Name = "statusStrip3";
+            this.statusStrip3.Size = new System.Drawing.Size(535, 22);
+            this.statusStrip3.TabIndex = 1;
+            this.statusStrip3.Text = "statusStrip3";
+            // 
+            // splitContainer4
+            // 
+            this.splitContainer4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer4.Location = new System.Drawing.Point(3, 28);
+            this.splitContainer4.Name = "splitContainer4";
+            // 
+            // splitContainer4.Panel1
+            // 
+            this.splitContainer4.Panel1.Controls.Add(this.treeView5);
+            // 
+            // splitContainer4.Panel2
+            // 
+            this.splitContainer4.Panel2.Controls.Add(this.splitContainer5);
+            this.splitContainer4.Size = new System.Drawing.Size(535, 301);
+            this.splitContainer4.SplitterDistance = 262;
+            this.splitContainer4.TabIndex = 2;
+            // 
+            // splitContainer5
+            // 
+            this.splitContainer5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer5.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer5.Name = "splitContainer5";
+            this.splitContainer5.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer5.Panel1
+            // 
+            this.splitContainer5.Panel1.Controls.Add(this.listBox2);
+            // 
+            // splitContainer5.Panel2
+            // 
+            this.splitContainer5.Panel2.Controls.Add(this.hb2);
+            this.splitContainer5.Size = new System.Drawing.Size(269, 301);
+            this.splitContainer5.SplitterDistance = 89;
+            this.splitContainer5.TabIndex = 0;
+            // 
+            // listBox2
+            // 
+            this.listBox2.ContextMenuStrip = this.contextMenuStrip1;
+            this.listBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBox2.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listBox2.FormattingEnabled = true;
+            this.listBox2.HorizontalScrollbar = true;
+            this.listBox2.IntegralHeight = false;
+            this.listBox2.ItemHeight = 16;
+            this.listBox2.Location = new System.Drawing.Point(0, 0);
+            this.listBox2.Name = "listBox2";
+            this.listBox2.ScrollAlwaysVisible = true;
+            this.listBox2.Size = new System.Drawing.Size(269, 89);
+            this.listBox2.TabIndex = 2;
+            this.listBox2.SelectedIndexChanged += new System.EventHandler(this.listBox2_SelectedIndexChanged);
+            // 
+            // treeView5
+            // 
+            this.treeView5.ContextMenuStrip = this.ebxcontext;
+            this.treeView5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView5.Font = new System.Drawing.Font("Courier New", 10F);
+            this.treeView5.HideSelection = false;
+            this.treeView5.Location = new System.Drawing.Point(0, 0);
+            this.treeView5.Name = "treeView5";
+            this.treeView5.Size = new System.Drawing.Size(262, 301);
+            this.treeView5.TabIndex = 1;
+            this.treeView5.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView5_AfterSelect);
+            // 
             // hb1
             // 
             this.hb1.BoldFont = null;
@@ -608,11 +728,28 @@
             this.hb1.UseFixedBytesPerLine = true;
             this.hb1.VScrollBarVisible = true;
             // 
-            // ebxpb1
+            // hb2
             // 
-            this.ebxpb1.Name = "ebxpb1";
-            this.ebxpb1.Size = new System.Drawing.Size(100, 16);
-            this.ebxpb1.Visible = false;
+            this.hb2.BoldFont = null;
+            this.hb2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hb2.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.hb2.LineInfoForeColor = System.Drawing.Color.Empty;
+            this.hb2.LineInfoVisible = true;
+            this.hb2.Location = new System.Drawing.Point(0, 0);
+            this.hb2.Name = "hb2";
+            this.hb2.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
+            this.hb2.Size = new System.Drawing.Size(269, 208);
+            this.hb2.StringViewVisible = true;
+            this.hb2.TabIndex = 1;
+            this.hb2.UseFixedBytesPerLine = true;
+            this.hb2.VScrollBarVisible = true;
+            // 
+            // statustextures
+            // 
+            this.statustextures.Font = new System.Drawing.Font("Courier New", 10F);
+            this.statustextures.Name = "statustextures";
+            this.statustextures.Size = new System.Drawing.Size(176, 17);
+            this.statustextures.Text = "toolStripStatusLabel1";
             // 
             // ContentBrowser
             // 
@@ -655,6 +792,18 @@
             this.toolStrip3.PerformLayout();
             this.statusStrip2.ResumeLayout(false);
             this.statusStrip2.PerformLayout();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
+            this.statusStrip3.ResumeLayout(false);
+            this.statusStrip3.PerformLayout();
+            this.splitContainer4.Panel1.ResumeLayout(false);
+            this.splitContainer4.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
+            this.splitContainer4.ResumeLayout(false);
+            this.splitContainer5.Panel1.ResumeLayout(false);
+            this.splitContainer5.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).EndInit();
+            this.splitContainer5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -707,5 +856,14 @@
         private System.Windows.Forms.ToolStripButton toolStripButton14;
         private System.Windows.Forms.ToolStripButton toolStripButton15;
         private System.Windows.Forms.ToolStripProgressBar ebxpb1;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.SplitContainer splitContainer4;
+        private System.Windows.Forms.TreeView treeView5;
+        private System.Windows.Forms.SplitContainer splitContainer5;
+        private System.Windows.Forms.ListBox listBox2;
+        private Be.Windows.Forms.HexBox hb2;
+        private System.Windows.Forms.StatusStrip statusStrip3;
+        private System.Windows.Forms.ToolStrip toolStrip4;
+        private System.Windows.Forms.ToolStripStatusLabel statustextures;
     }
 }

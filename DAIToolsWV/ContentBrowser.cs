@@ -18,17 +18,63 @@ namespace DAIToolsWV
 {
     public partial class ContentBrowser : Form
     {
-        DBAccess.BundleInformation[] blist = null;
-        DBAccess.EBXInformation[] ebxlist = null;
-        List<DBAccess.BundleInformation> tblist = null;       
+        private DBAccess.BundleInformation[] blist = null;
+        private DBAccess.EBXInformation[] ebxlist = null;
+        private List<DBAccess.BundleInformation> tblist = null;
+        private List<DBAccess.TextureInformation> ttlist = null;
+        private List<DBAccess.TextureInformation> ttprevlist = null;
 
-        Thread TbundleRefresh = null;
-        Thread TebxRefresh = null;
+        private string lastpath = "";
+
+        private Thread TbundleRefresh = null;
+        private Thread TebxRefresh = null;
+        private Thread TtexRefresh = null;
 
         public ContentBrowser()
         {
             InitializeComponent();
         }
+
+        private void ContentBrowser_Load(object sender, EventArgs e)
+        {
+            toolStripComboBox1.Items.Clear();
+            toolStripComboBox1.Items.Add("CAS Patch Type - 0 (Normal/None)");
+            toolStripComboBox1.Items.Add("CAS Patch Type - 1 (Replace)");
+            toolStripComboBox1.Items.Add("CAS Patch Type - 2 (Delta)");
+            toolStripComboBox1.SelectedIndex = 0;
+            RefreshReal();
+            RefreshBundles();
+            RefreshEBX();
+            RefreshTextures();
+        }
+
+        private void ContentBrowser_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                if (TbundleRefresh != null)
+                {
+                    TbundleRefresh.Abort();
+                    TbundleRefresh.Join();
+                }
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                if (TebxRefresh != null)
+                {
+                    TebxRefresh.Abort();
+                    TebxRefresh.Join();
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        #region real file system
 
         private void RefreshReal()
         {
@@ -61,18 +107,6 @@ namespace DAIToolsWV
         private void toolStripButton1_Click_1(object sender, EventArgs e)
         {
             RefreshReal();
-        }
-
-        private void ContentBrowser_Load(object sender, EventArgs e)
-        {
-            toolStripComboBox1.Items.Clear();
-            toolStripComboBox1.Items.Add("CAS Patch Type - 0 (Normal/None)");
-            toolStripComboBox1.Items.Add("CAS Patch Type - 1 (Replace)");
-            toolStripComboBox1.Items.Add("CAS Patch Type - 2 (Delta)");
-            toolStripComboBox1.SelectedIndex = 0;
-            RefreshReal();
-            RefreshBundles();
-            RefreshEBX();
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
@@ -108,6 +142,15 @@ namespace DAIToolsWV
             PreviewFile(path);
         }
 
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int n = listBox1.SelectedIndex;
+            if (n == -1)
+                return;
+            string path = GlobalStuff.FindSetting("gamepath") + listBox1.Items[n];
+            PreviewFile(path);
+        }
+
         public void PreviewFile(string path)
         {
             string ext = Path.GetExtension(path).ToLower();
@@ -138,19 +181,9 @@ namespace DAIToolsWV
             }
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            int n = listBox1.SelectedIndex;
-            if (n == -1)
-                return;
-            string path = GlobalStuff.FindSetting("gamepath") + listBox1.Items[n];
-            PreviewFile(path);
-        }
+        #endregion
 
-        private void toolStripButton6_Click(object sender, EventArgs e)
-        {
-            RefreshBundles();
-        }
+        #region internal file system
 
         private void RefreshBundles()
         {
@@ -211,6 +244,53 @@ namespace DAIToolsWV
                 splitContainer2.Visible = true;
             }
             ));
+        }
+
+        private void treeView3_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            TreeNode t = treeView3.SelectedNode;
+            if (t == null || t.Nodes == null || t.Nodes.Count != 0)
+                return;
+            string path = Helpers.GetPathFromNode(t, "/");
+            for (int i = 0; i < tblist.Count; i++)
+                if (path.Contains(tblist[i].bundlepath))
+                {
+                    DBAccess.BundleInformation bi = tblist[i];
+                    if (bi.isbase)
+                        return;
+                    TOCFile toc = new TOCFile(bi.filepath);
+                    byte[] data = toc.ExportBundleDataByPath(bi.bundlepath);
+                    Bundle b = null;
+                    if (bi.incas)
+                    {
+                        List<BJSON.Entry> tmp = new List<BJSON.Entry>();
+                        BJSON.ReadEntries(new MemoryStream(data), tmp);
+                        b = Bundle.Create(tmp[0]);
+                    }
+                    else
+                        b = Bundle.Create(data, true);
+                    if (b == null)
+                        return;
+                    if (b.ebx == null)
+                        b.ebx = new List<Bundle.ebxtype>();
+                    if (b.res == null)
+                        b.res = new List<Bundle.restype>();
+                    if (b.chunk == null)
+                        b.chunk = new List<Bundle.chunktype>();
+                    int total = b.ebx.Count + b.res.Count + b.chunk.Count;
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendFormat("Total count : {0}\n", total);
+                    sb.AppendFormat("EBX count   : {0}\n", b.ebx.Count);
+                    sb.AppendFormat("RES count   : {0}\n", b.res.Count);
+                    sb.AppendFormat("CHUNK count : {0}\n", b.chunk.Count);
+                    rtb1.Text = sb.ToString();
+
+                }
+        }
+
+        private void toolStripButton6_Click(object sender, EventArgs e)
+        {
+            RefreshBundles();
         }
 
         private void toolStripButton7_Click(object sender, EventArgs e)
@@ -332,47 +412,9 @@ namespace DAIToolsWV
             RefreshBundles();
         }
 
-        private void treeView3_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            TreeNode t = treeView3.SelectedNode;
-            if (t == null || t.Nodes == null || t.Nodes.Count != 0)
-                return;
-            string path = Helpers.GetPathFromNode(t, "/");
-            for (int i = 0; i < tblist.Count; i++)
-                if (path.Contains(tblist[i].bundlepath))
-                {
-                    DBAccess.BundleInformation bi = tblist[i];
-                    if (bi.isbase)
-                        return;
-                    TOCFile toc = new TOCFile(bi.filepath);
-                    byte[] data = toc.ExportBundleDataByPath(bi.bundlepath);
-                    Bundle b = null;
-                    if (bi.incas)
-                    {
-                        List<BJSON.Entry> tmp = new List<BJSON.Entry>();
-                        BJSON.ReadEntries(new MemoryStream(data), tmp);
-                        b = Bundle.Create(tmp[0]);
-                    }
-                    else
-                        b = Bundle.Create(data, true);
-                    if(b == null)
-                        return;
-                    if (b.ebx == null)
-                        b.ebx = new List<Bundle.ebxtype>();
-                    if (b.res == null)
-                        b.res = new List<Bundle.restype>();
-                    if (b.chunk == null)
-                        b.chunk = new List<Bundle.chunktype>();
-                    int total = b.ebx.Count + b.res.Count + b.chunk.Count;
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendFormat("Total count : {0}\n", total);
-                    sb.AppendFormat("EBX count   : {0}\n", b.ebx.Count);
-                    sb.AppendFormat("RES count   : {0}\n", b.res.Count);
-                    sb.AppendFormat("CHUNK count : {0}\n", b.chunk.Count);
-                    rtb1.Text = sb.ToString();
+        #endregion
 
-                }
-        }
+        #region ebx
 
         public void RefreshEBX()
         {
@@ -433,34 +475,6 @@ namespace DAIToolsWV
             ));
             sp.Stop();
         }
-
-        private void ContentBrowser_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            try
-            {
-                if (TbundleRefresh != null)
-                {
-                    TbundleRefresh.Abort();
-                    TbundleRefresh.Join();
-                }
-            }
-            catch (Exception)
-            {
-            }
-            try
-            {
-                if (TebxRefresh != null)
-                {
-                    TebxRefresh.Abort();
-                    TebxRefresh.Join();
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        private string lastpath = "";
 
         private void CheckSelectionEBX()
         {
@@ -662,5 +676,138 @@ namespace DAIToolsWV
                 ebxstatus.Text = "Ready. Processed Ebx:" + count + " Errors: " + errorcount + " (" + ((float)errorcount / (float)count) * 100f + "%)";
             }
         }
+
+        #endregion
+
+        #region texture browser
+
+        public void RefreshTextures()
+        {
+            try
+            {
+                if (TebxRefresh != null)
+                {
+                    TtexRefresh.Abort();
+                    TtexRefresh.Join();
+                }
+            }
+            catch (Exception)
+            {
+            }
+            TtexRefresh = new Thread(RefreshtextureThread);
+            TtexRefresh.Start();
+        }
+
+        public void RefreshtextureThread(object obj)
+        {
+            this.Invoke(new Action(delegate
+            {
+                splitContainer4.Visible = false;
+                toolStrip4.Enabled = false;
+                statustextures.Text = "Refreshing...";
+            }
+            ));
+            ttlist = new List<DBAccess.TextureInformation>();
+            ttlist.AddRange(DBAccess.GetTextureInformations());
+            this.Invoke(new Action(delegate
+            {
+                statustextures.Text = "Preparing...";
+                Application.DoEvents();
+                MakeTextureTree();
+            }
+            ));
+            this.Invoke(new Action(delegate
+            {
+                splitContainer4.Visible = true;
+                toolStrip4.Enabled = true;
+                statustextures.Text = "Loaded " + ttlist.Count +" textures";
+            }
+            ));
+        }
+
+        public void MakeTextureTree()
+        {
+            treeView5.Nodes.Clear();
+            TreeNode t = new TreeNode("Textures");
+            foreach (DBAccess.TextureInformation ti in ttlist)
+                t = AddPath(t, ti.name);
+            t.Expand();
+            treeView5.Nodes.Add(t);
+        }
+
+        public TreeNode AddPath(TreeNode t, string path)
+        {
+            string[] parts = path.Split('/');
+            TreeNode f = null;
+            foreach (TreeNode c in t.Nodes)
+                if (c.Text == parts[0])
+                {
+                    f = c;
+                    break;
+                }
+            if (f == null)
+            {
+                f = new TreeNode(parts[0]);
+                t.Nodes.Add(f);
+            }
+            if (parts.Length > 1)
+            {
+                string subpath = path.Substring(parts[0].Length + 1, path.Length - 1 - parts[0].Length);
+                f = AddPath(f, subpath);
+            }
+            return t;
+        }
+
+        private void treeView5_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            TreeNode t = treeView5.SelectedNode;
+            if (t == null || t.Nodes.Count != 0)
+                return;
+            string path = t.Text;
+            while (t.Parent.Text != "Textures")
+            {
+                t = t.Parent;
+                path = t.Text + "/" + path;
+            }
+            listBox2.Items.Clear();
+            ttprevlist = new List<DBAccess.TextureInformation>();
+            int count = 0;
+            string DAIpath = GlobalStuff.FindSetting("gamepath");
+            foreach (DBAccess.TextureInformation tmp in ttlist)
+                if (tmp.name == path)
+                {
+                    ttprevlist.Add(tmp);
+                    DBAccess.BundleInformation buni = DBAccess.GetBundleInformationByIndex(tmp.bundleIndex);
+                    listBox2.Items.Add((count++) + " : " + buni.filepath.Substring(DAIpath.Length, buni.filepath.Length - DAIpath.Length) + " -> " + buni.bundlepath);
+                }
+        }
+
+        private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int n = listBox2.SelectedIndex;
+            if (n == -1)
+                return;
+            DBAccess.TextureInformation ti = ttprevlist[n];
+            DBAccess.BundleInformation buni = DBAccess.GetBundleInformationByIndex(ti.bundleIndex);
+            DBAccess.TOCInformation toci = DBAccess.GetTocInformationbyIndex(buni.tocIndex);
+            byte[] resdata = new byte[0];
+            if (toci.incas)
+                resdata = SHA1Access.GetDataBySha1(ti.sha1);
+            else
+            {
+                TOCFile toc = new TOCFile(toci.path);
+                byte[] bundledata = toc.ExportBundleDataByPath(buni.bundlepath);
+                BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
+                foreach (BinaryBundle.ResEntry res in b.ResList)
+                    if (res._name == ti.name)
+                    {
+                        resdata = res._data;
+                        break;
+                    }
+            }
+            hb2.ByteProvider = new DynamicByteProvider(resdata);
+        }
+
+        #endregion
     }
 }
