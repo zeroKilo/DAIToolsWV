@@ -69,6 +69,13 @@ namespace DAILibWV
             public byte[] sha1;
             public int bundleIndex;
         }
+
+        public struct ChunkInformation
+        {
+            public byte[] id;
+            public byte[] sha1;
+            public int bundleIndex;
+        }
         
         #region get SQL stuff
 
@@ -626,7 +633,7 @@ namespace DAILibWV
             return result.ToArray();
         }
 
-        public static TOCInformation GetTocInformationbyIndex(int index)
+        public static TOCInformation GetTocInformationByIndex(int index)
         {
             TOCInformation res = new TOCInformation();
             SQLiteConnection con = GetConnection();
@@ -639,6 +646,23 @@ namespace DAILibWV
                 res.md5 = reader.GetString(2);
                 res.incas = reader.GetString(3) == "True";
                 res.type = reader.GetString(4);
+            }
+            con.Close();
+            return res;
+        }
+
+        public static ChunkInformation GetChunkInformationById(byte[] id)
+        {
+            ChunkInformation res = new ChunkInformation();
+            res.id = id;
+            res.bundleIndex = -1;
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllWhere("chunks", "id = '" + Helpers.ByteArrayToHexString(id) + "'", con);
+            if (reader.Read())
+            {
+                res.sha1 = Helpers.HexStringToByteArray(reader.GetString(1));
+                res.bundleIndex = reader.GetInt32(2);
             }
             con.Close();
             return res;

@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using DAILibWV.Frostbite;
 using DAILibWV;
 using Be.Windows.Forms;
+using DevIL;
 
 namespace DAIToolsWV
 {
@@ -787,9 +788,11 @@ namespace DAIToolsWV
             int n = listBox2.SelectedIndex;
             if (n == -1)
                 return;
+            if (File.Exists("tmp\\tmp.dds"))
+                File.Delete("tmp\\tmp.dds");
             DBAccess.TextureInformation ti = ttprevlist[n];
             DBAccess.BundleInformation buni = DBAccess.GetBundleInformationByIndex(ti.bundleIndex);
-            DBAccess.TOCInformation toci = DBAccess.GetTocInformationbyIndex(buni.tocIndex);
+            DBAccess.TOCInformation toci = DBAccess.GetTocInformationByIndex(buni.tocIndex);
             byte[] resdata = new byte[0];
             if (toci.incas)
                 resdata = SHA1Access.GetDataBySha1(ti.sha1);
@@ -806,8 +809,78 @@ namespace DAIToolsWV
                     }
             }
             hb2.ByteProvider = new DynamicByteProvider(resdata);
+            TextureMetaResource tmr = new TextureMetaResource(resdata);
+            DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(tmr.chunkid);
+            if (ci.bundleIndex == -1)
+                return;
+            DBAccess.BundleInformation buni2 = DBAccess.GetBundleInformationByIndex(ci.bundleIndex);
+            DBAccess.TOCInformation toci2 = DBAccess.GetTocInformationByIndex(buni2.tocIndex);
+            byte[] texdata = new byte[0];
+            if (toci2.incas)
+                texdata = SHA1Access.GetDataBySha1(ci.sha1);
+            else
+            {
+                TOCFile toc = new TOCFile(toci2.path);
+                byte[] bundledata = toc.ExportBundleDataByPath(buni2.bundlepath);
+                BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
+                foreach (BinaryBundle.ChunkEntry chunk in b.ChunkList)
+                    if (Helpers.MatchByteArray(chunk.id, ci.id))
+                    {
+                        texdata = chunk._data;
+                        break;
+                    }
+            }
+            if (toolStripButton16.Checked)
+            {
+                hb3.ByteProvider = new DynamicByteProvider(texdata);
+                hb3.BringToFront();
+            }
+            else
+            {
+                MemoryStream m = new MemoryStream();
+                tmr.WriteTextureHeader(m);
+                m.Write(texdata, 0, texdata.Length);
+                File.WriteAllBytes("tmp\\tmp.dds", m.ToArray());
+                try
+                {
+                    pb1.Image = DevIL.DevIL.LoadBitmap("tmp\\tmp.dds");
+                    pb1.BringToFront();
+                }
+                catch (Exception)
+                {
+                    hb3.ByteProvider = new DynamicByteProvider(texdata);
+                    hb3.BringToFront();
+                }
+            }
         }
 
         #endregion
+
+        private void toolStripButton17_Click(object sender, EventArgs e)
+        {
+            if (toolStripButton17.Checked)
+                pb1.SizeMode = PictureBoxSizeMode.StretchImage;
+            else
+                pb1.SizeMode = PictureBoxSizeMode.Normal;
+        }
+
+        private void toolStripButton18_Click(object sender, EventArgs e)
+        {
+            int n = listBox2.SelectedIndex;
+            if (n == -1)
+                return;
+            DBAccess.TextureInformation ti = ttprevlist[n];
+            if (File.Exists("tmp\\tmp.dds"))
+            {
+                SaveFileDialog d = new SaveFileDialog();
+                d.Filter = "*.dds|*.dds";
+                d.FileName = Path.GetFileName(ti.name.Replace("/", "\\")) + ".dds";
+                if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    File.Copy("tmp\\tmp.dds", d.FileName, true);
+                    MessageBox.Show("Done.");
+                }
+            }
+        }
     }
 }
