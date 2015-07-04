@@ -129,5 +129,10 @@ namespace DAIToolsWV
                 Application.Restart();
             }
         }
+
+        private void cASContainerCreatorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new FileTools.CASContainerCreator());
+        }
     }
 }

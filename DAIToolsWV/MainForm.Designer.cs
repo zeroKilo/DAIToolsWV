@@ -43,6 +43,7 @@ namespace DAIToolsWV
             this.contentToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eBXToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cASContainerCreatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -102,7 +103,8 @@ namespace DAIToolsWV
             // 
             this.generalToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.contentBrowserToolStripMenuItem,
-            this.hexToolToolStripMenuItem});
+            this.hexToolToolStripMenuItem,
+            this.cASContainerCreatorToolStripMenuItem});
             this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
             this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
             this.generalToolsToolStripMenuItem.Text = "General Tools";
@@ -110,14 +112,14 @@ namespace DAIToolsWV
             // contentBrowserToolStripMenuItem
             // 
             this.contentBrowserToolStripMenuItem.Name = "contentBrowserToolStripMenuItem";
-            this.contentBrowserToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.contentBrowserToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.contentBrowserToolStripMenuItem.Text = "Content Browser";
             this.contentBrowserToolStripMenuItem.Click += new System.EventHandler(this.contentBrowserToolStripMenuItem_Click_1);
             // 
             // hexToolToolStripMenuItem
             // 
             this.hexToolToolStripMenuItem.Name = "hexToolToolStripMenuItem";
-            this.hexToolToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.hexToolToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.hexToolToolStripMenuItem.Text = "Hex Tool";
             this.hexToolToolStripMenuItem.Click += new System.EventHandler(this.hexToolToolStripMenuItem_Click_1);
             // 
@@ -143,6 +145,13 @@ namespace DAIToolsWV
             this.rESETALLToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
             this.rESETALLToolStripMenuItem.Text = "RESET ALL";
             this.rESETALLToolStripMenuItem.Click += new System.EventHandler(this.rESETALLToolStripMenuItem_Click);
+            // 
+            // cASContainerCreatorToolStripMenuItem
+            // 
+            this.cASContainerCreatorToolStripMenuItem.Name = "cASContainerCreatorToolStripMenuItem";
+            this.cASContainerCreatorToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.cASContainerCreatorToolStripMenuItem.Text = "CAS Container Creator";
+            this.cASContainerCreatorToolStripMenuItem.Click += new System.EventHandler(this.cASContainerCreatorToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -177,6 +186,7 @@ namespace DAIToolsWV
         private ToolStripMenuItem contentToolsToolStripMenuItem;
         private ToolStripMenuItem eBXToolToolStripMenuItem;
         private ToolStripMenuItem rESETALLToolStripMenuItem;
+        private ToolStripMenuItem cASContainerCreatorToolStripMenuItem;
     }
 }
 

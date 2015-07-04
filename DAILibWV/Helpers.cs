@@ -75,6 +75,18 @@ namespace DAILibWV
             s.Write(t.ToArray(), 0, 4);
         }
 
+        public static void WriteUInt(Stream s, uint i)
+        {
+            s.Write(BitConverter.GetBytes(i), 0, 4);
+        }
+
+        public static void WriteLEUInt(Stream s, uint i)
+        {
+            List<byte> t = new List<byte>(BitConverter.GetBytes(i));
+            t.Reverse();
+            s.Write(t.ToArray(), 0, 4);
+        }
+
         public static int ReadInt(Stream s)
         {
             byte[] buff = new byte[4];
