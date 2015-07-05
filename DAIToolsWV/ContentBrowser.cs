@@ -285,7 +285,15 @@ namespace DAIToolsWV
                     sb.AppendFormat("RES count   : {0}\n", b.res.Count);
                     sb.AppendFormat("CHUNK count : {0}\n", b.chunk.Count);
                     rtb1.Text = sb.ToString();
-
+                    DBAccess.BundleInformation[] dupBun = DBAccess.GetBundleInformationById(bi.bundlepath);
+                    listBox3.Items.Clear();
+                    int count = 0;
+                    int l = GlobalStuff.FindSetting("gamepath").Length;
+                    foreach (DBAccess.BundleInformation dup in dupBun)
+                    {
+                        DBAccess.TOCInformation ti = DBAccess.GetTocInformationByIndex(dup.tocIndex);
+                        listBox3.Items.Add((count++) + " : " + ti.path.Substring(l, ti.path.Length - l) + " -> Delta:" + dup.isdelta + " Base:" + dup.isbase);
+                    }
                 }
         }
 
@@ -828,7 +836,7 @@ namespace DAIToolsWV
                 TextureMetaResource tmr = new TextureMetaResource(resdata);
                 DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(tmr.chunkid);
                 if (ci.bundleIndex == -1)
-                    return;
+                    throw new Exception("no chunk info found in db");
                 DBAccess.BundleInformation buni2 = DBAccess.GetBundleInformationByIndex(ci.bundleIndex);
                 DBAccess.TOCInformation toci2 = DBAccess.GetTocInformationByIndex(buni2.tocIndex);
                 byte[] texdata = new byte[0];
@@ -945,6 +953,40 @@ namespace DAIToolsWV
         {
             if (e.KeyChar == (char)13)
                 Helpers.SelectNext(toolStripTextBox3.Text, treeView3);
+        }
+
+        private void texcontext_Paint(object sender, PaintEventArgs e)
+        {
+            TreeNode t = treeView5.SelectedNode;
+            if (t == null || t.Nodes.Count != 0)
+            {
+                openInTextureToolToolStripMenuItem.Visible = false;
+                nOPEToolStripMenuItem.Visible = true;
+            }
+            else
+            {
+                openInTextureToolToolStripMenuItem.Visible = true;
+                nOPEToolStripMenuItem.Visible = false;
+            }
+        }
+
+        private void openInTextureToolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            TreeNode t = treeView5.SelectedNode;
+            if (t == null || t.Nodes.Count != 0)
+                return;
+            string path = t.Text;
+            while (t.Parent.Text != "Textures")
+            {
+                t = t.Parent;
+                path = t.Text + "/" + path;
+            }
+            ContentTools.TextureTool ttool = new ContentTools.TextureTool();
+            ttool.MdiParent = this.MdiParent;
+            ttool.WindowState = FormWindowState.Maximized;
+            ttool.Show();
+            ttool.LoadById(path);
         }
     }
 }

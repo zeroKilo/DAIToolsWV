@@ -305,5 +305,24 @@ namespace DAIToolsWV.FileTools
             BinaryBundle.ChunkEntry chunk = binBundle.ChunkList[n];
             hb4.ByteProvider = new DynamicByteProvider(chunk._data);
         }
+
+        private void expandAllSubNodesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TreeNode t = treeView1.SelectedNode;
+            if (t == null)
+                return;
+            Debug.LockWindowUpdate(treeView1.Handle);
+            t.ExpandAll();
+            Debug.LockWindowUpdate(System.IntPtr.Zero);
+        }
+
+        private void toolStripTextBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)
+            {
+                string text = toolStripTextBox1.Text;
+                Helpers.SelectNext(toolStripTextBox1.Text, treeView1);
+            }
+        }
     }
 }

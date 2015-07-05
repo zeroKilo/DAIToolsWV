@@ -80,6 +80,18 @@
     <Compile Include="ContentTools\EBXTool.Designer.cs">
       <DependentUpon>EBXTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="ContentTools\SHA1Lookup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ContentTools\SHA1Lookup.Designer.cs">
+      <DependentUpon>SHA1Lookup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ContentTools\TextureTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ContentTools\TextureTool.Designer.cs">
+      <DependentUpon>TextureTool.cs</DependentUpon>
+    </Compile>
     <Compile Include="DebugOutputWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -149,6 +161,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ContentTools\EBXTool.resx">
       <DependentUpon>EBXTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContentTools\SHA1Lookup.resx">
+      <DependentUpon>SHA1Lookup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContentTools\TextureTool.resx">
+      <DependentUpon>TextureTool.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DebugOutputWindow.resx">
       <DependentUpon>DebugOutputWindow.cs</DependentUpon>

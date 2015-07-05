@@ -63,6 +63,23 @@ namespace DAILibWV
             public bool isPatch;
         }
 
+        public struct RESInformation
+        {
+            public string resname;
+            public string sha1;
+            public string rtype;
+            public string bundlepath;
+            public int offset;
+            public int size;
+            public bool isbase;
+            public bool isdelta;
+            public string tocfilepath;
+            public bool incas;
+            public bool isbasegamefile;
+            public bool isDLC;
+            public bool isPatch;
+        }
+
         public struct TextureInformation
         {
             public string name;
@@ -156,6 +173,17 @@ namespace DAILibWV
             return command.ExecuteReader();
         }
 
+        public static SQLiteDataReader getAllJoined3Where(string table1, string table2, string table3, string key12, string key21, string key23, string key32, string where, SQLiteConnection con, string sort = null)
+        {
+            string sql = "SELECT * FROM " + table1 + " ";
+            sql += "JOIN " + table2 + " ON (" + table1 + "." + key12 + " = " + table2 + "." + key21 + ") ";
+            sql += "JOIN " + table3 + " ON (" + table2 + "." + key23 + " = " + table3 + "." + key32 + ") ";
+            sql += "WHERE " + where;
+            if (sort != null)
+                sql += " ORDER BY " + sort;
+            SQLiteCommand command = new SQLiteCommand(sql, con);
+            return command.ExecuteReader();
+        }
 
         #endregion
 
@@ -485,9 +513,46 @@ namespace DAILibWV
         public static BundleInformation GetBundleInformationByIndex(int index)
         {
             BundleInformation result = new BundleInformation();
+            result.tocIndex = -1;
             SQLiteConnection con = GetConnection();
             con.Open();
             SQLiteDataReader reader = getAllJoinedWhere("bundles", "tocfiles", "tocfile", "id", "bundles.id = " + index, con, "frostid");
+            if (reader.Read())
+            {
+                BundleInformation bi = new BundleInformation();
+                bi.index = reader.GetInt32(0);
+                bi.tocIndex = reader.GetInt32(1);
+                bi.bundlepath = reader.GetString(2).ToLower();
+                bi.offset = reader.GetInt32(3);
+                bi.size = reader.GetInt32(4);
+                bi.isbase = reader.GetString(5) == "True";
+                bi.isdelta = reader.GetString(6) == "True";
+                bi.filepath = reader.GetString(8).ToLower();
+                bi.incas = reader.GetString(10) == "True";
+                switch (reader.GetString(11))
+                {
+                    case "b":
+                        bi.isbasegamefile = true;
+                        break;
+                    case "u":
+                        bi.isDLC = true;
+                        break;
+                    case "p":
+                        bi.isPatch = true;
+                        break;
+                }
+                result = bi;
+            }
+            con.Close();
+            return result;
+        }
+        
+        public static BundleInformation[] GetBundleInformationById(string path)
+        {
+            List<BundleInformation> result = new List<BundleInformation>();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllJoinedWhere("bundles", "tocfiles", "tocfile", "id", "lower(bundles.frostid) = '" + path + "'", con);
             int count = 0;
             while (reader.Read())
             {
@@ -515,10 +580,10 @@ namespace DAILibWV
                         bi.isPatch = true;
                         break;
                 }
-                result = bi;
+                result.Add(bi);
             }
             con.Close();
-            return result;
+            return result.ToArray();
         }
 
         private static EBXInformation[] GetInitialEBXInformation()
@@ -612,12 +677,119 @@ namespace DAILibWV
             return result.ToArray();
         }
 
+        public static EBXInformation[] GetEBXInformationBySHA1(string sha1)
+        {
+            List<EBXInformation> result = new List<EBXInformation>();
+            sha1 = sha1.ToUpper();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllWhere("ebxlut", "sha1 = '" + sha1 + "' or basesha1 = '" + sha1 + "' or deltasha1 = '" + sha1 + "' ", con);
+            int count = 0;
+            while (reader.Read())
+            {
+                EBXInformation ebx = new EBXInformation();
+                ebx.ebxname = reader.GetString(1);
+                ebx.sha1 = reader.GetString(2);
+                ebx.basesha1 = reader.GetString(3);
+                ebx.deltasha1 = reader.GetString(4);
+                ebx.casPatchType = reader.GetInt32(5);
+                ebx.guid = reader.GetString(6);
+                ebx.bundlepath = reader.GetString(7);
+                ebx.offset = reader.GetInt32(8);
+                ebx.size = reader.GetInt32(9);
+                ebx.isbase = reader.GetString(10) == "True";
+                ebx.isdelta = reader.GetString(11) == "True";
+                ebx.tocfilepath = reader.GetString(12);
+                ebx.incas = reader.GetString(13) == "True";
+                switch (reader.GetString(14))
+                {
+                    default:
+                        ebx.isbasegamefile = true;
+                        break;
+                    case "u":
+                        ebx.isDLC = true;
+                        break;
+                    case "p":
+                        ebx.isPatch = true;
+                        break;
+                }
+                result.Add(ebx);
+                if (count++ % 1000 == 0)
+                    Application.DoEvents();
+            }
+            con.Close();
+            return result.ToArray();
+        }
+
+        public static RESInformation[] GetRESInformationBySHA1(string sha1)
+        {
+            List<RESInformation> result = new List<RESInformation>();
+            sha1 = sha1.ToUpper();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllJoined3Where("res", "bundles", "tocfiles", "bundle", "id", "tocfile", "id", "res.sha1='" + sha1 + "'", con);
+            int count = 0;
+            while (reader.Read())
+            {
+                RESInformation res = new RESInformation();
+                res.resname = reader.GetString(0);
+                res.sha1 = reader.GetString(1);
+                res.rtype = reader.GetString(2);
+                res.bundlepath = reader.GetString(6);
+                res.offset = reader.GetInt32(7);
+                res.size = reader.GetInt32(8);
+                res.isbase = reader.GetString(9) == "True";
+                res.isdelta = reader.GetString(10) == "True";
+                res.tocfilepath = reader.GetString(12);
+                res.incas = reader.GetString(14) == "True";
+                switch (reader.GetString(15))
+                {
+                    default:
+                        res.isbasegamefile = true;
+                        break;
+                    case "u":
+                        res.isDLC = true;
+                        break;
+                    case "p":
+                        res.isPatch = true;
+                        break;
+                }
+                result.Add(res);
+                if (count++ % 1000 == 0)
+                    Application.DoEvents();
+            }
+            con.Close();
+            return result.ToArray();
+        }
+
+
         public static TextureInformation[] GetTextureInformations()
         {
             List<TextureInformation> result = new List<TextureInformation>();
             SQLiteConnection con = GetConnection();
             con.Open();
             SQLiteDataReader reader = getAllWhere("res", "rtype = 'A654495C'", con);
+            int count = 0;
+            while (reader.Read())
+            {
+                if (count++ % 1000 == 0)
+                    Application.DoEvents();
+                TextureInformation ti = new TextureInformation();
+                ti.name = reader.GetString(0);
+                ti.sha1 = Helpers.HexStringToByteArray(reader.GetString(1));
+                ti.bundleIndex = reader.GetInt32(3);
+                result.Add(ti);
+            }
+            con.Close();
+            return result.ToArray();
+        }
+
+        public static TextureInformation[] GetTextureInformationsById(string id)
+        {
+            List<TextureInformation> result = new List<TextureInformation>();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllWhere("res", "rtype = 'A654495C' and lower(name) = '" + id.ToLower() + "'", con);
             int count = 0;
             while (reader.Read())
             {
@@ -661,11 +833,31 @@ namespace DAILibWV
             SQLiteDataReader reader = getAllWhere("chunks", "id = '" + Helpers.ByteArrayToHexString(id) + "'", con);
             if (reader.Read())
             {
+                res.id = Helpers.HexStringToByteArray(reader.GetString(0));
                 res.sha1 = Helpers.HexStringToByteArray(reader.GetString(1));
                 res.bundleIndex = reader.GetInt32(2);
             }
             con.Close();
             return res;
+        }
+
+        public static ChunkInformation[] GetChunkInformationBySHA1(string sha1)
+        {
+            sha1 = sha1.ToUpper();
+            List<ChunkInformation> res = new List<ChunkInformation>();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllWhere("chunks", "sha1 = '" + sha1 + "'", con);
+            if (reader.Read())
+            {
+                ChunkInformation ci = new ChunkInformation();
+                ci.id = Helpers.HexStringToByteArray(reader.GetString(0));
+                ci.sha1 = Helpers.HexStringToByteArray(reader.GetString(1));
+                ci.bundleIndex = reader.GetInt32(2);
+                res.Add(ci);
+            }
+            con.Close();
+            return res.ToArray();
         }
 
         #endregion

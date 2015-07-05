@@ -134,5 +134,15 @@ namespace DAIToolsWV
         {
             OpenMaxed(new FileTools.CASContainerCreator());
         }
+
+        private void textureToolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new ContentTools.TextureTool());
+        }
+
+        private void sHA1LookupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new ContentTools.SHA1Lookup());
+        }
     }
 }

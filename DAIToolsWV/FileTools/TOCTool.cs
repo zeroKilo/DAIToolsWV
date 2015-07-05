@@ -171,6 +171,71 @@ namespace DAIToolsWV.FileTools
         {
             Helpers.SelectNext(toolStripTextBox1.Text, treeView1);
         }
+
+        private void contextMenuStrip1_Paint(object sender, PaintEventArgs e)
+        {
+            TreeNode t = treeView1.SelectedNode;
+            if (t == null || t.Parent == null || t.Parent.Text != "bundles")
+            {
+                keepOnlyThisBundleToolStripMenuItem.Visible = 
+                deleteBundleToolStripMenuItem.Visible = false;
+                nOPEToolStripMenuItem.Visible = true;
+                return;
+            }
+            keepOnlyThisBundleToolStripMenuItem.Visible =
+            deleteBundleToolStripMenuItem.Visible = true;
+            nOPEToolStripMenuItem.Visible = false;
+        }
+
+        private void deleteBundleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TreeNode t = treeView1.SelectedNode;
+            if (t == null || t.Parent == null || t.Parent.Text != "bundles")
+                return;
+            int n = t.Index;
+            toc.bundles.RemoveAt(n);
+            BJSON.Entry root = toc.lines[0];
+            BJSON.Field bundles = root.fields[0];
+            List<BJSON.Entry> list = (List<BJSON.Entry>)bundles.data;
+            list.RemoveAt(n);
+            bundles.data = list;
+            RefreshTree();
+        }
+
+        private void keepOnlyThisBundleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TreeNode t = treeView1.SelectedNode;
+            if (t == null || t.Parent == null || t.Parent.Text != "bundles")
+                return;
+            int n = t.Index;
+            TOCFile.TOCBundleInfoStruct bunInfo = toc.bundles[n];
+            toc.bundles.Clear();
+            toc.bundles.Add(bunInfo);
+            BJSON.Entry root = toc.lines[0];
+            BJSON.Field bundles = root.fields[0];
+            List<BJSON.Entry> list = (List<BJSON.Entry>)bundles.data;
+            BJSON.Entry entry = list[n];
+            list.Clear();
+            list.Add(entry);
+            bundles.data = list;
+            RefreshTree();
+        }
+
+        private void expandAllSubNodesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TreeNode t = treeView1.SelectedNode;
+            if (t == null)
+                return;
+            Debug.LockWindowUpdate(treeView1.Handle);
+            t.ExpandAll();
+            Debug.LockWindowUpdate(System.IntPtr.Zero);
+        }
+
+        private void toolStripTextBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)
+                Helpers.SelectNext(toolStripTextBox1.Text, treeView1);
+        }
     }
     
 }

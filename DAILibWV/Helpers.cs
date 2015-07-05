@@ -532,6 +532,7 @@ namespace DAILibWV
 
         public static void SelectNext(string text, TreeView tree)
         {
+            text = text.ToLower();
             TreeNode t = tree.SelectedNode;
             if (t == null && tree.Nodes.Count != 0)
                 t = tree.Nodes[0];
@@ -571,7 +572,7 @@ namespace DAILibWV
         {
             foreach (TreeNode t2 in t.Nodes)
             {
-                if (t2.Text.Contains(text))
+                if (t2.Text.ToLower().Contains(text))
                     return t2;
                 if (t2.Nodes.Count != 0)
                 {

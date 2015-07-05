@@ -28,16 +28,23 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TOCTool));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openSingleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteBundleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.keepOnlyThisBundleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nOPEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.expandAllSubNodesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -77,6 +84,7 @@
             // 
             // treeView1
             // 
+            this.treeView1.ContextMenuStrip = this.contextMenuStrip1;
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.treeView1.HideSelection = false;
@@ -85,6 +93,46 @@
             this.treeView1.Size = new System.Drawing.Size(583, 463);
             this.treeView1.TabIndex = 2;
             this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteBundleToolStripMenuItem,
+            this.keepOnlyThisBundleToolStripMenuItem,
+            this.nOPEToolStripMenuItem,
+            this.expandAllSubNodesToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(177, 92);
+            this.contextMenuStrip1.Paint += new System.Windows.Forms.PaintEventHandler(this.contextMenuStrip1_Paint);
+            // 
+            // deleteBundleToolStripMenuItem
+            // 
+            this.deleteBundleToolStripMenuItem.Name = "deleteBundleToolStripMenuItem";
+            this.deleteBundleToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.deleteBundleToolStripMenuItem.Text = "Delete bundle";
+            this.deleteBundleToolStripMenuItem.Visible = false;
+            this.deleteBundleToolStripMenuItem.Click += new System.EventHandler(this.deleteBundleToolStripMenuItem_Click);
+            // 
+            // keepOnlyThisBundleToolStripMenuItem
+            // 
+            this.keepOnlyThisBundleToolStripMenuItem.Name = "keepOnlyThisBundleToolStripMenuItem";
+            this.keepOnlyThisBundleToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.keepOnlyThisBundleToolStripMenuItem.Text = "Keep only this bundle";
+            this.keepOnlyThisBundleToolStripMenuItem.Visible = false;
+            this.keepOnlyThisBundleToolStripMenuItem.Click += new System.EventHandler(this.keepOnlyThisBundleToolStripMenuItem_Click);
+            // 
+            // nOPEToolStripMenuItem
+            // 
+            this.nOPEToolStripMenuItem.Name = "nOPEToolStripMenuItem";
+            this.nOPEToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.nOPEToolStripMenuItem.Text = "N.O.P.E.";
+            // 
+            // expandAllSubNodesToolStripMenuItem
+            // 
+            this.expandAllSubNodesToolStripMenuItem.Name = "expandAllSubNodesToolStripMenuItem";
+            this.expandAllSubNodesToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.expandAllSubNodesToolStripMenuItem.Text = "Expand all sub nodes";
+            this.expandAllSubNodesToolStripMenuItem.Click += new System.EventHandler(this.expandAllSubNodesToolStripMenuItem_Click);
             // 
             // toolStrip1
             // 
@@ -101,6 +149,7 @@
             // 
             this.toolStripTextBox1.Name = "toolStripTextBox1";
             this.toolStripTextBox1.Size = new System.Drawing.Size(300, 25);
+            this.toolStripTextBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.toolStripTextBox1_KeyPress);
             // 
             // toolStripButton1
             // 
@@ -125,6 +174,7 @@
             this.Text = "TOC Tool";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -142,5 +192,10 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox1;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem deleteBundleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem keepOnlyThisBundleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nOPEToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem expandAllSubNodesToolStripMenuItem;
     }
 }

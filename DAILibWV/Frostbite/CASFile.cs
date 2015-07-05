@@ -76,7 +76,7 @@ namespace DAILibWV.Frostbite
             result.padding = Helpers.ReadUInt(s);
             long totalread = 0;
             MemoryStream res = new MemoryStream();
-            while (totalread < result.datasize && totalread < maxsize)
+            while (totalread < result.datasize && totalread < maxsize && totalread < size_)
             {
                 int ucsize = Helpers.ReadLEInt(s);
                 int csize = Helpers.ReadLEInt(s);
