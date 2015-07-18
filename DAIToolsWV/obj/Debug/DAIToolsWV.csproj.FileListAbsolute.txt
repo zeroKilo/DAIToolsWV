@@ -74,3 +74,4 @@ D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ContentTools.EBXTool.r
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.FileTools.CASContainerCreator.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ContentTools.TextureTool.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ContentTools.SHA1Lookup.resources
+D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ModTools.ModEditor.resources

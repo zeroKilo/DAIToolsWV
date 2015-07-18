@@ -178,6 +178,8 @@ namespace DAIToolsWV.ContentTools
                 MemoryStream m = new MemoryStream();
                 tmr.WriteTextureHeader(m);
                 m.Write(texdata, 0, texdata.Length);
+                if (!Directory.Exists("tmp"))
+                    Directory.CreateDirectory("tmp");
                 File.WriteAllBytes("tmp\\tmp.dds", m.ToArray());
                 try
                 {
@@ -202,6 +204,97 @@ namespace DAIToolsWV.ContentTools
                 pb1.SizeMode = PictureBoxSizeMode.StretchImage;
             else
                 pb1.SizeMode = PictureBoxSizeMode.Normal;
+        }
+
+        private void createSingleModToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int n = listBox1.SelectedIndex;
+            if (n == -1)
+                return;
+            MessageBox.Show("Please select replacement texture (same size)");
+            OpenFileDialog d = new OpenFileDialog();
+            d.Filter = "*.dds|*.dds";
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                byte[] data = File.ReadAllBytes(d.FileName);
+                MessageBox.Show("Please select mod save location");
+                SaveFileDialog d2 = new SaveFileDialog();
+                d2.Filter = "*.DAIMWV|*.DAIMWV";
+                if (d2.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    Mod mod = new Mod();
+                    mod.jobs = new List<Mod.ModJob>();
+                    Mod.ModJob mj = new Mod.ModJob();
+                    mj.type = 0;
+                    mj.paths = new List<string>();
+                    DBAccess.BundleInformation buni = bil[n];
+                    DBAccess.TextureInformation ti = new DBAccess.TextureInformation();
+                    foreach (DBAccess.TextureInformation t in til)
+                        if (t.bundleIndex == buni.index)
+                            ti = t;
+                    mj.respath = ti.name;
+                    mj.paths.Add(buni.bundlepath);
+                    MemoryStream m = new MemoryStream();
+                    m.Write(data, 0x80, data.Length - 0x80);
+                    mj.data = m.ToArray();
+                    mod.jobs.Add(mj);
+                    mod.Save(d2.FileName);
+                    MessageBox.Show("Done.");
+                }
+            }
+        }
+
+        private void createForAllDupsModToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Please select replacement texture (same size)");
+            OpenFileDialog d = new OpenFileDialog();
+            d.Filter = "*.dds|*.dds";
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                byte[] data = File.ReadAllBytes(d.FileName);
+                MessageBox.Show("Please select mod save location");
+                SaveFileDialog d2 = new SaveFileDialog();
+                d2.Filter = "*.DAIMWV|*.DAIMWV";
+                if (d2.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    Mod mod = new Mod();
+                    mod.jobs = new List<Mod.ModJob>();
+                    Mod.ModJob mj = new Mod.ModJob();
+                    mj.type = 0;                   
+                    mj.paths = new List<string>();
+                    for (int i = 0; i < bil.Length; i++)
+                    {
+                        DBAccess.BundleInformation buni = bil[i];
+                        DBAccess.TextureInformation ti = new DBAccess.TextureInformation();
+                        foreach (DBAccess.TextureInformation t in til)
+                            if (t.bundleIndex == buni.index)
+                                ti = t;
+                        mj.respath = ti.name;
+                        mj.paths.Add(buni.bundlepath);
+                    }
+                    MemoryStream m = new MemoryStream();
+                    m.Write(data, 0x80, data.Length - 0x80);
+                    mj.data = m.ToArray();
+                    mod.jobs.Add(mj);
+                    mod.Save(d2.FileName);
+                    MessageBox.Show("Done.");
+                }
+            }
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            if (File.Exists("tmp\\tmp.dds"))
+            {
+                SaveFileDialog d = new SaveFileDialog();
+                d.Filter = "*.dds|*.dds";
+                d.FileName = Path.GetFileName(toolStripTextBox1.Text.Replace("/", "\\")) + ".dds";
+                if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    File.Copy("tmp\\tmp.dds", d.FileName, true);
+                    MessageBox.Show("Done.");
+                }
+            }
         }
     }
 }

@@ -804,6 +804,8 @@ namespace DAIToolsWV
                 Application.DoEvents();
                 hb3.ByteProvider = new DynamicByteProvider(new byte[0]);
                 hb3.BringToFront();
+                if (!Directory.Exists("tmp"))
+                    Directory.CreateDirectory("tmp");
                 if (File.Exists("tmp\\tmp.dds"))
                     File.Delete("tmp\\tmp.dds");
                 DBAccess.TextureInformation ti = ttprevlist[n];

@@ -44,8 +44,10 @@ namespace DAIToolsWV
             this.contentToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eBXToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sHA1LookupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,6 +57,7 @@ namespace DAIToolsWV
             this.fileToolsToolStripMenuItem,
             this.generalToolsToolStripMenuItem,
             this.contentToolsToolStripMenuItem,
+            this.modToolsToolStripMenuItem,
             this.rESETALLToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -145,16 +148,23 @@ namespace DAIToolsWV
             // eBXToolToolStripMenuItem
             // 
             this.eBXToolToolStripMenuItem.Name = "eBXToolToolStripMenuItem";
-            this.eBXToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.eBXToolToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.eBXToolToolStripMenuItem.Text = "EBX Tool";
             this.eBXToolToolStripMenuItem.Click += new System.EventHandler(this.eBXToolToolStripMenuItem_Click);
             // 
             // textureToolToolStripMenuItem
             // 
             this.textureToolToolStripMenuItem.Name = "textureToolToolStripMenuItem";
-            this.textureToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.textureToolToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.textureToolToolStripMenuItem.Text = "Texture Tool";
             this.textureToolToolStripMenuItem.Click += new System.EventHandler(this.textureToolToolStripMenuItem_Click);
+            // 
+            // sHA1LookupToolStripMenuItem
+            // 
+            this.sHA1LookupToolStripMenuItem.Name = "sHA1LookupToolStripMenuItem";
+            this.sHA1LookupToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.sHA1LookupToolStripMenuItem.Text = "SHA1 Lookup";
+            this.sHA1LookupToolStripMenuItem.Click += new System.EventHandler(this.sHA1LookupToolStripMenuItem_Click);
             // 
             // rESETALLToolStripMenuItem
             // 
@@ -164,12 +174,20 @@ namespace DAIToolsWV
             this.rESETALLToolStripMenuItem.Text = "RESET ALL";
             this.rESETALLToolStripMenuItem.Click += new System.EventHandler(this.rESETALLToolStripMenuItem_Click);
             // 
-            // sHA1LookupToolStripMenuItem
+            // modToolsToolStripMenuItem
             // 
-            this.sHA1LookupToolStripMenuItem.Name = "sHA1LookupToolStripMenuItem";
-            this.sHA1LookupToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.sHA1LookupToolStripMenuItem.Text = "SHA1 Lookup";
-            this.sHA1LookupToolStripMenuItem.Click += new System.EventHandler(this.sHA1LookupToolStripMenuItem_Click);
+            this.modToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.modEditorToolStripMenuItem});
+            this.modToolsToolStripMenuItem.Name = "modToolsToolStripMenuItem";
+            this.modToolsToolStripMenuItem.Size = new System.Drawing.Size(67, 20);
+            this.modToolsToolStripMenuItem.Text = "Mod Tools";
+            // 
+            // modEditorToolStripMenuItem
+            // 
+            this.modEditorToolStripMenuItem.Name = "modEditorToolStripMenuItem";
+            this.modEditorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.modEditorToolStripMenuItem.Text = "Mod Editor";
+            this.modEditorToolStripMenuItem.Click += new System.EventHandler(this.modEditorToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -207,6 +225,8 @@ namespace DAIToolsWV
         private ToolStripMenuItem cASContainerCreatorToolStripMenuItem;
         private ToolStripMenuItem textureToolToolStripMenuItem;
         private ToolStripMenuItem sHA1LookupToolStripMenuItem;
+        private ToolStripMenuItem modToolsToolStripMenuItem;
+        private ToolStripMenuItem modEditorToolStripMenuItem;
     }
 }
 
