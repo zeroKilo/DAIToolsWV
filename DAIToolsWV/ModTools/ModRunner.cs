@@ -100,9 +100,10 @@ namespace DAIToolsWV.ModTools
             {
                 case 0:
                     sb.AppendLine("Affected ressource path: " + mj.respath);
-                    sb.AppendLine("Affected bundle paths (" + mj.paths.Count + "):");
-                    foreach (string p in mj.paths)
-                        sb.AppendLine("\tBundle: " + p);
+                    sb.AppendLine("Affected bundle paths (" + mj.bundlePaths.Count + "):");
+                    int count = 0;
+                    foreach (string p in mj.bundlePaths)
+                        sb.AppendLine("\t" + mj.tocPaths[count++] + " -> " + p);
                     break;
                 default:
                     return;

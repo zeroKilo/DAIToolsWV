@@ -14,7 +14,8 @@ namespace DAILibWV
         {
             public int type;//0 = texture replacement
             public string respath;
-            public List<string> paths;
+            public List<string> bundlePaths;
+            public List<string> tocPaths;
             public byte[] data;
         }
 
@@ -98,13 +99,21 @@ namespace DAILibWV
                     mj.data = dataList[index];
                     r.ReadToFollowing("respath");
                     mj.respath = r.ReadElementContentAsString();
-                    r.ReadToFollowing("bundlecount");
+                    r.ReadToFollowing("count");
                     int count = Convert.ToInt32(r.ReadElementContentAsString());
-                    mj.paths = new List<string>();
+                    r.ReadToFollowing("bundles");
+                    mj.bundlePaths = new List<string>();
                     for (int i = 0; i < count; i++)
                     {
                         r.ReadToFollowing("path");
-                        mj.paths.Add(r.ReadElementContentAsString());
+                        mj.bundlePaths.Add(r.ReadElementContentAsString());
+                    }
+                    r.ReadToFollowing("tocfiles");
+                    mj.tocPaths = new List<string>();
+                    for (int i = 0; i < count; i++)
+                    {
+                        r.ReadToFollowing("path");
+                        mj.tocPaths.Add(r.ReadElementContentAsString());
                     }
                     break;
             }
@@ -162,9 +171,13 @@ namespace DAILibWV
                     case 0:
                         w.WriteElementString("dataindex", (datacount++).ToString());
                         w.WriteElementString("respath", mj.respath);
-                        w.WriteElementString("bundlecount", mj.paths.Count.ToString());
+                        w.WriteElementString("count", mj.bundlePaths.Count.ToString());
                         w.WriteStartElement("bundles");
-                        foreach (string p in mj.paths)
+                        foreach (string p in mj.bundlePaths)
+                            w.WriteElementString("path", p);
+                        w.WriteFullEndElement();                        
+                        w.WriteStartElement("tocfiles");
+                        foreach (string p in mj.tocPaths)
                             w.WriteElementString("path", p);
                         w.WriteFullEndElement();
                         break;

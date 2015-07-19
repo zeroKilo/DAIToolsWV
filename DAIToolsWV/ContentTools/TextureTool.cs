@@ -226,14 +226,18 @@ namespace DAIToolsWV.ContentTools
                     mod.jobs = new List<Mod.ModJob>();
                     Mod.ModJob mj = new Mod.ModJob();
                     mj.type = 0;
-                    mj.paths = new List<string>();
+                    mj.bundlePaths = new List<string>();
+                    mj.tocPaths = new List<string>();
+                    int plen = GlobalStuff.FindSetting("gamepath").Length;
                     DBAccess.BundleInformation buni = bil[n];
                     DBAccess.TextureInformation ti = new DBAccess.TextureInformation();
                     foreach (DBAccess.TextureInformation t in til)
                         if (t.bundleIndex == buni.index)
                             ti = t;
+                    DBAccess.TOCInformation toci = DBAccess.GetTocInformationByIndex(buni.tocIndex);
                     mj.respath = ti.name;
-                    mj.paths.Add(buni.bundlepath);
+                    mj.bundlePaths.Add(buni.bundlepath);
+                    mj.tocPaths.Add(toci.path.Substring(plen, toci.path.Length - plen));
                     MemoryStream m = new MemoryStream();
                     m.Write(data, 0x80, data.Length - 0x80);
                     mj.data = m.ToArray();
@@ -260,8 +264,10 @@ namespace DAIToolsWV.ContentTools
                     Mod mod = new Mod();
                     mod.jobs = new List<Mod.ModJob>();
                     Mod.ModJob mj = new Mod.ModJob();
-                    mj.type = 0;                   
-                    mj.paths = new List<string>();
+                    mj.type = 0;
+                    mj.bundlePaths = new List<string>();
+                    mj.tocPaths = new List<string>();
+                    int plen = GlobalStuff.FindSetting("gamepath").Length;
                     for (int i = 0; i < bil.Length; i++)
                     {
                         DBAccess.BundleInformation buni = bil[i];
@@ -269,8 +275,10 @@ namespace DAIToolsWV.ContentTools
                         foreach (DBAccess.TextureInformation t in til)
                             if (t.bundleIndex == buni.index)
                                 ti = t;
+                        DBAccess.TOCInformation toci = DBAccess.GetTocInformationByIndex(buni.tocIndex);
                         mj.respath = ti.name;
-                        mj.paths.Add(buni.bundlepath);
+                        mj.bundlePaths.Add(buni.bundlepath);
+                        mj.tocPaths.Add(toci.path.Substring(plen, toci.path.Length - plen));
                     }
                     MemoryStream m = new MemoryStream();
                     m.Write(data, 0x80, data.Length - 0x80);
