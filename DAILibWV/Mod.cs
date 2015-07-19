@@ -22,6 +22,17 @@ namespace DAILibWV
         public List<ModJob> jobs;
         public static readonly int currVersion = 1;
 
+        public string GetTypeName(int type)
+        {
+            switch (type)
+            {
+                case 0:
+                    return "Texture Mod";
+                default:
+                    return "Unknown Modtype";
+            }
+        }
+
         public void Load(string path)
         {
             Load(File.ReadAllBytes(path));
@@ -123,7 +134,7 @@ namespace DAILibWV
             return m.ToArray();
         }
 
-        private void CreateHeader()
+        public void CreateHeader()
         {
             StringWriter sw = new StringWriter();
             XmlTextWriter w = new XmlTextWriter(sw);

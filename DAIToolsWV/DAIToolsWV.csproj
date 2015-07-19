@@ -159,6 +159,12 @@
     <Compile Include="ModTools\ModEditor.Designer.cs">
       <DependentUpon>ModEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="ModTools\ModRunner.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModTools\ModRunner.Designer.cs">
+      <DependentUpon>ModRunner.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ContentBrowser.resx">
@@ -209,6 +215,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ModTools\ModEditor.resx">
       <DependentUpon>ModEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModTools\ModRunner.resx">
+      <DependentUpon>ModRunner.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

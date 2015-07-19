@@ -149,5 +149,10 @@ namespace DAIToolsWV
         {
             OpenMaxed(new ModTools.ModEditor());
         }
+
+        private void modRunnerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new ModTools.ModRunner());
+        }
     }
 }

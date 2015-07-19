@@ -45,9 +45,10 @@ namespace DAIToolsWV
             this.eBXToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sHA1LookupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -166,18 +167,11 @@ namespace DAIToolsWV
             this.sHA1LookupToolStripMenuItem.Text = "SHA1 Lookup";
             this.sHA1LookupToolStripMenuItem.Click += new System.EventHandler(this.sHA1LookupToolStripMenuItem_Click);
             // 
-            // rESETALLToolStripMenuItem
-            // 
-            this.rESETALLToolStripMenuItem.ForeColor = System.Drawing.Color.Red;
-            this.rESETALLToolStripMenuItem.Name = "rESETALLToolStripMenuItem";
-            this.rESETALLToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
-            this.rESETALLToolStripMenuItem.Text = "RESET ALL";
-            this.rESETALLToolStripMenuItem.Click += new System.EventHandler(this.rESETALLToolStripMenuItem_Click);
-            // 
             // modToolsToolStripMenuItem
             // 
             this.modToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.modEditorToolStripMenuItem});
+            this.modEditorToolStripMenuItem,
+            this.modRunnerToolStripMenuItem});
             this.modToolsToolStripMenuItem.Name = "modToolsToolStripMenuItem";
             this.modToolsToolStripMenuItem.Size = new System.Drawing.Size(67, 20);
             this.modToolsToolStripMenuItem.Text = "Mod Tools";
@@ -188,6 +182,21 @@ namespace DAIToolsWV
             this.modEditorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.modEditorToolStripMenuItem.Text = "Mod Editor";
             this.modEditorToolStripMenuItem.Click += new System.EventHandler(this.modEditorToolStripMenuItem_Click);
+            // 
+            // rESETALLToolStripMenuItem
+            // 
+            this.rESETALLToolStripMenuItem.ForeColor = System.Drawing.Color.Red;
+            this.rESETALLToolStripMenuItem.Name = "rESETALLToolStripMenuItem";
+            this.rESETALLToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
+            this.rESETALLToolStripMenuItem.Text = "RESET ALL";
+            this.rESETALLToolStripMenuItem.Click += new System.EventHandler(this.rESETALLToolStripMenuItem_Click);
+            // 
+            // modRunnerToolStripMenuItem
+            // 
+            this.modRunnerToolStripMenuItem.Name = "modRunnerToolStripMenuItem";
+            this.modRunnerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.modRunnerToolStripMenuItem.Text = "Mod Runner";
+            this.modRunnerToolStripMenuItem.Click += new System.EventHandler(this.modRunnerToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -227,6 +236,7 @@ namespace DAIToolsWV
         private ToolStripMenuItem sHA1LookupToolStripMenuItem;
         private ToolStripMenuItem modToolsToolStripMenuItem;
         private ToolStripMenuItem modEditorToolStripMenuItem;
+        private ToolStripMenuItem modRunnerToolStripMenuItem;
     }
 }
 

@@ -59,5 +59,36 @@ namespace DAIToolsWV.ModTools
                 return;
             hb1.ByteProvider = new DynamicByteProvider(dataList[n]);
         }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (mod == null)
+                return;
+            OpenFileDialog d = new OpenFileDialog();
+            d.Filter = "*.DAIMWV|*.DAIMWV";
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                Mod mi = new Mod();
+                mi.Load(d.FileName);
+                foreach (Mod.ModJob mj in mi.jobs)
+                    mod.jobs.Add(mj);
+                mod.CreateHeader();
+                RefreshMe();
+                MessageBox.Show("Done.");
+            }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (mod == null)
+                return;
+            SaveFileDialog d = new SaveFileDialog();
+            d.Filter = "*.DAIMWV|*.DAIMWV";
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                mod.Save(d.FileName);
+                MessageBox.Show("Done.");
+            }
+        }
     }
 }
