@@ -104,7 +104,7 @@ namespace DAILibWV
 
         public static SQLiteConnection GetConnection()
         {
-            return new SQLiteConnection("Data Source=" + dbpath + ";Version=3;");
+            return new SQLiteConnection("Data Source=" + dbpath + ";Version=3;Compress=True;");
         }
 
         public static long GetLastRowId(SQLiteConnection con)
@@ -268,11 +268,9 @@ namespace DAILibWV
         public static void ClearBundlesdb(SQLiteConnection con)
         {
             SQLCommand("DROP TABLE IF EXISTS bundles", con);
-            SQLCommand("DROP TABLE IF EXISTS ebx", con);
             SQLCommand("DROP TABLE IF EXISTS res", con);
             SQLCommand("DROP TABLE IF EXISTS chunks", con);
             SQLCommand("CREATE TABLE bundles (id INTEGER PRIMARY KEY AUTOINCREMENT, tocfile INTEGER, frostid TEXT, offset INT, size INT, base TEXT, delta TEXT, FOREIGN KEY (tocfile) REFERENCES tocfiles (id))", con);
-            SQLCommand("CREATE TABLE ebx (name TEXT, sha1 TEXT, basesha1 TEXT, deltasha1 TEXT, ptype INT, bundle INT, guid TEXT, FOREIGN KEY (bundle) REFERENCES bundles (id))", con);
             SQLCommand("CREATE TABLE res (name TEXT, sha1 TEXT, rtype TEXT, bundle INT, FOREIGN KEY (bundle) REFERENCES bundles (id))", con);
             SQLCommand("CREATE TABLE chunks (id TEXT, sha1 TEXT, bundle INT, FOREIGN KEY (bundle) REFERENCES bundles (id))", con);
         }
@@ -324,12 +322,6 @@ namespace DAILibWV
             SQLCommand("INSERT INTO casfiles VALUES ('" + path + "','" + type + "')", con);
         }
 
-        public static void AddEBXFile(string name, byte[] sha1, byte[] basesha1, byte[] deltasha1, int casPatchType, int bundleid, string guid, SQLiteConnection con)
-        {
-            name = name.Replace("'", "");//lolfix
-            SQLCommand("INSERT INTO ebx VALUES ('" + name + "','" + Helpers.ByteArrayToHexString(sha1) + "','" + Helpers.ByteArrayToHexString(basesha1) + "','" + Helpers.ByteArrayToHexString(deltasha1) + "'," + casPatchType + "," + bundleid + ", '" + guid + "')", con);
-        }
-
         public static void AddRESFile(string name, byte[] sha1, byte[] rtype, int bundleid, SQLiteConnection con)
         {
             name = name.Replace("'", "");//lolfix
@@ -343,20 +335,104 @@ namespace DAILibWV
 
         public static void AddBundle(int tocid, bool incas, Bundle b, TOCFile.TOCBundleInfoStruct info, SQLiteConnection con)
         {
-            Debug.LogLn(" EBX:" + b.ebx.Count + " RES:" + b.res.Count + " CHUNK:" + b.chunk.Count, false);
+            Debug.LogLn(" EBX:" + b.ebx.Count + " RES:" + b.res.Count + " CHUNK:" + b.chunk.Count, true);
             SQLCommand("INSERT INTO bundles (tocfile, frostid, offset, size, base, delta) VALUES (" + tocid + ",'" + info.id + "'," + info.offset + ", " + info.size + ", '" + info.isbase + "', '" + info.isdelta + "' )", con);
             int bundleid = (int)GetLastRowId(con);
+            TOCInformation toci = GetTocInformationByIndex(tocid);
+            var transaction = con.BeginTransaction();
+            int counter = 0;
             if (b.ebx != null)
                 foreach (Bundle.ebxtype ebx in b.ebx)
-                    if (ebx.name != null && ebx.originalSize != null && ebx.size != null)
-                        AddEBXFile(ebx.name, ebx.Sha1, ebx.baseSha1, ebx.deltaSha1, ebx.casPatchType, bundleid, "", con);
+                    try
+                    {
+                        if (ebx.name != null && ebx.originalSize != null && ebx.size != null)
+                        {
+                            EBXInformation inf = new EBXInformation();
+                            inf.basesha1 = Helpers.ByteArrayToHexString(ebx.baseSha1);
+                            inf.bundlepath = b.path;
+                            inf.casPatchType = ebx.casPatchType;
+                            inf.deltasha1 = Helpers.ByteArrayToHexString(ebx.deltaSha1);
+                            inf.ebxname = ebx.name;
+                            inf.incas = incas;
+                            inf.isbase = info.isbase;
+                            inf.isdelta = info.isdelta;
+                            if (toci.type == TYPE_BASEGAME)
+                                inf.isbasegamefile = true;
+                            if (toci.type == TYPE_UPDATE)
+                                inf.isDLC = true;
+                            if (toci.type == TYPE_PATCH)
+                                inf.isPatch = true;
+                            inf.offset = info.offset;
+                            inf.sha1 = Helpers.ByteArrayToHexString(ebx.Sha1);
+                            inf.size = info.size;
+                            inf.tocfilepath = toci.path;
+                            byte[] data = new byte[0];
+                            if (inf.incas)
+                                data = SHA1Access.GetDataBySha1(ebx.Sha1, 0x38);
+                            else
+                            {
+                                BinaryBundle bb = null;
+                                foreach (AddEBXHelpStruct h in aehelp)
+                                    if (h.tocpath == inf.tocfilepath && h.bpath == inf.bundlepath)
+                                    {
+                                        bb = h.b;
+                                        break;
+                                    }
+                                if (bb == null)
+                                {
+                                    TOCFile toc = new TOCFile(inf.tocfilepath);
+                                    byte[] bundledata = toc.ExportBundleDataByPath(inf.bundlepath);
+                                    bb = new BinaryBundle(new MemoryStream(bundledata));
+                                    AddEBXHelpStruct h = new AddEBXHelpStruct();
+                                    h.tocpath = inf.tocfilepath;
+                                    h.bpath = inf.bundlepath;
+                                    h.b = bb;
+                                    if (aehelp.Count > 10)
+                                        aehelp.RemoveAt(0);
+                                }
+                                foreach (BinaryBundle.EbxEntry ebx2 in bb.EbxList)
+                                    if (inf.ebxname == ebx2._name)
+                                        data = ebx2._data;
+                            }
+                            inf.guid = Helpers.ByteArrayToHexString(data, 0x28, 0x10);
+                            AddEBXLUTFile(inf, con);
+                            if ((counter++) % 100 == 0)
+                            {
+                                transaction.Commit();
+                                transaction = con.BeginTransaction();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+            transaction.Commit();
+            transaction = con.BeginTransaction();
             if (b.res != null)
                 foreach (Bundle.restype res in b.res)
-                    if (res.name != null)
-                        AddRESFile(res.name, res.SHA1, res.rtype, bundleid, con);
+                    try
+                    {
+                        if (res.name != null)
+                            AddRESFile(res.name, res.SHA1, res.rtype, bundleid, con);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+            transaction.Commit();
+            transaction = con.BeginTransaction();
             if (b.chunk != null)
                 foreach (Bundle.chunktype chunk in b.chunk)
-                    AddChunk(chunk.id, chunk.SHA1, bundleid, con);
+                    try
+                    {
+                        AddChunk(chunk.id, chunk.SHA1, bundleid, con);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+            transaction.Commit();
         }
 
         private struct AddEBXHelpStruct
@@ -406,7 +482,7 @@ namespace DAILibWV
             }
             guid = Helpers.ByteArrayToHexString(data, 0x28, 0x10);
             SQLCommand("INSERT INTO ebxlut (path,sha1,basesha1,deltasha1,casptype,guid,bundlepath,offset,size,isbase,isdelta,tocpath,incas,filetype) VALUES ('"
-                + ebx.ebxname + "','"
+                + ebx.ebxname.Replace("'","''") + "','"
                 + ebx.sha1 + "','"
                 + ebx.basesha1 + "','"
                 + ebx.deltasha1 + "',"
@@ -581,50 +657,6 @@ namespace DAILibWV
                         break;
                 }
                 result.Add(bi);
-            }
-            con.Close();
-            return result.ToArray();
-        }
-
-        private static EBXInformation[] GetInitialEBXInformation()
-        {
-            List<EBXInformation> result = new List<EBXInformation>();
-            SQLiteConnection con = GetConnection();
-            con.Open();
-            Debug.LogLn("Generating sorted ebx lookup table, this takes a while and freezes the program in the meantime,\n thats normal, please stand by...");
-            SQLiteDataReader reader =
-                getAllJoined3("ebx", "bundles", "tocfiles", "bundle", "id", "tocfile", "id", con, "ebx.name");
-            int count = 0;
-            while (reader.Read())
-            {
-                if (count++ % 10000 == 0)
-                    Debug.LogLn("Read " + (count - 1) + " ebx...");
-                EBXInformation ebx = new EBXInformation();
-                ebx.ebxname = reader.GetString(0).ToLower();
-                ebx.sha1 = reader.GetString(1);
-                ebx.basesha1 = reader.GetString(2);
-                ebx.deltasha1 = reader.GetString(3);
-                ebx.casPatchType = reader.GetInt32(4);
-                ebx.bundlepath = reader.GetString(9);
-                ebx.offset = reader.GetInt32(10);
-                ebx.size = reader.GetInt32(11);
-                ebx.isbase = reader.GetString(12) == "True";
-                ebx.isdelta = reader.GetString(13) == "True";
-                ebx.tocfilepath = reader.GetString(15);
-                ebx.incas = reader.GetString(17) == "True";
-                switch (reader.GetString(18))
-                {
-                    case "b":
-                        ebx.isbasegamefile = true;
-                        break;
-                    case "u":
-                        ebx.isDLC = true;
-                        break;
-                    case "p":
-                        ebx.isPatch = true;
-                        break;
-                }
-                result.Add(ebx);
             }
             con.Close();
             return result.ToArray();
@@ -876,7 +908,6 @@ namespace DAILibWV
                 SaveSettings();
                 ScanFiles();
                 ScanTOCsForBundles();
-                PrepareEbxLookup();
             }
             catch (Exception ex)
             {
@@ -940,7 +971,7 @@ namespace DAILibWV
                 Debug.LogLn("Opening " + file + " ...");
                 TOCFile tocfile = new TOCFile(file);
                 int counter2 = 0;
-                var transaction = con.BeginTransaction();
+                
                 foreach (TOCFile.TOCBundleInfoStruct info in tocfile.bundles)
                 {
                     counter2++;
@@ -976,12 +1007,11 @@ namespace DAILibWV
                     if (info.isbase) log += "ISBASEG ";
                     if (info.isdelta) log += "ISDELTA ";
                     log += "ID: " + info.id;
-                    Debug.Log(log, counter2 % 100 == 0);
+                    Debug.Log(log, true);
                     AddBundle(fileids[counter - 1], tocfile.iscas, b, info, con);
                 }
-                transaction.Commit();
                 counter2 = 0;
-                transaction = con.BeginTransaction();
+                var transaction = con.BeginTransaction();
                 foreach (TOCFile.TOCChunkInfoStruct info in tocfile.chunks)
                 {
                     AddGlobalChunk(fileids[counter - 1], info.id, info.sha1, info.offset, info.size, con);
@@ -999,29 +1029,6 @@ namespace DAILibWV
                 TimeSpan ETAt = TimeSpan.FromMilliseconds(ETA);
                 Debug.LogLn((counter) + "/" + files.Count + " files done." + " - Elapsed: " + sp.Elapsed.ToString() + " ETA: " + ETAt.ToString());
             }
-            con.Close();
-        }
-
-        private static void PrepareEbxLookup()
-        {
-            EBXInformation[] list = GetInitialEBXInformation();
-            int count = 0;
-            aehelp = new List<AddEBXHelpStruct>();
-            SQLiteConnection con = GetConnection();
-            con.Open();
-            var transaction = con.BeginTransaction();
-            foreach (EBXInformation ebx in list)
-            {
-                AddEBXLUTFile(ebx, con);
-                if (count % 1000 == 0)
-                {
-                    transaction.Commit();
-                    Debug.LogLn("Saving ebx lookup table...(" + count + " / " + list.Length + ")", true);
-                    transaction = con.BeginTransaction();
-                }
-                count++;
-            }
-            transaction.Commit();
             con.Close();
         }
 
