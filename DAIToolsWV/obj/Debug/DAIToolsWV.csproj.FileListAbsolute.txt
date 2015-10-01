@@ -76,3 +76,4 @@ D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ContentTools.TextureTo
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ContentTools.SHA1Lookup.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ModTools.ModEditor.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ModTools.ModRunner.resources
+D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.FileTools.BundleBuilder.resources

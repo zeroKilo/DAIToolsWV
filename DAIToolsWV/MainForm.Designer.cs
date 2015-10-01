@@ -37,6 +37,7 @@ namespace DAIToolsWV
             this.sBToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mFTToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.initFsToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bundleBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contentBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hexToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,8 +48,8 @@ namespace DAIToolsWV
             this.sHA1LookupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,7 +73,8 @@ namespace DAIToolsWV
             this.tOCToolToolStripMenuItem,
             this.sBToolToolStripMenuItem,
             this.mFTToolToolStripMenuItem,
-            this.initFsToolToolStripMenuItem});
+            this.initFsToolToolStripMenuItem,
+            this.bundleBuilderToolStripMenuItem});
             this.fileToolsToolStripMenuItem.Name = "fileToolsToolStripMenuItem";
             this.fileToolsToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.fileToolsToolStripMenuItem.Text = "File Tools";
@@ -80,30 +82,37 @@ namespace DAIToolsWV
             // tOCToolToolStripMenuItem
             // 
             this.tOCToolToolStripMenuItem.Name = "tOCToolToolStripMenuItem";
-            this.tOCToolToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.tOCToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.tOCToolToolStripMenuItem.Text = "TOC Tool";
             this.tOCToolToolStripMenuItem.Click += new System.EventHandler(this.tOCToolToolStripMenuItem_Click);
             // 
             // sBToolToolStripMenuItem
             // 
             this.sBToolToolStripMenuItem.Name = "sBToolToolStripMenuItem";
-            this.sBToolToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.sBToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.sBToolToolStripMenuItem.Text = "SB Tool";
             this.sBToolToolStripMenuItem.Click += new System.EventHandler(this.sBToolToolStripMenuItem_Click);
             // 
             // mFTToolToolStripMenuItem
             // 
             this.mFTToolToolStripMenuItem.Name = "mFTToolToolStripMenuItem";
-            this.mFTToolToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.mFTToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.mFTToolToolStripMenuItem.Text = "MFT Tool";
             this.mFTToolToolStripMenuItem.Click += new System.EventHandler(this.mFTToolToolStripMenuItem_Click);
             // 
             // initFsToolToolStripMenuItem
             // 
             this.initFsToolToolStripMenuItem.Name = "initFsToolToolStripMenuItem";
-            this.initFsToolToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.initFsToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.initFsToolToolStripMenuItem.Text = "InitFs Tool";
             this.initFsToolToolStripMenuItem.Click += new System.EventHandler(this.initFsToolToolStripMenuItem_Click);
+            // 
+            // bundleBuilderToolStripMenuItem
+            // 
+            this.bundleBuilderToolStripMenuItem.Name = "bundleBuilderToolStripMenuItem";
+            this.bundleBuilderToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bundleBuilderToolStripMenuItem.Text = "Bundle Builder";
+            this.bundleBuilderToolStripMenuItem.Click += new System.EventHandler(this.bundleBuilderToolStripMenuItem_Click);
             // 
             // generalToolsToolStripMenuItem
             // 
@@ -179,9 +188,16 @@ namespace DAIToolsWV
             // modEditorToolStripMenuItem
             // 
             this.modEditorToolStripMenuItem.Name = "modEditorToolStripMenuItem";
-            this.modEditorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.modEditorToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.modEditorToolStripMenuItem.Text = "Mod Editor";
             this.modEditorToolStripMenuItem.Click += new System.EventHandler(this.modEditorToolStripMenuItem_Click);
+            // 
+            // modRunnerToolStripMenuItem
+            // 
+            this.modRunnerToolStripMenuItem.Name = "modRunnerToolStripMenuItem";
+            this.modRunnerToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+            this.modRunnerToolStripMenuItem.Text = "Mod Runner";
+            this.modRunnerToolStripMenuItem.Click += new System.EventHandler(this.modRunnerToolStripMenuItem_Click);
             // 
             // rESETALLToolStripMenuItem
             // 
@@ -190,13 +206,6 @@ namespace DAIToolsWV
             this.rESETALLToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
             this.rESETALLToolStripMenuItem.Text = "RESET ALL";
             this.rESETALLToolStripMenuItem.Click += new System.EventHandler(this.rESETALLToolStripMenuItem_Click);
-            // 
-            // modRunnerToolStripMenuItem
-            // 
-            this.modRunnerToolStripMenuItem.Name = "modRunnerToolStripMenuItem";
-            this.modRunnerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.modRunnerToolStripMenuItem.Text = "Mod Runner";
-            this.modRunnerToolStripMenuItem.Click += new System.EventHandler(this.modRunnerToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -237,6 +246,7 @@ namespace DAIToolsWV
         private ToolStripMenuItem modToolsToolStripMenuItem;
         private ToolStripMenuItem modEditorToolStripMenuItem;
         private ToolStripMenuItem modRunnerToolStripMenuItem;
+        private ToolStripMenuItem bundleBuilderToolStripMenuItem;
     }
 }
 
