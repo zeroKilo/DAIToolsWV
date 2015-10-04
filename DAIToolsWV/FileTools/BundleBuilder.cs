@@ -17,6 +17,8 @@ namespace DAIToolsWV.FileTools
     {
         public TOCFile toc;
         public List<bool> SelectForDeletion;
+        public List<string> SelectForReplacement;
+        public List<bool> SelectForDuplication;
 
         public BundleBuilder()
         {
@@ -31,8 +33,14 @@ namespace DAIToolsWV.FileTools
             {
                 toc = new TOCFile(d.FileName);
                 SelectForDeletion = new List<bool>();
+                SelectForReplacement = new List<string>();
+                SelectForDuplication = new List<bool>();
                 foreach (TOCFile.TOCBundleInfoStruct b in toc.bundles)
+                {
                     SelectForDeletion.Add(false);
+                    SelectForReplacement.Add(null);
+                    SelectForDuplication.Add(false);
+                }
                 RefreshMe();
                 rtb2.Text = "";
             }
@@ -43,7 +51,10 @@ namespace DAIToolsWV.FileTools
             listBox1.Items.Clear();
             int count = 0;
             foreach (TOCFile.TOCBundleInfoStruct bundle in toc.bundles)
-                listBox1.Items.Add((SelectForDeletion[count++] ? "(TO DELETE)" : "") + bundle.id);
+                listBox1.Items.Add((SelectForDeletion[count] ? "(TO DELETE)" : "")
+                                   +(SelectForDuplication[count] ? "(TO DUPLICATE)" : "")
+                                   +(SelectForReplacement[count++] != null ? "(TO REPLACE)" : "") 
+                                   + bundle.id);
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -81,6 +92,11 @@ namespace DAIToolsWV.FileTools
                         ((List<BJSON.Entry>)tbun.data).Add(list[i]);
                         countcopy++;
                     }
+                    else
+                    {
+                        SelectForReplacement.RemoveAt(i);
+                        SelectForDuplication.RemoveAt(i);
+                    }
                 rtb2.AppendText("Copied: " + countcopy + " / " + list.Count + "\n");
                 root.fields[0] = tbun;
             }
@@ -117,7 +133,9 @@ namespace DAIToolsWV.FileTools
                     int size = 0;
                     bool isbase = false;
                     BJSON.Field offset_field = new BJSON.Field();
-                    foreach(BJSON.Field f in e.fields)
+                    BJSON.Field size_field = new BJSON.Field();
+                    BJSON.Field isbase_field = new BJSON.Field();
+                    foreach (BJSON.Field f in e.fields)
                         switch (f.fieldname)
                         {
                             case "offset":
@@ -126,16 +144,64 @@ namespace DAIToolsWV.FileTools
                                 break;
                             case "size":
                                 size = BitConverter.ToInt32((byte[])f.data, 0);
+                                size_field = f;
                                 break;
                             case "base":
                                 isbase = (bool)f.data;
+                                isbase_field = f;
                                 break;
                         }
-                    if (isbase)
-                        continue;
-                    offset_field.data = BitConverter.GetBytes(gl_off);
-                    CopyFileStream(ofs, m, offset, size);
+                    if (SelectForReplacement[i] == null)
+                    {
+                        if (isbase)
+                            continue;
+                        offset_field.data = BitConverter.GetBytes(gl_off);
+                        CopyFileStream(ofs, m, offset, size);
+                    }
+                    else
+                    {
+                        byte[] buf = File.ReadAllBytes(SelectForReplacement[i]);
+                        size = buf.Length;
+                        if (isbase)
+                            isbase_field.data = false;
+                        offset_field.data = BitConverter.GetBytes(gl_off);
+                        size_field.data = BitConverter.GetBytes(size);
+                        m.Write(buf, 0, size);
+                    }
                     gl_off += size;
+                    if (SelectForDuplication[i])
+                    {
+                        BJSON.Entry te = new BJSON.Entry();
+                        te.type = e.type;
+                        te.type87name = e.type87name;
+                        te.fields = new List<BJSON.Field>();
+                        foreach (BJSON.Field f in e.fields)
+                        {
+                            BJSON.Field tf = new BJSON.Field();
+                            tf.fieldname = f.fieldname;
+                            tf.type = f.type;
+                            switch (f.fieldname)
+                            {
+                                case "offset":
+                                    tf.data = BitConverter.GetBytes(BitConverter.ToInt64((byte[])f.data, 0));
+                                    break;
+                                case "size":
+                                    tf.data = BitConverter.GetBytes(BitConverter.ToInt32((byte[])f.data, 0));
+                                    break;
+                                case "base":
+                                    tf.data = (bool)f.data;
+                                    break;
+                                default:
+                                    tf.data = f.data;
+                                    break;
+                            }
+                            te.fields.Add(tf);
+                        }
+                        list.Insert(i + 1, te);
+                        bundles.data = list;
+                        SelectForDuplication.Insert(i + 1, false);
+                        SelectForReplacement.Insert(i + 1, null);
+                    }
                 }
                 ofs.Close();
                 MemoryStream t = new MemoryStream();
@@ -203,6 +269,7 @@ namespace DAIToolsWV.FileTools
             int n = listBox1.SelectedIndex;
             if (n == -1 || toc == null)
                 return;
+            UnMark();
             SelectForDeletion[n] = true;
             RefreshMe();
             listBox1.SelectedIndex = n;
@@ -210,10 +277,17 @@ namespace DAIToolsWV.FileTools
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
+            UnMark();
+        }
+
+        private void UnMark()
+        {
             int n = listBox1.SelectedIndex;
             if (n == -1 || toc == null)
                 return;
             SelectForDeletion[n] = false;
+            SelectForReplacement[n] = null;
+            SelectForDuplication[n] = false;
             RefreshMe();
             listBox1.SelectedIndex = n;
         }
@@ -231,17 +305,49 @@ namespace DAIToolsWV.FileTools
             rtb1.Text = sb.ToString();
         }
 
-        private void listBox1_KeyPress(object sender, KeyPressEventArgs e)
+        private void toolStripButton3_Click(object sender, EventArgs e)
         {
-            if (e.KeyChar == (char)13)
+            int n = listBox1.SelectedIndex;
+            if (n == -1 || toc == null)
+                return;
+            TOCFile.TOCBundleInfoStruct b = toc.bundles[n];
+            SaveFileDialog d = new SaveFileDialog();
+            d.Filter = "*.bundle|*.bundle";
+            d.FileName = Path.GetFileName(b.id.Replace("/", "\\"));
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                int n = listBox1.SelectedIndex;
-                if (n == -1 || toc == null)
-                    return;
-                SelectForDeletion[n] = !SelectForDeletion[n];
-                RefreshMe();
-                listBox1.SelectedIndex = n;
+                byte[] buff = toc.ExportBundleDataByPath(b.id);
+                File.WriteAllBytes(d.FileName, buff);
+                MessageBox.Show("Done.");
             }
+            
+        }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            int n = listBox1.SelectedIndex;
+            if (n == -1 || toc == null)
+                return;
+            UnMark();
+            OpenFileDialog d = new OpenFileDialog();
+            d.Filter = "*.bundle|*.bundle";
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                TOCFile.TOCBundleInfoStruct b = toc.bundles[n];
+                SelectForReplacement[n] = d.FileName;
+                RefreshMe();
+            }
+        }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            int n = listBox1.SelectedIndex;
+            if (n == -1 || toc == null)
+                return;
+            UnMark();
+            SelectForDuplication[n] = true;
+            RefreshMe();
+            listBox1.SelectedIndex = n;
         }
     }
 }

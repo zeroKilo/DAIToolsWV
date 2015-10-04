@@ -324,5 +324,20 @@ namespace DAIToolsWV.FileTools
                 Helpers.SelectNext(toolStripTextBox1.Text, treeView1);
             }
         }
+
+        private void openRawBundleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            OpenFileDialog d = new OpenFileDialog();
+            d.Filter = "*.bundle|*.bundle";
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                toolStrip1.Visible = true;
+                splitContainer2.BringToFront();
+                sb = new SBFile(d.FileName);
+                RefreshTree();
+                return;
+            }
+        }
     }
 }

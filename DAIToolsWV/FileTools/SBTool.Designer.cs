@@ -40,6 +40,7 @@
             this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.contextmenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.expandAllSubNodesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.hb1 = new Be.Windows.Forms.HexBox();
@@ -63,7 +64,7 @@
             this.hb4 = new Be.Windows.Forms.HexBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.treeView2 = new System.Windows.Forms.TreeView();
-            this.expandAllSubNodesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openRawBundleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.contextmenu.SuspendLayout();
@@ -99,7 +100,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Location = new System.Drawing.Point(0, 25);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(658, 24);
             this.menuStrip1.TabIndex = 0;
@@ -110,6 +111,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.opnSingleToolStripMenuItem,
+            this.openRawBundleToolStripMenuItem,
             this.saveAsToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
@@ -118,14 +120,14 @@
             // opnSingleToolStripMenuItem
             // 
             this.opnSingleToolStripMenuItem.Name = "opnSingleToolStripMenuItem";
-            this.opnSingleToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.opnSingleToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.opnSingleToolStripMenuItem.Text = "Open";
             this.opnSingleToolStripMenuItem.Click += new System.EventHandler(this.opnSingleToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
@@ -179,6 +181,13 @@
             this.expandAllSubNodesToolStripMenuItem});
             this.contextmenu.Name = "contextmenu";
             this.contextmenu.Size = new System.Drawing.Size(176, 26);
+            // 
+            // expandAllSubNodesToolStripMenuItem
+            // 
+            this.expandAllSubNodesToolStripMenuItem.Name = "expandAllSubNodesToolStripMenuItem";
+            this.expandAllSubNodesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.expandAllSubNodesToolStripMenuItem.Text = "Expand all sub nodes";
+            this.expandAllSubNodesToolStripMenuItem.Click += new System.EventHandler(this.expandAllSubNodesToolStripMenuItem_Click);
             // 
             // splitContainer2
             // 
@@ -502,12 +511,12 @@
             this.treeView2.Size = new System.Drawing.Size(644, 411);
             this.treeView2.TabIndex = 1;
             // 
-            // expandAllSubNodesToolStripMenuItem
+            // openRawBundleToolStripMenuItem
             // 
-            this.expandAllSubNodesToolStripMenuItem.Name = "expandAllSubNodesToolStripMenuItem";
-            this.expandAllSubNodesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.expandAllSubNodesToolStripMenuItem.Text = "Expand all sub nodes";
-            this.expandAllSubNodesToolStripMenuItem.Click += new System.EventHandler(this.expandAllSubNodesToolStripMenuItem_Click);
+            this.openRawBundleToolStripMenuItem.Name = "openRawBundleToolStripMenuItem";
+            this.openRawBundleToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.openRawBundleToolStripMenuItem.Text = "Open Raw Bundle";
+            this.openRawBundleToolStripMenuItem.Click += new System.EventHandler(this.openRawBundleToolStripMenuItem_Click);
             // 
             // SBTool
             // 
@@ -594,5 +603,6 @@
         private System.Windows.Forms.ListBox listBox4;
         private Be.Windows.Forms.HexBox hb4;
         private System.Windows.Forms.ToolStripMenuItem expandAllSubNodesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openRawBundleToolStripMenuItem;
     }
 }
