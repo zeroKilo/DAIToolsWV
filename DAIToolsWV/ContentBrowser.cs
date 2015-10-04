@@ -73,6 +73,7 @@ namespace DAIToolsWV
             catch (Exception)
             {
             }
+            GC.Collect();
         }
 
         #region real file system

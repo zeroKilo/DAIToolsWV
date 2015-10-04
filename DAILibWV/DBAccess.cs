@@ -706,6 +706,7 @@ namespace DAILibWV
                 }
             }
             con.Close();
+            GC.Collect();
             return result.ToArray();
         }
 

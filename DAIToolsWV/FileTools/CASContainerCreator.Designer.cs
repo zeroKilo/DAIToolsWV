@@ -31,12 +31,12 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.appendToCASToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.hb1 = new Be.Windows.Forms.HexBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.hb2 = new Be.Windows.Forms.HexBox();
             this.hb3 = new Be.Windows.Forms.HexBox();
-            this.appendToCASToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -71,9 +71,16 @@
             // loadBinaryToolStripMenuItem
             // 
             this.loadBinaryToolStripMenuItem.Name = "loadBinaryToolStripMenuItem";
-            this.loadBinaryToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.loadBinaryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadBinaryToolStripMenuItem.Text = "Load Binary";
             this.loadBinaryToolStripMenuItem.Click += new System.EventHandler(this.loadBinaryToolStripMenuItem_Click);
+            // 
+            // appendToCASToolStripMenuItem
+            // 
+            this.appendToCASToolStripMenuItem.Name = "appendToCASToolStripMenuItem";
+            this.appendToCASToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.appendToCASToolStripMenuItem.Text = "Append to CAS";
+            this.appendToCASToolStripMenuItem.Click += new System.EventHandler(this.appendToCASToolStripMenuItem_Click);
             // 
             // splitContainer1
             // 
@@ -157,13 +164,6 @@
             this.hb3.TabIndex = 3;
             this.hb3.UseFixedBytesPerLine = true;
             this.hb3.VScrollBarVisible = true;
-            // 
-            // appendToCASToolStripMenuItem
-            // 
-            this.appendToCASToolStripMenuItem.Name = "appendToCASToolStripMenuItem";
-            this.appendToCASToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.appendToCASToolStripMenuItem.Text = "Append to CAS";
-            this.appendToCASToolStripMenuItem.Click += new System.EventHandler(this.appendToCASToolStripMenuItem_Click);
             // 
             // CASContainerCreator
             // 
