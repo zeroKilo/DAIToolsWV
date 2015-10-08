@@ -36,6 +36,7 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
@@ -44,7 +45,8 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.rtb1 = new System.Windows.Forms.RichTextBox();
             this.rtb2 = new System.Windows.Forms.RichTextBox();
-            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.selectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.invertDeletionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -60,7 +62,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.selectToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(714, 24);
@@ -100,7 +103,7 @@
             this.toolStripButton4,
             this.toolStripSeparator1,
             this.toolStripButton3});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(714, 25);
             this.toolStrip1.TabIndex = 2;
@@ -125,6 +128,16 @@
             this.toolStripButton1.Size = new System.Drawing.Size(93, 22);
             this.toolStripButton1.Text = "Mark for Deletion";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
+            // toolStripButton5
+            // 
+            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(106, 22);
+            this.toolStripButton5.Text = "Mark for Duplication";
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 
             // toolStripButton4
             // 
@@ -154,7 +167,7 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 25);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 49);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -165,8 +178,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.rtb2);
-            this.splitContainer1.Size = new System.Drawing.Size(714, 430);
-            this.splitContainer1.SplitterDistance = 241;
+            this.splitContainer1.Size = new System.Drawing.Size(714, 406);
+            this.splitContainer1.SplitterDistance = 227;
             this.splitContainer1.TabIndex = 3;
             // 
             // splitContainer2
@@ -182,7 +195,7 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.rtb1);
-            this.splitContainer2.Size = new System.Drawing.Size(714, 241);
+            this.splitContainer2.Size = new System.Drawing.Size(714, 227);
             this.splitContainer2.SplitterDistance = 470;
             this.splitContainer2.TabIndex = 4;
             // 
@@ -195,9 +208,10 @@
             this.listBox1.ItemHeight = 16;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(470, 241);
+            this.listBox1.Size = new System.Drawing.Size(470, 227);
             this.listBox1.TabIndex = 4;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged_1);
+            this.listBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listBox1_KeyPress);
             // 
             // rtb1
             // 
@@ -206,7 +220,7 @@
             this.rtb1.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtb1.Location = new System.Drawing.Point(0, 0);
             this.rtb1.Name = "rtb1";
-            this.rtb1.Size = new System.Drawing.Size(240, 241);
+            this.rtb1.Size = new System.Drawing.Size(240, 227);
             this.rtb1.TabIndex = 0;
             this.rtb1.Text = "";
             this.rtb1.WordWrap = false;
@@ -218,20 +232,25 @@
             this.rtb2.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtb2.Location = new System.Drawing.Point(0, 0);
             this.rtb2.Name = "rtb2";
-            this.rtb2.Size = new System.Drawing.Size(714, 185);
+            this.rtb2.Size = new System.Drawing.Size(714, 175);
             this.rtb2.TabIndex = 1;
             this.rtb2.Text = "";
             this.rtb2.WordWrap = false;
             // 
-            // toolStripButton5
+            // selectToolStripMenuItem
             // 
-            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
-            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Size = new System.Drawing.Size(106, 22);
-            this.toolStripButton5.Text = "Mark for Duplication";
-            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
+            this.selectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.invertDeletionToolStripMenuItem});
+            this.selectToolStripMenuItem.Name = "selectToolStripMenuItem";
+            this.selectToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.selectToolStripMenuItem.Text = "Select";
+            // 
+            // invertDeletionToolStripMenuItem
+            // 
+            this.invertDeletionToolStripMenuItem.Name = "invertDeletionToolStripMenuItem";
+            this.invertDeletionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.invertDeletionToolStripMenuItem.Text = "Invert Deletion";
+            this.invertDeletionToolStripMenuItem.Click += new System.EventHandler(this.invertDeletionToolStripMenuItem_Click);
             // 
             // BundleBuilder
             // 
@@ -278,6 +297,8 @@
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
+        private System.Windows.Forms.ToolStripMenuItem selectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem invertDeletionToolStripMenuItem;
 
     }
 }

@@ -83,7 +83,8 @@ namespace DAIToolsWV.FileTools
                 BJSON.Entry root = toc.lines[0];
                 BJSON.Field bundles = root.fields[0];
                 BJSON.Field tbun = bundles;
-                List<BJSON.Entry> list = (List<BJSON.Entry>)bundles.data;
+                List<BJSON.Entry> list = new List<BJSON.Entry>();
+                list.AddRange((List<BJSON.Entry>)bundles.data);
                 tbun.data = new List<BJSON.Entry>();
                 int countcopy = 0;
                 for (int i = 0; i < list.Count; i++)
@@ -96,6 +97,9 @@ namespace DAIToolsWV.FileTools
                     {
                         SelectForReplacement.RemoveAt(i);
                         SelectForDuplication.RemoveAt(i);
+                        SelectForDeletion.RemoveAt(i);
+                        list.RemoveAt(i);
+                        i--;
                     }
                 rtb2.AppendText("Copied: " + countcopy + " / " + list.Count + "\n");
                 root.fields[0] = tbun;
@@ -346,6 +350,32 @@ namespace DAIToolsWV.FileTools
                 return;
             UnMark();
             SelectForDuplication[n] = true;
+            RefreshMe();
+            listBox1.SelectedIndex = n;
+        }
+
+        private void listBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            int n = listBox1.SelectedIndex;
+            if (n == -1 || toc == null)
+                return;
+            switch (e.KeyChar)
+            {
+                case (char)8:
+                    SelectForDeletion[n] = !SelectForDeletion[n];
+                    break;            
+            }
+            RefreshMe();
+            listBox1.SelectedIndex = n;
+        }
+
+        private void invertDeletionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int n = listBox1.SelectedIndex;
+            if (n == -1 || toc == null)
+                return;
+            for (int i = 0; i < SelectForDeletion.Count; i++)
+                SelectForDeletion[i] = !SelectForDeletion[i];
             RefreshMe();
             listBox1.SelectedIndex = n;
         }

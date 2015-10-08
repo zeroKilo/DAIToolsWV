@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -119,6 +120,45 @@ namespace DAILibWV.Frostbite
                 if (cat.lines[i][7] == casnumber)
                     result.Add(i);
             return result;
+        }
+
+        public static byte[] MakeHeaderAndContainer(byte[] data)
+        {
+            MemoryStream m = new MemoryStream();
+            int pos = 0;
+            while (pos < data.Length)
+            {
+                if (data.Length - pos > 0xFFFF)
+                {
+                    Helpers.WriteLEInt(m, 0xFFFF);
+                    m.WriteByte(0);
+                    m.WriteByte(0x70);
+                    m.WriteByte(0xFF);
+                    m.WriteByte(0xFF);
+                    m.Write(data, pos, 0xFFFF);
+                    pos += 0xFFFF;
+                }
+                else
+                {
+                    int rest = data.Length - pos;
+                    Helpers.WriteLEInt(m, rest);
+                    m.WriteByte(0);
+                    m.WriteByte(0x70);
+                    m.WriteByte((byte)(rest >> 8));
+                    m.WriteByte((byte)(rest & 0xFF));
+                    m.Write(data, pos, rest);
+                    pos += rest;
+                }
+            }
+            MemoryStream result = new MemoryStream();
+            Helpers.WriteUInt(result, 0xF00FCEFA);
+            SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider();
+            byte[] Sha1= sha1.ComputeHash(m.ToArray());
+            result.Write(Sha1, 0, 0x14);
+            Helpers.WriteInt(result, (int)m.Length);
+            Helpers.WriteUInt(result, 0);
+            result.Write(m.ToArray(),0,(int)m.Length);
+            return result.ToArray();
         }
     }
 }

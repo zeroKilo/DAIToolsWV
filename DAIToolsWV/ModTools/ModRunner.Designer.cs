@@ -30,55 +30,92 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModRunner));
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
+            this.toolStrip3 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.textBox2 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.button2 = new System.Windows.Forms.Button();
+            this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.rtb1 = new System.Windows.Forms.RichTextBox();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStrip2 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.toolStrip3 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.panel4 = new System.Windows.Forms.Panel();
             this.rtb2 = new System.Windows.Forms.RichTextBox();
             this.toolStrip4 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.panel1.SuspendLayout();
+            this.toolStrip3.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.toolStrip2.SuspendLayout();
             this.panel3.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.toolStrip2.SuspendLayout();
-            this.toolStrip3.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.panel4.SuspendLayout();
             this.toolStrip4.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.toolStrip3);
             this.panel1.Controls.Add(this.textBox2);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.button1);
+            this.panel1.Controls.Add(this.toolStrip3);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(680, 180);
             this.panel1.TabIndex = 0;
+            // 
+            // toolStrip3
+            // 
+            this.toolStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton3});
+            this.toolStrip3.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip3.Name = "toolStrip3";
+            this.toolStrip3.Size = new System.Drawing.Size(680, 25);
+            this.toolStrip3.TabIndex = 6;
+            this.toolStrip3.Text = "toolStrip3";
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(34, 22);
+            this.toolStripButton3.Text = "Next";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(16, 83);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(404, 20);
+            this.textBox2.TabIndex = 5;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 30);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(109, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Please select mod file";
             // 
             // button1
             // 
@@ -89,15 +126,6 @@
             this.button1.Text = "Load";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 30);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(109, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Please select mod file";
             // 
             // panel2
             // 
@@ -115,24 +143,43 @@
             this.panel2.Size = new System.Drawing.Size(680, 180);
             this.panel2.TabIndex = 2;
             // 
-            // label2
+            // toolStrip2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 29);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(130, 13);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Please select Patch folder";
+            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton2});
+            this.toolStrip2.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip2.Name = "toolStrip2";
+            this.toolStrip2.Size = new System.Drawing.Size(680, 25);
+            this.toolStrip2.TabIndex = 6;
+            this.toolStrip2.Text = "toolStrip2";
             // 
-            // radioButton1
+            // toolStripButton2
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(16, 46);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(125, 17);
-            this.radioButton1.TabIndex = 1;
-            this.radioButton1.Text = "Use from game folder";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(34, 22);
+            this.toolStripButton2.Text = "Next";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(32, 122);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(404, 20);
+            this.textBox1.TabIndex = 4;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(32, 92);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(109, 23);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "Select Folder";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // radioButton2
             // 
@@ -146,23 +193,24 @@
             this.radioButton2.Text = "Select seperate folder (recommened)";
             this.radioButton2.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // radioButton1
             // 
-            this.button2.Location = new System.Drawing.Point(32, 92);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(109, 23);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "Select Folder";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(16, 46);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(125, 17);
+            this.radioButton1.TabIndex = 1;
+            this.radioButton1.Text = "Use from game folder";
+            this.radioButton1.UseVisualStyleBackColor = true;
             // 
-            // textBox1
+            // label2
             // 
-            this.textBox1.Location = new System.Drawing.Point(32, 122);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(404, 20);
-            this.textBox1.TabIndex = 4;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(13, 29);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(130, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Please select Patch folder";
             // 
             // panel3
             // 
@@ -173,17 +221,6 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(680, 180);
             this.panel3.TabIndex = 3;
-            // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1,
-            this.toolStripButton4});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(680, 25);
-            this.toolStrip1.TabIndex = 0;
-            this.toolStrip1.Text = "toolStrip1";
             // 
             // splitContainer1
             // 
@@ -230,6 +267,17 @@
             this.rtb1.Text = "";
             this.rtb1.WordWrap = false;
             // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton1,
+            this.toolStripButton4});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(680, 25);
+            this.toolStrip1.TabIndex = 0;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
             // toolStripButton1
             // 
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -239,54 +287,6 @@
             this.toolStripButton1.Size = new System.Drawing.Size(44, 22);
             this.toolStripButton1.Text = "Run All";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
-            // toolStrip2
-            // 
-            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton2});
-            this.toolStrip2.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(680, 25);
-            this.toolStrip2.TabIndex = 6;
-            this.toolStrip2.Text = "toolStrip2";
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(34, 22);
-            this.toolStripButton2.Text = "Next";
-            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(16, 83);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(404, 20);
-            this.textBox2.TabIndex = 5;
-            // 
-            // toolStrip3
-            // 
-            this.toolStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton3});
-            this.toolStrip3.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip3.Name = "toolStrip3";
-            this.toolStrip3.Size = new System.Drawing.Size(680, 25);
-            this.toolStrip3.TabIndex = 6;
-            this.toolStrip3.Text = "toolStrip3";
-            // 
-            // toolStripButton3
-            // 
-            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(34, 22);
-            this.toolStripButton3.Text = "Next";
-            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // toolStripButton4
             // 
@@ -347,27 +347,27 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(680, 180);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
+            this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel2);
             this.Name = "ModRunner";
             this.Text = "Mod Runner";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.toolStrip3.ResumeLayout(false);
+            this.toolStrip3.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            this.toolStrip2.ResumeLayout(false);
+            this.toolStrip2.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.toolStrip2.ResumeLayout(false);
-            this.toolStrip2.PerformLayout();
-            this.toolStrip3.ResumeLayout(false);
-            this.toolStrip3.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             this.toolStrip4.ResumeLayout(false);
