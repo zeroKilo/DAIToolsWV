@@ -162,318 +162,221 @@ namespace DAIToolsWV.ModTools
                     return;
                 }
             }
+            //create cas data
+            byte[] newsha1 = CreateCASContainer(mj);
+            if (newsha1.Length != 0x14)
+            {
+                DbgPrint("Error: could not create CAS data, aborting!");
+                return;
+            }
             //walk through affected toc files
             foreach (string tocpath in mj.tocPaths)
+                RunRessourceJob(mj, tocpath, newsha1);
+        }
+
+        public void RunRessourceJob(Mod.ModJob mj, string tocpath, byte[] newsha1)
+        {
+            //check if incas
+            DbgPrint("Loading : " + tocpath);
+            TOCFile toc = new TOCFile(outputPath + tocpath);
+            if (!toc.iscas)
             {
-                //check if incas
-                DbgPrint("Loading : " + tocpath);
-                TOCFile toc = new TOCFile(outputPath + tocpath);
-                if(!toc.iscas )
+                DbgPrint("Error: TOC is not saving in CAS, skipping!");
+                return;
+            }
+            //walk through affected bundles
+            foreach (string bpath in mj.bundlePaths)
+                RunRessourceJobOnBundle(mj, toc, tocpath, newsha1, bpath);
+        }
+
+        public bool ImportBundleFromBase(TOCFile toc,string tocpath,int index, string bpath)
+        {
+            DbgPrint("  Its a base reference! Copying in from base...");
+            //Find base toc
+            string basepath = GlobalStuff.FindSetting("gamepath");
+            if (!File.Exists(basepath + tocpath))
+            {
+                DbgPrint("Error: base TOC file not found, skipping!");
+                return false;
+            }
+            TOCFile otoc = new TOCFile(basepath + tocpath);
+            //get base bundle data
+            byte[] buff = otoc.ExportBundleDataByPath(bpath);
+            if (buff.Length == 0)
+            {
+                DbgPrint("Error: base bundle not found, skipping!");
+                return false;
+            }
+            //get old sb file
+            string oldSBpath = outputPath + Path.GetDirectoryName(tocpath) + "\\" + Path.GetFileNameWithoutExtension(tocpath) + ".sb";
+            if (!File.Exists(oldSBpath))
+            {
+                DbgPrint("Error: patch SB file not found, skipping!");
+                return false;
+            }
+            DbgPrint("  Got copy, recompiling...");
+            //recompiling new sb in memory
+            MemoryStream newSB = new MemoryStream();
+            FileStream oldSB = new FileStream(oldSBpath, FileMode.Open, FileAccess.Read);
+            long glob_off = 0;
+            BJSON.Entry root = toc.lines[0];
+            BJSON.Field bundles = root.fields[0];
+            int count = ((List<BJSON.Entry>)bundles.data).Count();
+            DbgPrint("  Recompiling SB...");
+            //put one bundle after another that is not base as defined in toc
+            for (int i = 0; i < count; i++)
+            {
+                //get entry infos
+                BJSON.Entry b = ((List<BJSON.Entry>)bundles.data)[i];
+                BJSON.Field f_offset = FindField(b, "offset");
+                BJSON.Field f_size = FindField(b, "size");
+                BJSON.Field f_isBase = FindField(b, "base");
+                //if not our target and not copied from base, copy from old SB
+                if (i != index && f_isBase == null)
                 {
-                    DbgPrint("Error: TOC is not saving in CAS, skipping!");
-                    continue;
+                    int size = BitConverter.ToInt32((byte[])f_size.data, 0);
+                    CopyFileStream(oldSB, newSB, BitConverter.ToInt64((byte[])f_offset.data, 0), size);
+                    f_offset.data = BitConverter.GetBytes(glob_off);
+                    glob_off += size;
                 }
-                //walk through affected bundles
-                foreach (string bpath in mj.bundlePaths)
+                //if target, replace data, make delta
+                if (i == index)
                 {
-                    int count = 0;
-                    int index = -1;
-                    foreach (TOCFile.TOCBundleInfoStruct buni in toc.bundles)
-                        if (count++ > -1 && bpath == buni.id)
-                        {
-                            DbgPrint(" Found bundle : " + bpath);
-                            index = count - 1;
-                            break;
-                        }
-                    //if bundle found
-                    if (index != -1)
+                    f_offset.data = BitConverter.GetBytes(glob_off);
+                    f_size.data = BitConverter.GetBytes(buff.Length);
+                    f_isBase.fieldname = "delta";
+                    newSB.Write(buff, 0, buff.Length);
+                    glob_off += buff.Length;
+                }
+            }
+            oldSB.Close();
+            //rebuilding new SB
+            oldSB = new FileStream(oldSBpath, FileMode.Create, FileAccess.Write);
+            //creating bundle header field
+            MemoryStream t = new MemoryStream();
+            Helpers.WriteLEB128(t, (int)newSB.Length);
+            newSB.WriteByte(0);
+            int varsize = (int)t.Length;
+            //add root entry
+            oldSB.WriteByte(0x82);
+            Helpers.WriteLEB128(oldSB, varsize + 9 + (int)newSB.Length);
+            byte[] buff2 = { 0x01, 0x62, 0x75, 0x6E, 0x64, 0x6C, 0x65, 0x73, 0x00 };
+            oldSB.Write(buff2, 0, 9);
+            oldSB.Write(t.ToArray(), 0, varsize);
+            //header done, grab header offset and put all bundles
+            int rel_off = (int)oldSB.Position;
+            oldSB.Write(newSB.ToArray(), 0, (int)newSB.Length);
+            oldSB.Close();
+            DbgPrint("  Recompiling TOC...");
+            //correct offsets in toc by new adding header offset
+            count = ((List<BJSON.Entry>)bundles.data).Count();
+            for (int i = 0; i < count; i++)
+            {
+                BJSON.Entry b = ((List<BJSON.Entry>)bundles.data)[i];
+                BJSON.Field f_offset = FindField(b, "offset");
+                BJSON.Field f_isBase = FindField(b, "base");
+                //if is in sb file, update
+                if (f_isBase == null)
+                {
+                    long off = BitConverter.ToInt64((byte[])f_offset.data, 0);
+                    off += rel_off;
+                    f_offset.data = BitConverter.GetBytes(off);
+                }
+            }
+            toc.Save();
+            DbgPrint("  Bundle imported");
+            return true;
+        }
+
+        public void RunRessourceJobOnBundle(Mod.ModJob mj, TOCFile toc, string tocpath, byte[] newsha1, string bpath)
+        {
+            int count = 0;
+            int index = -1;
+            foreach (TOCFile.TOCBundleInfoStruct buni in toc.bundles)
+                if (count++ > -1 && bpath == buni.id)
+                {
+                    DbgPrint(" Found bundle : " + bpath);
+                    index = count - 1;
+                    break;
+                }
+            //if bundle found
+            if (index != -1)
+            {                
+                //find out if base or delta
+                BJSON.Entry root = toc.lines[0];
+                BJSON.Field bundles = root.fields[0];
+                BJSON.Entry bun = ((List<BJSON.Entry>)bundles.data)[index];
+                BJSON.Field isDeltaField = FindField(bun, "delta");
+                BJSON.Field isBaseField = FindField(bun, "base");
+                //if is base, copy from base, make delta and recompile
+                if (isBaseField != null && (bool)isBaseField.data == true)
+                    if (!ImportBundleFromBase(toc, tocpath, index, bpath))
+                        return;
+                //check if already is in sb
+                if (isDeltaField != null && (bool)isDeltaField.data == true)
+                    DbgPrint("  Its already a delta");
+                DbgPrint("  Updating SB file with new SHA1...");//yeah, pretty much
+                string SBpath = outputPath + Path.GetDirectoryName(tocpath) + "\\" + Path.GetFileNameWithoutExtension(tocpath) + ".sb";
+                SBFile sb = new SBFile(SBpath);
+                root = sb.lines[0];
+                bundles = root.fields[0];
+                count = ((List<BJSON.Entry>)bundles.data).Count;
+                //find right bundle
+                for (int i = 0; i < count; i++)
+                {
+                    bun = ((List<BJSON.Entry>)bundles.data)[i];
+                    BJSON.Field res = FindField(bun, "res");
+                    BJSON.Field chunks = FindField(bun, "chunks");
+                    BJSON.Field path = FindField(bun, "path");
+                    if (!(path != null && (string)path.data == bpath) || res == null || chunks == null)
+                        continue;
+                    //find right res entry
+                    foreach (BJSON.Entry res_e in ((List<BJSON.Entry>)res.data))
                     {
-                        //find out if base or delta
-                        BJSON.Entry root = toc.lines[0];
-                        BJSON.Field bundles = root.fields[0];
-                        BJSON.Entry bun = ((List<BJSON.Entry>)bundles.data)[index];
-                        BJSON.Field isDeltaField = null;
-                        BJSON.Field isBaseField = null;
-                        foreach (BJSON.Field f in bun.fields)
-                            switch (f.fieldname)
-                            {
-                                case "base":
-                                    isBaseField = f;
-                                    break;
-                                case "delta":
-                                    isDeltaField = f;
-                                    break;
-                            }
-                        //if is base, copy from base, make delta and recompile
-                        if (isBaseField != null && (bool)isBaseField.data == true)
+                        BJSON.Field f_sha1 = FindField(res_e, "sha1");
+                        BJSON.Field f_name = FindField(res_e, "name");
+                        if (f_name != null && (string)f_name.data == mj.respath && f_sha1 != null)
                         {
-                            DbgPrint("  Its a base reference! Copying in from base...");
-                            //Find base toc
-                            string basepath = GlobalStuff.FindSetting("gamepath");
-                            if (!File.Exists(basepath + tocpath))
+                            //get res data and extract chunk id
+                            byte[] sha1buff = (byte[])f_sha1.data;
+                            DbgPrint("  Found res sha1 : " + Helpers.ByteArrayToHexString(sha1buff));
+                            byte[] resdata = SHA1Access.GetDataBySha1(sha1buff);
+                            if (resdata.Length == 0)
                             {
-                                DbgPrint("Error: base TOC file not found, skipping!");
-                                continue;
-                            }
-                            TOCFile otoc = new TOCFile(basepath + tocpath);
-                            //get base bundle data
-                            byte[] buff = otoc.ExportBundleDataByPath(bpath);
-                            if (buff.Length == 0)
-                            {
-                                DbgPrint("Error: base bundle not found, skipping!");
-                                continue;
-                            }
-                            //get old sb file
-                            string oldSBpath = outputPath + Path.GetDirectoryName(tocpath) + "\\" + Path.GetFileNameWithoutExtension(tocpath) + ".sb";
-                            if (!File.Exists(oldSBpath))
-                            {
-                                DbgPrint("Error: patch SB file not found, skipping!");
-                                continue;
-                            }
-                            DbgPrint("  Got copy, recompiling...");
-                            //recompiling new sb in memory
-                            MemoryStream newSB = new MemoryStream();
-                            FileStream oldSB = new FileStream(oldSBpath, FileMode.Open, FileAccess.Read);
-                            long glob_off = 0;
-                            count = ((List<BJSON.Entry>)bundles.data).Count();
-                            DbgPrint("  Recompiling SB...");
-                            //put one bundle after another that is not base as defined in toc
-                            for (int i = 0; i < count; i++)
-                            {
-                                //get entry infos
-                                BJSON.Entry b = ((List<BJSON.Entry>)bundles.data)[i];
-                                BJSON.Field f_offset = null;
-                                BJSON.Field f_size = null;
-                                BJSON.Field f_isBase = null;
-                                foreach (BJSON.Field f in b.fields)
-                                    switch (f.fieldname)
-                                    {
-                                        case "offset":
-                                            f_offset = f;
-                                            break;
-                                        case "size":
-                                            f_size = f;
-                                            break;
-                                        case "base":
-                                            f_isBase = f;
-                                            break;
-                                    }
-                                //if not our target and not copied from base, copy from old SB
-                                if (i != index && f_isBase == null)
-                                {
-                                    int size = BitConverter.ToInt32((byte[])f_size.data, 0);
-                                    CopyFileStream(oldSB, newSB, BitConverter.ToInt64((byte[])f_offset.data, 0), size);
-                                    f_offset.data = BitConverter.GetBytes(glob_off);
-                                    glob_off += size;
-                                }
-                                //if target, replace data, make delta
-                                if (i == index)
-                                {
-                                    f_offset.data = BitConverter.GetBytes(glob_off);
-                                    f_size.data = BitConverter.GetBytes(buff.Length);
-                                    f_isBase.fieldname = "delta";
-                                    newSB.Write(buff, 0, buff.Length);
-                                    glob_off += buff.Length;
-                                }
-                            }
-                            oldSB.Close();
-                            //rebuilding new SB
-                            oldSB = new FileStream(oldSBpath, FileMode.Create, FileAccess.Write);
-                            //creating bundle header field
-                            MemoryStream t = new MemoryStream();
-                            Helpers.WriteLEB128(t, (int)newSB.Length);
-                            newSB.WriteByte(0);
-                            int varsize = (int)t.Length;
-                            //add root entry
-                            oldSB.WriteByte(0x82);
-                            Helpers.WriteLEB128(oldSB, varsize + 9 + (int)newSB.Length);
-                            byte[] buff2 = { 0x01, 0x62, 0x75, 0x6E, 0x64, 0x6C, 0x65, 0x73, 0x00 };
-                            oldSB.Write(buff2, 0, 9);
-                            oldSB.Write(t.ToArray(), 0, varsize);
-                            //header done, grab header offset and put all bundles
-                            int rel_off = (int)oldSB.Position;
-                            oldSB.Write(newSB.ToArray(), 0, (int)newSB.Length);
-                            oldSB.Close();
-                            DbgPrint("  Recompiling TOC...");
-                            //correct offsets in toc by new adding header offset
-                            count = ((List<BJSON.Entry>)bundles.data).Count();
-                            for (int i = 0; i < count; i++)
-                            {
-                                BJSON.Entry b = ((List<BJSON.Entry>)bundles.data)[i];
-                                BJSON.Field f_offset = null;
-                                BJSON.Field f_isBase = null;
-                                foreach (BJSON.Field f in b.fields)
-                                    switch (f.fieldname)
-                                    {
-                                        case "offset":
-                                            f_offset = f;
-                                            break;
-                                        case "base":
-                                            f_isBase = f;
-                                            break;
-                                    }
-                                //if is in sb file, update
-                                if (f_isBase == null)
-                                {
-                                    long off = BitConverter.ToInt64((byte[])f_offset.data, 0);
-                                    off += rel_off;
-                                    f_offset.data = BitConverter.GetBytes(off);
-                                }
-                            }
-                            toc.Save();
-                            DbgPrint("  Bundle imported");
-                        }
-                        //check if already is in sb
-                        if (isDeltaField != null && (bool)isDeltaField.data == true)
-                        {
-                            DbgPrint("  Its already a delta");
-                        }
-                        //generating cas data
-                        DbgPrint("  Creating CAS container for new data");
-                        byte[] data = CASFile.MakeHeaderAndContainer(mj.data);
-                        DbgPrint("  Finding free CAS...");
-                        int casindex = 99;
-                        FileStream fs;
-                        long pos;
-                        while (File.Exists(outputPath + "Data\\cas_" + casindex.ToString("D2") + ".cas"))
-                        {
-                            fs = new FileStream(outputPath + "Data\\cas_" + casindex.ToString("D2") + ".cas", FileMode.Open, FileAccess.Read);
-                            fs.Seek(0, SeekOrigin.End);
-                            pos = fs.Position;
-                            fs.Close();
-                            if (pos < 0x70000000)
+                                DbgPrint("  Error: cant find res data, skipping!");
                                 break;
-                            casindex--;
-                        }
-                        string caspath = outputPath + "Data\\cas_" + casindex.ToString("D2") + ".cas";
-                        if (!File.Exists(caspath))
-                            File.WriteAllBytes(caspath, new byte[0]);
-                        DbgPrint("  Choosing : cas_" + casindex.ToString("D2") + ".cas");
-                        fs = new FileStream(caspath, FileMode.Open, FileAccess.Read);
-                        //get new offset
-                        fs.Seek(0, SeekOrigin.End);
-                        pos = fs.Position;
-                        fs.Close();
-                        fs = new FileStream(caspath, FileMode.Append, FileAccess.Write);
-                        fs.Write(data, 0, data.Length);
-                        fs.Close();
-                        //creating new CAT entry with new SHA1
-                        DbgPrint("  Appended Data, updating CAT file...");
-                        if (!File.Exists(outputPath + "Data\\cas.cat"))
-                        {
-                            DbgPrint("Error: cant find CAT file, skipping!");
-                            continue;
-                        }
-                        fs = new FileStream(outputPath + "Data\\cas.cat", FileMode.Append, FileAccess.Write);
-                        fs.Write(data, 4, 0x14);
-                        byte[] newsha1 = new byte[0x14];
-                        for (int i = 0; i < 0x14; i++)
-                            newsha1[i] = data[i + 4];
-                        fs.Write(BitConverter.GetBytes((int)pos + 0x20), 0, 4);
-                        fs.Write(BitConverter.GetBytes((int)data.Length - 0x20), 0, 4);
-                        fs.Write(BitConverter.GetBytes(casindex), 0, 4);
-                        fs.Close();
-                        DbgPrint("  Updating SB file with new SHA1...");//yeah, pretty much
-                        string SBpath = outputPath + Path.GetDirectoryName(tocpath) + "\\" + Path.GetFileNameWithoutExtension(tocpath) + ".sb";
-                        SBFile sb = new SBFile(SBpath);
-                        root = sb.lines[0];
-                        bundles = root.fields[0];
-                        count = ((List<BJSON.Entry>)bundles.data).Count;
-                        //find right bundle
-                        for (int i = 0; i < count; i++)
-                        {
-                            bun = ((List<BJSON.Entry>)bundles.data)[i];
-                            bool found = false;
-                            BJSON.Field res = null;
-                            BJSON.Field chunks = null;
-                            foreach (BJSON.Field f in bun.fields)
-                                if (f.fieldname == "path" && ((string)f.data) == bpath)
-                                    found = true;
-                                else
-                                    switch (f.fieldname)
-                                    {
-                                        case "res":
-                                            res = f;
-                                            break;
-                                        case "chunks":
-                                            chunks = f;
-                                            break;
-                                    }
-                            if (!found || res == null || chunks == null)
-                                continue;
-                            //find right res entry
-                            foreach (BJSON.Entry res_e in ((List<BJSON.Entry>)res.data))
+                            }
+                            byte[] chunkidbuff = new byte[16];
+                            for (int j = 0; j < 16; j++)
+                                chunkidbuff[j] = resdata[j + 0x1C];
+                            DbgPrint("  Found chunk id : " + Helpers.ByteArrayToHexString(chunkidbuff));
+                            List<BJSON.Entry> chunklist = (List<BJSON.Entry>)chunks.data;
+                            bool replaced = false;
+                            //find right chunk by id
+                            for (int j = 0; j < chunklist.Count; j++)
                             {
-                                bool found2 = false;
-                                BJSON.Field f_sha1 = null;
-                                foreach (BJSON.Field f2 in res_e.fields)
-                                    switch (f2.fieldname)
-                                    {
-                                        case "name":
-                                            if (((string)f2.data) == mj.respath)
-                                                found2 = true;
-                                            break;
-                                        case "sha1":
-                                            f_sha1 = f2;
-                                            break;
-                                    }
-                                if (found2 && f_sha1 != null)
+                                BJSON.Field f2_sha1 = FindField(chunklist[j], "sha1");
+                                BJSON.Field f2_id = FindField(chunklist[j], "id");
+                                //patch in new sha1
+                                if (f2_id != null && Helpers.ByteArrayCompare((byte[])f2_id.data, chunkidbuff) && f2_sha1 != null) 
                                 {
-                                    //get res data and extract chunk id
-                                    byte[] sha1buff = (byte[])f_sha1.data;
-                                    DbgPrint("  Found res sha1 : " + Helpers.ByteArrayToHexString(sha1buff));
-                                    byte[] resdata = SHA1Access.GetDataBySha1(sha1buff);
-                                    if (resdata.Length == 0)
-                                    {
-                                        DbgPrint("  Error: cant find res data, skipping!");
-                                        break;
-                                    }
-                                    byte[] chunkidbuff = new byte[16];
-                                    for (int j = 0; j < 16; j++)
-                                        chunkidbuff[j] = resdata[j + 0x1C];
-                                    DbgPrint("  Found chunk id : " + Helpers.ByteArrayToHexString(chunkidbuff));
-                                    List<BJSON.Entry> chunklist = (List<BJSON.Entry>)chunks.data;
-                                    bool replaced = false;
-                                    //find right chunk by id
-                                    for (int j = 0; j < chunklist.Count; j++)
-                                    {
-                                        bool found3 = false;
-                                        BJSON.Field f2_sha1 = null;
-                                        foreach (BJSON.Field f3 in chunklist[j].fields)
-                                            switch (f3.fieldname)
-                                            {
-                                                case "id":
-                                                    if (Helpers.ByteArrayCompare((byte[])f3.data, chunkidbuff))
-                                                        found3 = true;
-                                                    break;
-                                                case "sha1":
-                                                    f2_sha1 = f3;
-                                                    break;
-                                            }
-                                        //patch in new sha1
-                                        if (found3 && f2_sha1 != null)
-                                        {
-                                            f2_sha1.data = newsha1;
-                                            sb.Save();
-                                            replaced = true;
-                                            DbgPrint("  Replaced chunk sha1 and saved SB file");
-                                            DbgPrint("  Job successfull!");
-                                            break;
-                                        }
-                                    }
-                                    if (!replaced)
-                                    {
-                                        DbgPrint("  Error: Could not find Chunk by id");
-                                    }
+                                    f2_sha1.data = newsha1;
+                                    sb.Save();
+                                    replaced = true;
+                                    DbgPrint("  Replaced chunk sha1 and saved SB file");
+                                    DbgPrint("  Job successfull!");
+                                    break;
                                 }
                             }
+                            if (!replaced)
+                                DbgPrint("  Error: Could not find Chunk by id");
                         }
                     }
-                    else
-                    {
-                        DbgPrint(" Error: could find bundle " + bpath);
-                    }
                 }
+            }
+            else
+            {
+                DbgPrint(" Error: could find bundle " + bpath);
             }
         }
 
@@ -491,6 +394,64 @@ namespace DAIToolsWV.ModTools
             int bytes_read = 0;
             while ((bytes_read += s_in.Read(buff, bytes_read, size - bytes_read)) != size) Application.DoEvents();
             s_out.Write(buff, 0, size);
+        }
+
+        public byte[] CreateCASContainer(Mod.ModJob mj)
+        {
+            //generating cas data
+            DbgPrint("  Creating CAS container for new data");
+            byte[] data = CASFile.MakeHeaderAndContainer(mj.data);
+            DbgPrint("  Finding free CAS...");
+            int casindex = 99;
+            FileStream fs;
+            long pos;
+            while (File.Exists(outputPath + "Data\\cas_" + casindex.ToString("D2") + ".cas"))
+            {
+                fs = new FileStream(outputPath + "Data\\cas_" + casindex.ToString("D2") + ".cas", FileMode.Open, FileAccess.Read);
+                fs.Seek(0, SeekOrigin.End);
+                pos = fs.Position;
+                fs.Close();
+                if (pos < 0x70000000)
+                    break;
+                casindex--;
+            }
+            string caspath = outputPath + "Data\\cas_" + casindex.ToString("D2") + ".cas";
+            if (!File.Exists(caspath))
+                File.WriteAllBytes(caspath, new byte[0]);
+            DbgPrint("  Choosing : cas_" + casindex.ToString("D2") + ".cas");
+            fs = new FileStream(caspath, FileMode.Open, FileAccess.Read);
+            //get new offset
+            fs.Seek(0, SeekOrigin.End);
+            pos = fs.Position;
+            fs.Close();
+            fs = new FileStream(caspath, FileMode.Append, FileAccess.Write);
+            fs.Write(data, 0, data.Length);
+            fs.Close();
+            //creating new CAT entry with new SHA1
+            DbgPrint("  Appended Data, updating CAT file...");
+            if (!File.Exists(outputPath + "Data\\cas.cat"))
+            {
+                DbgPrint("Error: cant find CAT file, skipping!");
+                return new byte[0];
+            }
+            fs = new FileStream(outputPath + "Data\\cas.cat", FileMode.Append, FileAccess.Write);
+            fs.Write(data, 4, 0x14);
+            byte[] newsha1 = new byte[0x14];
+            for (int i = 0; i < 0x14; i++)
+                newsha1[i] = data[i + 4];
+            fs.Write(BitConverter.GetBytes((int)pos + 0x20), 0, 4);
+            fs.Write(BitConverter.GetBytes((int)data.Length - 0x20), 0, 4);
+            fs.Write(BitConverter.GetBytes(casindex), 0, 4);
+            fs.Close();
+            return newsha1;
+        }
+
+        public BJSON.Field FindField(BJSON.Entry e, string name)
+        {
+            foreach (BJSON.Field f in e.fields)
+                if (f.fieldname == name)
+                    return f;
+            return null;
         }
     }
 }
