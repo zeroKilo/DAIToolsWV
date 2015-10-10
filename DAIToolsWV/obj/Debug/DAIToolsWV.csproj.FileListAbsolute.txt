@@ -58,7 +58,6 @@ D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\bin\Debug\Be.Windows.Forms.HexBox.xml
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\bin\Debug\DAILibWV.pdb
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\bin\Debug\System.Data.SQLite.xml
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.csprojResolveAssemblyReference.cache
-D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ContentBrowser.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.DebugOutputWindow.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.FileTools.HexTool.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.FileTools.INITFSTool.resources
@@ -77,3 +76,7 @@ D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ContentTools.SHA1Looku
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ModTools.ModEditor.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ModTools.ModRunner.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.FileTools.BundleBuilder.resources
+D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.Browser.FileBrowser.resources
+D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.Browser.BundleBrowser.resources
+D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.Browser.EBXBrowser.resources
+D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.Browser.TextureBrowser.resources

@@ -98,11 +98,6 @@ namespace DAIToolsWV
             OpenMaxed(new FileTools.MFTTool());
         }
 
-        private void contentBrowserToolStripMenuItem_Click_1(object sender, EventArgs e)
-        {
-            OpenMaxed(new ContentBrowser());
-        }
-
         private void hexToolToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             Form f = new FileTools.HexTool();
@@ -158,6 +153,26 @@ namespace DAIToolsWV
         private void bundleBuilderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenMaxed(new FileTools.BundleBuilder());
+        }
+
+        private void fileBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new Browser.FileBrowser());
+        }
+
+        private void bundleBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new Browser.BundleBrowser());
+        }
+
+        private void eBXBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new Browser.EBXBrowser());
+        }
+
+        private void textureBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new Browser.TextureBrowser());
         }
     }
 }

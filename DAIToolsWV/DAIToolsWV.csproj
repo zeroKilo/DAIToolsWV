@@ -68,11 +68,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContentBrowser.cs">
+    <Compile Include="Browser\BundleBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ContentBrowser.Designer.cs">
-      <DependentUpon>ContentBrowser.cs</DependentUpon>
+    <Compile Include="Browser\BundleBrowser.Designer.cs">
+      <DependentUpon>BundleBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Browser\EBXBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Browser\EBXBrowser.Designer.cs">
+      <DependentUpon>EBXBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Browser\FileBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Browser\FileBrowser.Designer.cs">
+      <DependentUpon>FileBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Browser\TextureBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Browser\TextureBrowser.Designer.cs">
+      <DependentUpon>TextureBrowser.cs</DependentUpon>
     </Compile>
     <Compile Include="ContentTools\EBXTool.cs">
       <SubType>Form</SubType>
@@ -173,9 +191,17 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ContentBrowser.resx">
-      <DependentUpon>ContentBrowser.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Browser\BundleBrowser.resx">
+      <DependentUpon>BundleBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Browser\EBXBrowser.resx">
+      <DependentUpon>EBXBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Browser\FileBrowser.resx">
+      <DependentUpon>FileBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Browser\TextureBrowser.resx">
+      <DependentUpon>TextureBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ContentTools\EBXTool.resx">
       <DependentUpon>EBXTool.cs</DependentUpon>
