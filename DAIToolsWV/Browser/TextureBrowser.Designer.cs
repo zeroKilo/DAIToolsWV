@@ -87,6 +87,7 @@
             // 
             // treeView5
             // 
+            this.treeView5.ContextMenuStrip = this.texcontext;
             this.treeView5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView5.Font = new System.Drawing.Font("Courier New", 10F);
             this.treeView5.HideSelection = false;
@@ -282,7 +283,7 @@
             this.openInTextureToolToolStripMenuItem,
             this.nOPEToolStripMenuItem});
             this.texcontext.Name = "texcontext";
-            this.texcontext.Size = new System.Drawing.Size(176, 48);
+            this.texcontext.Size = new System.Drawing.Size(176, 70);
             this.texcontext.Paint += new System.Windows.Forms.PaintEventHandler(this.texcontext_Paint);
             // 
             // openInTextureToolToolStripMenuItem

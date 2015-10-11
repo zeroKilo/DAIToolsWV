@@ -135,11 +135,6 @@ namespace DAIToolsWV
             OpenMaxed(new ContentTools.TextureTool());
         }
 
-        private void sHA1LookupToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenMaxed(new ContentTools.SHA1Lookup());
-        }
-
         private void modEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenMaxed(new ModTools.ModEditor());
@@ -173,6 +168,16 @@ namespace DAIToolsWV
         private void textureBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenMaxed(new Browser.TextureBrowser());
+        }
+
+        private void talktableToolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new ContentTools.TalktableTool());
+        }
+
+        private void sHA1LookupToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            OpenMaxed(new ContentTools.SHA1Lookup());
         }
     }
 }

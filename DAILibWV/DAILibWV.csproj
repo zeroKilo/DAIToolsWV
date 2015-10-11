@@ -55,6 +55,7 @@
     <Compile Include="Frostbite\CATFile.cs" />
     <Compile Include="Frostbite\EBXStream.cs" />
     <Compile Include="Frostbite\SBFile.cs" />
+    <Compile Include="Frostbite\Talktable.cs" />
     <Compile Include="Frostbite\TextureMetaResource.cs" />
     <Compile Include="Frostbite\TOCFile.cs" />
     <Compile Include="GlobalStuff.cs" />

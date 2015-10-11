@@ -56,6 +56,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\DevIL.NET.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -103,6 +104,12 @@
     </Compile>
     <Compile Include="ContentTools\SHA1Lookup.Designer.cs">
       <DependentUpon>SHA1Lookup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ContentTools\TalktableTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ContentTools\TalktableTool.Designer.cs">
+      <DependentUpon>TalktableTool.cs</DependentUpon>
     </Compile>
     <Compile Include="ContentTools\TextureTool.cs">
       <SubType>Form</SubType>
@@ -208,6 +215,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ContentTools\SHA1Lookup.resx">
       <DependentUpon>SHA1Lookup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContentTools\TalktableTool.resx">
+      <DependentUpon>TalktableTool.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ContentTools\TextureTool.resx">
       <DependentUpon>TextureTool.cs</DependentUpon>

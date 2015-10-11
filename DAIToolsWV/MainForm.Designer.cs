@@ -32,28 +32,29 @@ namespace DAIToolsWV
             this.components = new System.ComponentModel.Container();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.generalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hexToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cASContainerCreatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tOCToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sBToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mFTToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.initFsToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bundleBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hexToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cASContainerCreatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contentToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eBXToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sHA1LookupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.talktableToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.browserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bundleBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eBXBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sHA1LookupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -71,6 +72,30 @@ namespace DAIToolsWV
             this.menuStrip1.Size = new System.Drawing.Size(1119, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
+            // 
+            // generalToolsToolStripMenuItem
+            // 
+            this.generalToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.hexToolToolStripMenuItem,
+            this.sHA1LookupToolStripMenuItem,
+            this.cASContainerCreatorToolStripMenuItem});
+            this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
+            this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
+            this.generalToolsToolStripMenuItem.Text = "General Tools";
+            // 
+            // hexToolToolStripMenuItem
+            // 
+            this.hexToolToolStripMenuItem.Name = "hexToolToolStripMenuItem";
+            this.hexToolToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.hexToolToolStripMenuItem.Text = "Hex Tool";
+            this.hexToolToolStripMenuItem.Click += new System.EventHandler(this.hexToolToolStripMenuItem_Click_1);
+            // 
+            // cASContainerCreatorToolStripMenuItem
+            // 
+            this.cASContainerCreatorToolStripMenuItem.Name = "cASContainerCreatorToolStripMenuItem";
+            this.cASContainerCreatorToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.cASContainerCreatorToolStripMenuItem.Text = "CAS Container Creator";
+            this.cASContainerCreatorToolStripMenuItem.Click += new System.EventHandler(this.cASContainerCreatorToolStripMenuItem_Click);
             // 
             // fileToolsToolStripMenuItem
             // 
@@ -119,35 +144,12 @@ namespace DAIToolsWV
             this.bundleBuilderToolStripMenuItem.Text = "Bundle Builder";
             this.bundleBuilderToolStripMenuItem.Click += new System.EventHandler(this.bundleBuilderToolStripMenuItem_Click);
             // 
-            // generalToolsToolStripMenuItem
-            // 
-            this.generalToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.hexToolToolStripMenuItem,
-            this.cASContainerCreatorToolStripMenuItem});
-            this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
-            this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
-            this.generalToolsToolStripMenuItem.Text = "General Tools";
-            // 
-            // hexToolToolStripMenuItem
-            // 
-            this.hexToolToolStripMenuItem.Name = "hexToolToolStripMenuItem";
-            this.hexToolToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.hexToolToolStripMenuItem.Text = "Hex Tool";
-            this.hexToolToolStripMenuItem.Click += new System.EventHandler(this.hexToolToolStripMenuItem_Click_1);
-            // 
-            // cASContainerCreatorToolStripMenuItem
-            // 
-            this.cASContainerCreatorToolStripMenuItem.Name = "cASContainerCreatorToolStripMenuItem";
-            this.cASContainerCreatorToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.cASContainerCreatorToolStripMenuItem.Text = "CAS Container Creator";
-            this.cASContainerCreatorToolStripMenuItem.Click += new System.EventHandler(this.cASContainerCreatorToolStripMenuItem_Click);
-            // 
             // contentToolsToolStripMenuItem
             // 
             this.contentToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.eBXToolToolStripMenuItem,
             this.textureToolToolStripMenuItem,
-            this.sHA1LookupToolStripMenuItem});
+            this.talktableToolToolStripMenuItem});
             this.contentToolsToolStripMenuItem.Name = "contentToolsToolStripMenuItem";
             this.contentToolsToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
             this.contentToolsToolStripMenuItem.Text = "Content Tools";
@@ -155,23 +157,62 @@ namespace DAIToolsWV
             // eBXToolToolStripMenuItem
             // 
             this.eBXToolToolStripMenuItem.Name = "eBXToolToolStripMenuItem";
-            this.eBXToolToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.eBXToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.eBXToolToolStripMenuItem.Text = "EBX Tool";
             this.eBXToolToolStripMenuItem.Click += new System.EventHandler(this.eBXToolToolStripMenuItem_Click);
             // 
             // textureToolToolStripMenuItem
             // 
             this.textureToolToolStripMenuItem.Name = "textureToolToolStripMenuItem";
-            this.textureToolToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.textureToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.textureToolToolStripMenuItem.Text = "Texture Tool";
             this.textureToolToolStripMenuItem.Click += new System.EventHandler(this.textureToolToolStripMenuItem_Click);
             // 
-            // sHA1LookupToolStripMenuItem
+            // talktableToolToolStripMenuItem
             // 
-            this.sHA1LookupToolStripMenuItem.Name = "sHA1LookupToolStripMenuItem";
-            this.sHA1LookupToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
-            this.sHA1LookupToolStripMenuItem.Text = "SHA1 Lookup";
-            this.sHA1LookupToolStripMenuItem.Click += new System.EventHandler(this.sHA1LookupToolStripMenuItem_Click);
+            this.talktableToolToolStripMenuItem.Name = "talktableToolToolStripMenuItem";
+            this.talktableToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.talktableToolToolStripMenuItem.Text = "Talktable Tool";
+            this.talktableToolToolStripMenuItem.Click += new System.EventHandler(this.talktableToolToolStripMenuItem_Click);
+            // 
+            // browserToolStripMenuItem
+            // 
+            this.browserToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileBrowserToolStripMenuItem,
+            this.bundleBrowserToolStripMenuItem,
+            this.eBXBrowserToolStripMenuItem,
+            this.textureBrowserToolStripMenuItem});
+            this.browserToolStripMenuItem.Name = "browserToolStripMenuItem";
+            this.browserToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+            this.browserToolStripMenuItem.Text = "Browser";
+            // 
+            // fileBrowserToolStripMenuItem
+            // 
+            this.fileBrowserToolStripMenuItem.Name = "fileBrowserToolStripMenuItem";
+            this.fileBrowserToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.fileBrowserToolStripMenuItem.Text = "File Browser";
+            this.fileBrowserToolStripMenuItem.Click += new System.EventHandler(this.fileBrowserToolStripMenuItem_Click);
+            // 
+            // bundleBrowserToolStripMenuItem
+            // 
+            this.bundleBrowserToolStripMenuItem.Name = "bundleBrowserToolStripMenuItem";
+            this.bundleBrowserToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.bundleBrowserToolStripMenuItem.Text = "Bundle Browser";
+            this.bundleBrowserToolStripMenuItem.Click += new System.EventHandler(this.bundleBrowserToolStripMenuItem_Click);
+            // 
+            // eBXBrowserToolStripMenuItem
+            // 
+            this.eBXBrowserToolStripMenuItem.Name = "eBXBrowserToolStripMenuItem";
+            this.eBXBrowserToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.eBXBrowserToolStripMenuItem.Text = "EBX Browser";
+            this.eBXBrowserToolStripMenuItem.Click += new System.EventHandler(this.eBXBrowserToolStripMenuItem_Click);
+            // 
+            // textureBrowserToolStripMenuItem
+            // 
+            this.textureBrowserToolStripMenuItem.Name = "textureBrowserToolStripMenuItem";
+            this.textureBrowserToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.textureBrowserToolStripMenuItem.Text = "Texture Browser";
+            this.textureBrowserToolStripMenuItem.Click += new System.EventHandler(this.textureBrowserToolStripMenuItem_Click);
             // 
             // modToolsToolStripMenuItem
             // 
@@ -204,44 +245,12 @@ namespace DAIToolsWV
             this.rESETALLToolStripMenuItem.Text = "RESET ALL";
             this.rESETALLToolStripMenuItem.Click += new System.EventHandler(this.rESETALLToolStripMenuItem_Click);
             // 
-            // browserToolStripMenuItem
+            // sHA1LookupToolStripMenuItem
             // 
-            this.browserToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileBrowserToolStripMenuItem,
-            this.bundleBrowserToolStripMenuItem,
-            this.eBXBrowserToolStripMenuItem,
-            this.textureBrowserToolStripMenuItem});
-            this.browserToolStripMenuItem.Name = "browserToolStripMenuItem";
-            this.browserToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
-            this.browserToolStripMenuItem.Text = "Browser";
-            // 
-            // fileBrowserToolStripMenuItem
-            // 
-            this.fileBrowserToolStripMenuItem.Name = "fileBrowserToolStripMenuItem";
-            this.fileBrowserToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.fileBrowserToolStripMenuItem.Text = "File Browser";
-            this.fileBrowserToolStripMenuItem.Click += new System.EventHandler(this.fileBrowserToolStripMenuItem_Click);
-            // 
-            // bundleBrowserToolStripMenuItem
-            // 
-            this.bundleBrowserToolStripMenuItem.Name = "bundleBrowserToolStripMenuItem";
-            this.bundleBrowserToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.bundleBrowserToolStripMenuItem.Text = "Bundle Browser";
-            this.bundleBrowserToolStripMenuItem.Click += new System.EventHandler(this.bundleBrowserToolStripMenuItem_Click);
-            // 
-            // eBXBrowserToolStripMenuItem
-            // 
-            this.eBXBrowserToolStripMenuItem.Name = "eBXBrowserToolStripMenuItem";
-            this.eBXBrowserToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.eBXBrowserToolStripMenuItem.Text = "EBX Browser";
-            this.eBXBrowserToolStripMenuItem.Click += new System.EventHandler(this.eBXBrowserToolStripMenuItem_Click);
-            // 
-            // textureBrowserToolStripMenuItem
-            // 
-            this.textureBrowserToolStripMenuItem.Name = "textureBrowserToolStripMenuItem";
-            this.textureBrowserToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.textureBrowserToolStripMenuItem.Text = "Texture Browser";
-            this.textureBrowserToolStripMenuItem.Click += new System.EventHandler(this.textureBrowserToolStripMenuItem_Click);
+            this.sHA1LookupToolStripMenuItem.Name = "sHA1LookupToolStripMenuItem";
+            this.sHA1LookupToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.sHA1LookupToolStripMenuItem.Text = "SHA1 Lookup";
+            this.sHA1LookupToolStripMenuItem.Click += new System.EventHandler(this.sHA1LookupToolStripMenuItem_Click_1);
             // 
             // MainForm
             // 
@@ -277,7 +286,6 @@ namespace DAIToolsWV
         private ToolStripMenuItem rESETALLToolStripMenuItem;
         private ToolStripMenuItem cASContainerCreatorToolStripMenuItem;
         private ToolStripMenuItem textureToolToolStripMenuItem;
-        private ToolStripMenuItem sHA1LookupToolStripMenuItem;
         private ToolStripMenuItem modToolsToolStripMenuItem;
         private ToolStripMenuItem modEditorToolStripMenuItem;
         private ToolStripMenuItem modRunnerToolStripMenuItem;
@@ -287,6 +295,8 @@ namespace DAIToolsWV
         private ToolStripMenuItem bundleBrowserToolStripMenuItem;
         private ToolStripMenuItem eBXBrowserToolStripMenuItem;
         private ToolStripMenuItem textureBrowserToolStripMenuItem;
+        private ToolStripMenuItem talktableToolToolStripMenuItem;
+        private ToolStripMenuItem sHA1LookupToolStripMenuItem;
     }
 }
 

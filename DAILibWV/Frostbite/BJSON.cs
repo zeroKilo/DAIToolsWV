@@ -15,6 +15,20 @@ namespace DAILibWV.Frostbite
             public int type;
             public List<Field> fields;
             public string type87name;
+            public Field FindField(string name)
+            {
+                foreach (Field f in fields)
+                    if (f.fieldname == name)
+                        return f;
+                    else if (f.type == 1)
+                        foreach (Entry e in (List<Entry>)f.data)
+                        {
+                            Field result = e.FindField(name);
+                            if (result != null)
+                                return result;
+                        }
+                return null;
+            }
         }
 
         public class Field

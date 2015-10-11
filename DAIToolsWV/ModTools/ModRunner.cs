@@ -162,6 +162,7 @@ namespace DAIToolsWV.ModTools
                     return;
                 }
             }
+            DbgPrint("All found.");
             //create cas data
             byte[] newsha1 = CreateCASContainer(mj);
             if (newsha1.Length != 0x14)
@@ -228,9 +229,9 @@ namespace DAIToolsWV.ModTools
             {
                 //get entry infos
                 BJSON.Entry b = ((List<BJSON.Entry>)bundles.data)[i];
-                BJSON.Field f_offset = FindField(b, "offset");
-                BJSON.Field f_size = FindField(b, "size");
-                BJSON.Field f_isBase = FindField(b, "base");
+                BJSON.Field f_offset = b.FindField("offset");
+                BJSON.Field f_size = b.FindField("size");
+                BJSON.Field f_isBase = b.FindField("base");
                 //if not our target and not copied from base, copy from old SB
                 if (i != index && f_isBase == null)
                 {
@@ -273,8 +274,8 @@ namespace DAIToolsWV.ModTools
             for (int i = 0; i < count; i++)
             {
                 BJSON.Entry b = ((List<BJSON.Entry>)bundles.data)[i];
-                BJSON.Field f_offset = FindField(b, "offset");
-                BJSON.Field f_isBase = FindField(b, "base");
+                BJSON.Field f_offset = b.FindField("offset");
+                BJSON.Field f_isBase = b.FindField("base");
                 //if is in sb file, update
                 if (f_isBase == null)
                 {
@@ -306,8 +307,8 @@ namespace DAIToolsWV.ModTools
                 BJSON.Entry root = toc.lines[0];
                 BJSON.Field bundles = root.fields[0];
                 BJSON.Entry bun = ((List<BJSON.Entry>)bundles.data)[index];
-                BJSON.Field isDeltaField = FindField(bun, "delta");
-                BJSON.Field isBaseField = FindField(bun, "base");
+                BJSON.Field isDeltaField = bun.FindField("delta");
+                BJSON.Field isBaseField = bun.FindField("base");
                 //if is base, copy from base, make delta and recompile
                 if (isBaseField != null && (bool)isBaseField.data == true)
                     if (!ImportBundleFromBase(toc, tocpath, index, bpath))
@@ -325,16 +326,16 @@ namespace DAIToolsWV.ModTools
                 for (int i = 0; i < count; i++)
                 {
                     bun = ((List<BJSON.Entry>)bundles.data)[i];
-                    BJSON.Field res = FindField(bun, "res");
-                    BJSON.Field chunks = FindField(bun, "chunks");
-                    BJSON.Field path = FindField(bun, "path");
+                    BJSON.Field res = bun.FindField("res");
+                    BJSON.Field chunks = bun.FindField("chunks");
+                    BJSON.Field path = bun.FindField("path");
                     if (!(path != null && (string)path.data == bpath) || res == null || chunks == null)
                         continue;
                     //find right res entry
                     foreach (BJSON.Entry res_e in ((List<BJSON.Entry>)res.data))
                     {
-                        BJSON.Field f_sha1 = FindField(res_e, "sha1");
-                        BJSON.Field f_name = FindField(res_e, "name");
+                        BJSON.Field f_sha1 = res_e.FindField("sha1");
+                        BJSON.Field f_name = res_e.FindField("name");
                         if (f_name != null && (string)f_name.data == mj.respath && f_sha1 != null)
                         {
                             //get res data and extract chunk id
@@ -355,8 +356,8 @@ namespace DAIToolsWV.ModTools
                             //find right chunk by id
                             for (int j = 0; j < chunklist.Count; j++)
                             {
-                                BJSON.Field f2_sha1 = FindField(chunklist[j], "sha1");
-                                BJSON.Field f2_id = FindField(chunklist[j], "id");
+                                BJSON.Field f2_sha1 = chunklist[j].FindField("sha1");
+                                BJSON.Field f2_id = chunklist[j].FindField("id");
                                 //patch in new sha1
                                 if (f2_id != null && Helpers.ByteArrayCompare((byte[])f2_id.data, chunkidbuff) && f2_sha1 != null) 
                                 {
@@ -399,9 +400,9 @@ namespace DAIToolsWV.ModTools
         public byte[] CreateCASContainer(Mod.ModJob mj)
         {
             //generating cas data
-            DbgPrint("  Creating CAS container for new data");
+            DbgPrint("Creating CAS container for new data");
             byte[] data = CASFile.MakeHeaderAndContainer(mj.data);
-            DbgPrint("  Finding free CAS...");
+            DbgPrint("Finding free CAS...");
             int casindex = 99;
             FileStream fs;
             long pos;
@@ -418,7 +419,7 @@ namespace DAIToolsWV.ModTools
             string caspath = outputPath + "Data\\cas_" + casindex.ToString("D2") + ".cas";
             if (!File.Exists(caspath))
                 File.WriteAllBytes(caspath, new byte[0]);
-            DbgPrint("  Choosing : cas_" + casindex.ToString("D2") + ".cas");
+            DbgPrint("Choosing : cas_" + casindex.ToString("D2") + ".cas");
             fs = new FileStream(caspath, FileMode.Open, FileAccess.Read);
             //get new offset
             fs.Seek(0, SeekOrigin.End);
@@ -428,7 +429,7 @@ namespace DAIToolsWV.ModTools
             fs.Write(data, 0, data.Length);
             fs.Close();
             //creating new CAT entry with new SHA1
-            DbgPrint("  Appended Data, updating CAT file...");
+            DbgPrint("Appended Data, updating CAT file...");
             if (!File.Exists(outputPath + "Data\\cas.cat"))
             {
                 DbgPrint("Error: cant find CAT file, skipping!");
@@ -444,14 +445,6 @@ namespace DAIToolsWV.ModTools
             fs.Write(BitConverter.GetBytes(casindex), 0, 4);
             fs.Close();
             return newsha1;
-        }
-
-        public BJSON.Field FindField(BJSON.Entry e, string name)
-        {
-            foreach (BJSON.Field f in e.fields)
-                if (f.fieldname == name)
-                    return f;
-            return null;
         }
     }
 }
