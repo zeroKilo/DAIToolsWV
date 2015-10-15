@@ -102,10 +102,12 @@ namespace DAIToolsWV.ModTools
             {
                 case 0:
                     sb.AppendLine("Affected ressource path: " + mj.respath);
-                    sb.AppendLine("Affected bundle paths (" + mj.bundlePaths.Count + "):");
-                    int count = 0;
+                    sb.AppendLine("Affected bundle paths (" + mj.bundlePaths.Count + "):");                    
                     foreach (string p in mj.bundlePaths)
-                        sb.AppendLine("\t" + mj.tocPaths[count++] + " -> " + p);
+                        sb.AppendLine("\t" + p);
+                    sb.AppendLine("Affected toc files (" + mj.tocPaths.Count + "):");
+                    foreach (string p in mj.tocPaths)
+                        sb.AppendLine("\t" + p);
                     break;
                 default:
                     return;
@@ -152,14 +154,57 @@ namespace DAIToolsWV.ModTools
 
         public void RunTextureJob(Mod.ModJob mj)
         {
+            DbgPrint("Running Texture Replacement Job for: " + mj.respath);
             //Check Toc Files
+            List<string> reducedTocPaths = new List<string>();
+            bool found = false;
+            foreach (string p in mj.tocPaths)
+            {
+                found = false;
+                for (int i = 0; i < reducedTocPaths.Count; i++)
+                    if (p == reducedTocPaths[i])
+                    {
+                        found = true;
+                        break;
+                    }
+                if (!found)
+                    reducedTocPaths.Add(p);
+            }
+            mj.tocPaths = reducedTocPaths;
+            List<string> reducedBundlePaths = new List<string>();            
+            foreach (string p in mj.bundlePaths)
+            {
+                found = false;
+                for (int i = 0; i < reducedBundlePaths.Count; i++)
+                    if (p == reducedBundlePaths[i])
+                    {
+                        found = true;
+                        break;
+                    }
+                if (!found)
+                    reducedBundlePaths.Add(p);
+            }
+            mj.bundlePaths = reducedBundlePaths;
             foreach (string tocpath in mj.tocPaths)
             {
+                if (tocpath.ToLower().Contains("\\patch\\"))
+                    continue;
                 DbgPrint("Checking for : " + tocpath);
-                if (!File.Exists(outputPath + tocpath))
+                if (!tocpath.ToLower().StartsWith("update"))
                 {
-                    DbgPrint("Error: TOC file not found, aborting!");
-                    return;
+                    if (!File.Exists(outputPath + tocpath))
+                    {
+                        DbgPrint("Error: TOC file not found, aborting!");
+                        return;
+                    }
+                }
+                else
+                {
+                    if (!File.Exists(outputPath + Helpers.SkipSubFolder(tocpath, 2)))
+                    {
+                        DbgPrint("Error: TOC file not found, aborting!");
+                        return;
+                    }
                 }
             }
             DbgPrint("All found.");
@@ -172,25 +217,179 @@ namespace DAIToolsWV.ModTools
             }
             //walk through affected toc files
             foreach (string tocpath in mj.tocPaths)
-                RunRessourceJob(mj, tocpath, newsha1);
+                if (!tocpath.ToLower().Contains("\\patch\\"))
+                    RunRessourceJob(mj, tocpath, newsha1);
         }
 
         public void RunRessourceJob(Mod.ModJob mj, string tocpath, byte[] newsha1)
         {
-            //check if incas
+            if (!tocpath.ToLower().StartsWith("update"))
             DbgPrint("Loading : " + tocpath);
-            TOCFile toc = new TOCFile(outputPath + tocpath);
-            if (!toc.iscas)
-            {
-                DbgPrint("Error: TOC is not saving in CAS, skipping!");
-                return;
-            }
+            TOCFile toc = null;
+            if (!tocpath.ToLower().StartsWith("update"))
+                toc = new TOCFile(outputPath + tocpath);
+            else
+                toc = new TOCFile(outputPath + Helpers.SkipSubFolder(tocpath, 2));
             //walk through affected bundles
             foreach (string bpath in mj.bundlePaths)
                 RunRessourceJobOnBundle(mj, toc, tocpath, newsha1, bpath);
         }
 
-        public bool ImportBundleFromBase(TOCFile toc,string tocpath,int index, string bpath)
+        public void RunRessourceJobOnBundle(Mod.ModJob mj, TOCFile toc, string tocpath, byte[] newsha1, string bpath)
+        {
+            int count = 0;
+            int index = -1;
+            foreach (TOCFile.TOCBundleInfoStruct buni in toc.bundles)
+                if (count++ > -1 && bpath == buni.id)
+                {
+                    DbgPrint(" Found bundle : " + bpath);
+                    index = count - 1;
+                    break;
+                }
+            //if bundle found
+            if (index != -1)
+            {
+                if (!toc.iscas)
+                {
+                    DbgPrint(" Warning: binary bundles not supported yet, skipping!");
+                    return;
+                }
+                //find out if base or delta
+                BJSON.Entry root = toc.lines[0];
+                BJSON.Field bundles = root.fields[0];
+                BJSON.Entry bun = ((List<BJSON.Entry>)bundles.data)[index];
+                BJSON.Field isDeltaField = bun.FindField("delta");
+                BJSON.Field isBaseField = bun.FindField("base");
+                //if is base, copy from base, make delta and recompile
+                if (isBaseField != null && (bool)isBaseField.data == true)
+                    if (!ImportBundleFromBase(toc, tocpath, index, bpath))
+                        return;
+                //check if already is in sb
+                if (isDeltaField != null && (bool)isDeltaField.data == true)
+                    DbgPrint("  Its already a delta");
+                DbgPrint("  Updating SB file with new SHA1...");//yeah, pretty much
+                string SBpath = outputPath + Path.GetDirectoryName(tocpath) + "\\" + Path.GetFileNameWithoutExtension(tocpath) + ".sb";
+                SBFile sb = new SBFile(SBpath);
+                root = sb.lines[0];
+                bundles = root.fields[0];
+                count = ((List<BJSON.Entry>)bundles.data).Count;
+                //find right bundle
+                for (int i = 0; i < count; i++)
+                {
+                    bun = ((List<BJSON.Entry>)bundles.data)[i];
+                    BJSON.Field ebx = bun.FindField("ebx");
+                    BJSON.Field res = bun.FindField("res");
+                    BJSON.Field chunks = bun.FindField("chunks");
+                    BJSON.Field path = bun.FindField("path");
+                    if (!(path != null && (string)path.data == bpath) || res == null || chunks == null)
+                        continue;
+                    bool found = false;
+                    ////find right ebx entry
+                    //foreach (BJSON.Entry ebx_e in ((List<BJSON.Entry>)ebx.data))
+                    //{
+                    //    BJSON.Field f_name = ebx_e.FindField("name");
+                    //    BJSON.Field f_casPatchType = ebx_e.FindField("casPatchType");
+                    //    if (f_name != null && (string)f_name.data == mj.respath)
+                    //    {
+                    //        DbgPrint("  Found ebx");
+                    //        found = true;
+                    //        if (f_casPatchType != null)
+                    //            f_casPatchType.data = BitConverter.GetBytes((int)1);
+                    //        else
+                    //        {
+                    //            f_casPatchType = new BJSON.Field();
+                    //            f_casPatchType.fieldname = "casPatchType";
+                    //            f_casPatchType.type = 8;
+                    //            f_casPatchType.data = BitConverter.GetBytes((int)1);
+                    //            ebx_e.fields.Add(f_casPatchType);
+                    //        }
+                    //        DbgPrint("  casPatchType set to 1");
+                    //    }
+                    //}
+                    //if (!found)
+                    //{
+                    //    DbgPrint("  Error: cant find ebx, skipping!");
+                    //    break;
+                    //}
+                    //
+                    //found = false;
+                    byte[] chunkidbuff = new byte[16];
+                    //find right res entry
+                    foreach (BJSON.Entry res_e in ((List<BJSON.Entry>)res.data))
+                    {
+                        BJSON.Field f_sha1 = res_e.FindField("sha1");
+                        BJSON.Field f_name = res_e.FindField("name");
+                        BJSON.Field f_casPatchType = res_e.FindField("casPatchType");
+                        if (f_name != null && (string)f_name.data == mj.respath && f_sha1 != null)
+                        {
+                            //get res data and extract chunk id
+                            byte[] sha1buff = (byte[])f_sha1.data;
+                            DbgPrint("  Found res sha1 : " + Helpers.ByteArrayToHexString(sha1buff));
+                            byte[] resdata = SHA1Access.GetDataBySha1(sha1buff);
+                            if (resdata.Length == 0)
+                            {
+                                DbgPrint("  Error: cant find res data, skipping!");
+                                break;
+                            }
+                            for (int j = 0; j < 16; j++)
+                                chunkidbuff[j] = resdata[j + 0x1C];
+                            DbgPrint("  Found chunk id : " + Helpers.ByteArrayToHexString(chunkidbuff));
+                            //if (f_casPatchType != null)
+                            //    f_casPatchType.data = BitConverter.GetBytes((int)1);
+                            //else
+                            //{
+                            //    f_casPatchType = new BJSON.Field();
+                            //    f_casPatchType.fieldname = "casPatchType";
+                            //    f_casPatchType.type = 8;
+                            //    f_casPatchType.data = BitConverter.GetBytes((int)1);
+                            //    res_e.fields.Add(f_casPatchType);
+                            //}
+                            //DbgPrint("  casPatchType set to 1");
+                            found = true;
+                        }
+                    }
+                    if (!found)
+                    {
+                        DbgPrint("  Error: cant find res, skipping!");
+                        break;
+                    }
+                    found = false;
+                    //find right chunk entry
+                    foreach (BJSON.Entry chunk_e in ((List<BJSON.Entry>)chunks.data))
+                    {
+                        BJSON.Field f_id = chunk_e.FindField("id");
+                        BJSON.Field f2_sha1 = chunk_e.FindField("sha1");
+                        BJSON.Field f_casPatchType2 = chunk_e.FindField("casPatchType");
+                        if (f_id != null && Helpers.ByteArrayCompare((byte[])f_id.data, chunkidbuff))
+                        {
+                            DbgPrint("  Found chunk");
+                            found = true;
+                            if (f_casPatchType2 != null)
+                                f_casPatchType2.data = BitConverter.GetBytes((int)1);
+                            else
+                            {
+                                f_casPatchType2 = new BJSON.Field();
+                                f_casPatchType2.fieldname = "casPatchType";
+                                f_casPatchType2.type = 8;
+                                f_casPatchType2.data = BitConverter.GetBytes((int)1);
+                                chunk_e.fields.Add(f_casPatchType2);
+                            }
+                            DbgPrint("  casPatchType set to 1");
+                            f2_sha1.data = newsha1;
+                            sb.Save();
+                            found = true;
+                            DbgPrint("  Replaced chunk sha1 and saved SB file");
+                            DbgPrint("  Job successfull!");
+                            break;
+                        }
+                    }
+                    if (!found)
+                        DbgPrint("  Error: Could not find Chunk by id");
+                }
+            }
+        }
+
+        public bool ImportBundleFromBase(TOCFile toc, string tocpath, int index, string bpath)
         {
             DbgPrint("  Its a base reference! Copying in from base...");
             //Find base toc
@@ -287,98 +486,6 @@ namespace DAIToolsWV.ModTools
             toc.Save();
             DbgPrint("  Bundle imported");
             return true;
-        }
-
-        public void RunRessourceJobOnBundle(Mod.ModJob mj, TOCFile toc, string tocpath, byte[] newsha1, string bpath)
-        {
-            int count = 0;
-            int index = -1;
-            foreach (TOCFile.TOCBundleInfoStruct buni in toc.bundles)
-                if (count++ > -1 && bpath == buni.id)
-                {
-                    DbgPrint(" Found bundle : " + bpath);
-                    index = count - 1;
-                    break;
-                }
-            //if bundle found
-            if (index != -1)
-            {                
-                //find out if base or delta
-                BJSON.Entry root = toc.lines[0];
-                BJSON.Field bundles = root.fields[0];
-                BJSON.Entry bun = ((List<BJSON.Entry>)bundles.data)[index];
-                BJSON.Field isDeltaField = bun.FindField("delta");
-                BJSON.Field isBaseField = bun.FindField("base");
-                //if is base, copy from base, make delta and recompile
-                if (isBaseField != null && (bool)isBaseField.data == true)
-                    if (!ImportBundleFromBase(toc, tocpath, index, bpath))
-                        return;
-                //check if already is in sb
-                if (isDeltaField != null && (bool)isDeltaField.data == true)
-                    DbgPrint("  Its already a delta");
-                DbgPrint("  Updating SB file with new SHA1...");//yeah, pretty much
-                string SBpath = outputPath + Path.GetDirectoryName(tocpath) + "\\" + Path.GetFileNameWithoutExtension(tocpath) + ".sb";
-                SBFile sb = new SBFile(SBpath);
-                root = sb.lines[0];
-                bundles = root.fields[0];
-                count = ((List<BJSON.Entry>)bundles.data).Count;
-                //find right bundle
-                for (int i = 0; i < count; i++)
-                {
-                    bun = ((List<BJSON.Entry>)bundles.data)[i];
-                    BJSON.Field res = bun.FindField("res");
-                    BJSON.Field chunks = bun.FindField("chunks");
-                    BJSON.Field path = bun.FindField("path");
-                    if (!(path != null && (string)path.data == bpath) || res == null || chunks == null)
-                        continue;
-                    //find right res entry
-                    foreach (BJSON.Entry res_e in ((List<BJSON.Entry>)res.data))
-                    {
-                        BJSON.Field f_sha1 = res_e.FindField("sha1");
-                        BJSON.Field f_name = res_e.FindField("name");
-                        if (f_name != null && (string)f_name.data == mj.respath && f_sha1 != null)
-                        {
-                            //get res data and extract chunk id
-                            byte[] sha1buff = (byte[])f_sha1.data;
-                            DbgPrint("  Found res sha1 : " + Helpers.ByteArrayToHexString(sha1buff));
-                            byte[] resdata = SHA1Access.GetDataBySha1(sha1buff);
-                            if (resdata.Length == 0)
-                            {
-                                DbgPrint("  Error: cant find res data, skipping!");
-                                break;
-                            }
-                            byte[] chunkidbuff = new byte[16];
-                            for (int j = 0; j < 16; j++)
-                                chunkidbuff[j] = resdata[j + 0x1C];
-                            DbgPrint("  Found chunk id : " + Helpers.ByteArrayToHexString(chunkidbuff));
-                            List<BJSON.Entry> chunklist = (List<BJSON.Entry>)chunks.data;
-                            bool replaced = false;
-                            //find right chunk by id
-                            for (int j = 0; j < chunklist.Count; j++)
-                            {
-                                BJSON.Field f2_sha1 = chunklist[j].FindField("sha1");
-                                BJSON.Field f2_id = chunklist[j].FindField("id");
-                                //patch in new sha1
-                                if (f2_id != null && Helpers.ByteArrayCompare((byte[])f2_id.data, chunkidbuff) && f2_sha1 != null) 
-                                {
-                                    f2_sha1.data = newsha1;
-                                    sb.Save();
-                                    replaced = true;
-                                    DbgPrint("  Replaced chunk sha1 and saved SB file");
-                                    DbgPrint("  Job successfull!");
-                                    break;
-                                }
-                            }
-                            if (!replaced)
-                                DbgPrint("  Error: Could not find Chunk by id");
-                        }
-                    }
-                }
-            }
-            else
-            {
-                DbgPrint(" Error: could find bundle " + bpath);
-            }
         }
 
         private void CopyFileStream(Stream s_in, Stream s_out, long offset, int size)

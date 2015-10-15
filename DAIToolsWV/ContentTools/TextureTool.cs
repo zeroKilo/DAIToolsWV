@@ -268,6 +268,7 @@ namespace DAIToolsWV.ContentTools
                     mj.bundlePaths = new List<string>();
                     mj.tocPaths = new List<string>();
                     int plen = GlobalStuff.FindSetting("gamepath").Length;
+                    bool skip = false;
                     for (int i = 0; i < bil.Length; i++)
                     {
                         DBAccess.BundleInformation buni = bil[i];
@@ -277,8 +278,27 @@ namespace DAIToolsWV.ContentTools
                                 ti = t;
                         DBAccess.TOCInformation toci = DBAccess.GetTocInformationByIndex(buni.tocIndex);
                         mj.respath = ti.name;
-                        mj.bundlePaths.Add(buni.bundlepath);
-                        mj.tocPaths.Add(toci.path.Substring(plen, toci.path.Length - plen));
+                        skip = false;
+                        foreach (string p in mj.bundlePaths)
+                            if (p == buni.bundlepath)
+                            {
+                                skip = true;
+                                break;
+                            }
+                        if (!skip)
+                            mj.bundlePaths.Add(buni.bundlepath);
+                        string tpath = toci.path.Substring(plen, toci.path.Length - plen);
+                        skip = false;
+                        foreach (string p in mj.tocPaths)
+                            if (p == tpath)
+                            {
+                                skip = true;
+                                break;
+                            }
+                        if (tpath.ToLower().Contains("\\patch\\"))
+                            skip = true;
+                        if (!skip)
+                            mj.tocPaths.Add(tpath);
                     }
                     MemoryStream m = new MemoryStream();
                     m.Write(data, 0x80, data.Length - 0x80);

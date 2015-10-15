@@ -178,6 +178,18 @@
       <DependentUpon>TOCTool_InputForm.cs</DependentUpon>
     </Compile>
     <Compile Include="FixedByteProvider.cs" />
+    <Compile Include="GeneralTools\CATrepair.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GeneralTools\CATrepair.Designer.cs">
+      <DependentUpon>CATrepair.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GeneralTools\HexToString.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GeneralTools\HexToString.Designer.cs">
+      <DependentUpon>HexToString.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -254,6 +266,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FileTools\TOCTool_InputForm.resx">
       <DependentUpon>TOCTool_InputForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GeneralTools\CATrepair.resx">
+      <DependentUpon>CATrepair.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GeneralTools\HexToString.resx">
+      <DependentUpon>HexToString.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

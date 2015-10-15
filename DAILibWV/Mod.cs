@@ -21,7 +21,7 @@ namespace DAILibWV
 
         public string headerXML;
         public List<ModJob> jobs;
-        public static readonly int currVersion = 1;
+        public static readonly int currVersion = 2;
 
         public string GetTypeName(int type)
         {
@@ -99,18 +99,20 @@ namespace DAILibWV
                     mj.data = dataList[index];
                     r.ReadToFollowing("respath");
                     mj.respath = r.ReadElementContentAsString();
-                    r.ReadToFollowing("count");
-                    int count = Convert.ToInt32(r.ReadElementContentAsString());
+                    r.ReadToFollowing("countbundles");
+                    int countbundles = Convert.ToInt32(r.ReadElementContentAsString());
+                    r.ReadToFollowing("counttocs");
+                    int counttocs = Convert.ToInt32(r.ReadElementContentAsString());
                     r.ReadToFollowing("bundles");
                     mj.bundlePaths = new List<string>();
-                    for (int i = 0; i < count; i++)
+                    for (int i = 0; i < countbundles; i++)
                     {
                         r.ReadToFollowing("path");
                         mj.bundlePaths.Add(r.ReadElementContentAsString());
                     }
                     r.ReadToFollowing("tocfiles");
                     mj.tocPaths = new List<string>();
-                    for (int i = 0; i < count; i++)
+                    for (int i = 0; i < counttocs; i++)
                     {
                         r.ReadToFollowing("path");
                         mj.tocPaths.Add(r.ReadElementContentAsString());
@@ -120,14 +122,15 @@ namespace DAILibWV
             jobs.Add(mj);
         }
 
-        public void Save(string path)
+        public void Save(string path, bool createHeader = true)
         {
-            File.WriteAllBytes(path, Save());
+            File.WriteAllBytes(path, Save(createHeader));
         }
 
-        public byte[] Save()
+        public byte[] Save(bool createHeader = true)
         {
-            CreateHeader();
+            if(createHeader)
+                CreateHeader();
             MemoryStream m = new MemoryStream();
             Helpers.WriteInt(m, headerXML.Length);
             foreach (char c in headerXML)
@@ -152,7 +155,7 @@ namespace DAILibWV
             w.WriteStartDocument();
             w.WriteStartElement("mod");
             w.WriteStartElement("details");
-            w.WriteElementString("version", "1");
+            w.WriteElementString("version", "2");
             w.WriteElementString("game", "DAI");
             w.WriteElementString("author", "unknown");
             w.WriteElementString("creationdate", DateTime.Now.ToLongDateString());
@@ -171,7 +174,8 @@ namespace DAILibWV
                     case 0:
                         w.WriteElementString("dataindex", (datacount++).ToString());
                         w.WriteElementString("respath", mj.respath);
-                        w.WriteElementString("count", mj.bundlePaths.Count.ToString());
+                        w.WriteElementString("countbundles", mj.bundlePaths.Count.ToString());
+                        w.WriteElementString("counttocs", mj.tocPaths.Count.ToString());
                         w.WriteStartElement("bundles");
                         foreach (string p in mj.bundlePaths)
                             w.WriteElementString("path", p);

@@ -22,6 +22,7 @@ namespace DAIToolsWV.FileTools
         public CASFile cas;
         public BinaryBundle binBundle;
         public string basepath;
+        public string lastsearch = "";
 
         public SBTool()
         {
@@ -338,6 +339,39 @@ namespace DAIToolsWV.FileTools
                 RefreshTree();
                 return;
             }
+        }
+
+        private void findToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            lastsearch = Microsoft.VisualBasic.Interaction.InputBox("Please enter search value", "Edit", lastsearch).ToLower();
+            for(int i=0;i<listBox2.Items.Count;i++)
+                if (listBox2.Items[i].ToString().ToLower().Contains(lastsearch))
+                {
+                    listBox2.SelectedIndex = i;
+                    return;
+                }
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            lastsearch = Microsoft.VisualBasic.Interaction.InputBox("Please enter search value", "Edit", lastsearch).ToLower();
+            for (int i = 0; i < listBox3.Items.Count; i++)
+                if (listBox3.Items[i].ToString().ToLower().Contains(lastsearch))
+                {
+                    listBox3.SelectedIndex = i;
+                    return;
+                }
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            lastsearch = Microsoft.VisualBasic.Interaction.InputBox("Please enter search value", "Edit", lastsearch).ToLower();
+            for (int i = 0; i < listBox4.Items.Count; i++)
+                if (listBox4.Items[i].ToString().ToLower().Contains(lastsearch))
+                {
+                    listBox4.SelectedIndex = i;
+                    return;
+                }
         }
     }
 }

@@ -584,6 +584,18 @@ namespace DAILibWV
             return null;
         }
 
+
+
+        public static string SkipSubFolder(string path, int start)
+        {
+            string[] parts = path.Split('\\');
+            StringBuilder sb = new StringBuilder();
+            for (int i = start; i < parts.Length - 1; i++)
+                sb.Append(parts[i] + "\\");
+            sb.Append(parts[parts.Length - 1]);
+            return sb.ToString();
+        }
+
         public static Dictionary<uint, string> ResTypes = new Dictionary<uint, string>()
         #region data
         {

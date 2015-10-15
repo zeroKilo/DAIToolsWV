@@ -179,5 +179,15 @@ namespace DAIToolsWV
         {
             OpenMaxed(new ContentTools.SHA1Lookup());
         }
+
+        private void hexToStringToolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new GeneralTools.HexToString());
+        }
+
+        private void cATRepairToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new GeneralTools.CATrepair());
+        }
     }
 }

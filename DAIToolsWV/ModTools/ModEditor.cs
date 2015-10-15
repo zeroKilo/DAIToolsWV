@@ -86,7 +86,8 @@ namespace DAIToolsWV.ModTools
             d.Filter = "*.DAIMWV|*.DAIMWV";
             if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                mod.Save(d.FileName);
+                mod.headerXML = rtb1.Text;
+                mod.Save(d.FileName, false);
                 MessageBox.Show("Done.");
             }
         }

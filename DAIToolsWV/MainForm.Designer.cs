@@ -34,7 +34,9 @@ namespace DAIToolsWV
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.generalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hexToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sHA1LookupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cASContainerCreatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hexToStringToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tOCToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sBToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,7 +56,7 @@ namespace DAIToolsWV
             this.modEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sHA1LookupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cATRepairToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -78,7 +80,9 @@ namespace DAIToolsWV
             this.generalToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.hexToolToolStripMenuItem,
             this.sHA1LookupToolStripMenuItem,
-            this.cASContainerCreatorToolStripMenuItem});
+            this.cASContainerCreatorToolStripMenuItem,
+            this.hexToStringToolToolStripMenuItem,
+            this.cATRepairToolStripMenuItem});
             this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
             this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
             this.generalToolsToolStripMenuItem.Text = "General Tools";
@@ -90,12 +94,26 @@ namespace DAIToolsWV
             this.hexToolToolStripMenuItem.Text = "Hex Tool";
             this.hexToolToolStripMenuItem.Click += new System.EventHandler(this.hexToolToolStripMenuItem_Click_1);
             // 
+            // sHA1LookupToolStripMenuItem
+            // 
+            this.sHA1LookupToolStripMenuItem.Name = "sHA1LookupToolStripMenuItem";
+            this.sHA1LookupToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.sHA1LookupToolStripMenuItem.Text = "SHA1 Lookup";
+            this.sHA1LookupToolStripMenuItem.Click += new System.EventHandler(this.sHA1LookupToolStripMenuItem_Click_1);
+            // 
             // cASContainerCreatorToolStripMenuItem
             // 
             this.cASContainerCreatorToolStripMenuItem.Name = "cASContainerCreatorToolStripMenuItem";
             this.cASContainerCreatorToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.cASContainerCreatorToolStripMenuItem.Text = "CAS Container Creator";
             this.cASContainerCreatorToolStripMenuItem.Click += new System.EventHandler(this.cASContainerCreatorToolStripMenuItem_Click);
+            // 
+            // hexToStringToolToolStripMenuItem
+            // 
+            this.hexToStringToolToolStripMenuItem.Name = "hexToStringToolToolStripMenuItem";
+            this.hexToStringToolToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.hexToStringToolToolStripMenuItem.Text = "Hex To String Tool";
+            this.hexToStringToolToolStripMenuItem.Click += new System.EventHandler(this.hexToStringToolToolStripMenuItem_Click);
             // 
             // fileToolsToolStripMenuItem
             // 
@@ -157,21 +175,21 @@ namespace DAIToolsWV
             // eBXToolToolStripMenuItem
             // 
             this.eBXToolToolStripMenuItem.Name = "eBXToolToolStripMenuItem";
-            this.eBXToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.eBXToolToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.eBXToolToolStripMenuItem.Text = "EBX Tool";
             this.eBXToolToolStripMenuItem.Click += new System.EventHandler(this.eBXToolToolStripMenuItem_Click);
             // 
             // textureToolToolStripMenuItem
             // 
             this.textureToolToolStripMenuItem.Name = "textureToolToolStripMenuItem";
-            this.textureToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.textureToolToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.textureToolToolStripMenuItem.Text = "Texture Tool";
             this.textureToolToolStripMenuItem.Click += new System.EventHandler(this.textureToolToolStripMenuItem_Click);
             // 
             // talktableToolToolStripMenuItem
             // 
             this.talktableToolToolStripMenuItem.Name = "talktableToolToolStripMenuItem";
-            this.talktableToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.talktableToolToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.talktableToolToolStripMenuItem.Text = "Talktable Tool";
             this.talktableToolToolStripMenuItem.Click += new System.EventHandler(this.talktableToolToolStripMenuItem_Click);
             // 
@@ -245,12 +263,12 @@ namespace DAIToolsWV
             this.rESETALLToolStripMenuItem.Text = "RESET ALL";
             this.rESETALLToolStripMenuItem.Click += new System.EventHandler(this.rESETALLToolStripMenuItem_Click);
             // 
-            // sHA1LookupToolStripMenuItem
+            // cATRepairToolStripMenuItem
             // 
-            this.sHA1LookupToolStripMenuItem.Name = "sHA1LookupToolStripMenuItem";
-            this.sHA1LookupToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.sHA1LookupToolStripMenuItem.Text = "SHA1 Lookup";
-            this.sHA1LookupToolStripMenuItem.Click += new System.EventHandler(this.sHA1LookupToolStripMenuItem_Click_1);
+            this.cATRepairToolStripMenuItem.Name = "cATRepairToolStripMenuItem";
+            this.cATRepairToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.cATRepairToolStripMenuItem.Text = "CAT Repair";
+            this.cATRepairToolStripMenuItem.Click += new System.EventHandler(this.cATRepairToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -297,6 +315,8 @@ namespace DAIToolsWV
         private ToolStripMenuItem textureBrowserToolStripMenuItem;
         private ToolStripMenuItem talktableToolToolStripMenuItem;
         private ToolStripMenuItem sHA1LookupToolStripMenuItem;
+        private ToolStripMenuItem hexToStringToolToolStripMenuItem;
+        private ToolStripMenuItem cATRepairToolStripMenuItem;
     }
 }
 
