@@ -365,16 +365,22 @@ namespace DAIToolsWV.ModTools
                             DbgPrint("  Found chunk");
                             found = true;
                             if (f_casPatchType2 != null)
-                                f_casPatchType2.data = BitConverter.GetBytes((int)1);
-                            else
                             {
-                                f_casPatchType2 = new BJSON.Field();
-                                f_casPatchType2.fieldname = "casPatchType";
-                                f_casPatchType2.type = 8;
-                                f_casPatchType2.data = BitConverter.GetBytes((int)1);
-                                chunk_e.fields.Add(f_casPatchType2);
+                                if (chunk_e.RemoveField("casPatchType"))
+                                    DbgPrint("  casPatchType Propery found and removed");
+                                else
+                                    DbgPrint("  casPatchType Propery found but not removed");
+                                //f_casPatchType2.data = BitConverter.GetBytes((int)1);
                             }
-                            DbgPrint("  casPatchType set to 1");
+                            //else
+                            //{
+                            //    DbgPrint("  casPatchType added and set to 0");
+                            //    f_casPatchType2 = new BJSON.Field();
+                            //    f_casPatchType2.fieldname = "casPatchType";
+                            //    f_casPatchType2.type = 8;
+                            //    f_casPatchType2.data = BitConverter.GetBytes((int)0);
+                            //    chunk_e.fields.Add(f_casPatchType2);
+                            //}
                             f2_sha1.data = newsha1;
                             sb.Save();
                             found = true;

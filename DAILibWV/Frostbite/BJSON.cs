@@ -29,6 +29,16 @@ namespace DAILibWV.Frostbite
                         }
                 return null;
             }
+            public bool RemoveField(string name)
+            {
+                for (int i = 0; i < fields.Count; i++)
+                    if (fields[i].fieldname == name)
+                    {
+                        fields.RemoveAt(i);
+                        return true;
+                    }
+                return false;
+            }
         }
 
         public class Field
@@ -249,14 +259,15 @@ namespace DAILibWV.Frostbite
         {
             if (e.type == 0x87)
             {
-                t.Text = "87 (" + e.type87name + ")";
+                t.Text = "[87] (" + e.type87name + ")";
                 return t;
             }
             if (e.type == 0x82)
             {
+                int count = 0;
                 foreach (Field f in e.fields)
-                    if (f.type != 0)
-                        t.Nodes.Add(MakeField(new TreeNode(f.fieldname), f));
+                    if (count != -1 && f.type != 0)
+                        t.Nodes.Add(MakeField(new TreeNode((count++) + " : " +  f.fieldname), f));
             }
             return t;
         }
@@ -265,20 +276,16 @@ namespace DAILibWV.Frostbite
         {
             byte[] buff;
             if (f.fields != null)
-            {
                 foreach (Field subfield in f.fields)
-                {
                     t.Nodes.Add(MakeField(new TreeNode(subfield.fieldname), subfield));
-                }
-            }
             else
-            {
                 switch (f.type)
                 {
                     case 1:
                         List<Entry> listb = (List<Entry>)f.data;
+                        int count = 0;
                         foreach (Entry e in listb)
-                            t.Nodes.Add(MakeEntry(new TreeNode(e.type.ToString("X")), e));
+                            t.Nodes.Add(MakeEntry(new TreeNode(count++ + " : [" + e.type.ToString("X") + "]"), e));
                         break;
                     case 2:
                         List<Field> listf = (List<Field>)f.data;
@@ -333,7 +340,6 @@ namespace DAILibWV.Frostbite
                     default:
                         break;
                 }
-            }
             return t;
         }
     }

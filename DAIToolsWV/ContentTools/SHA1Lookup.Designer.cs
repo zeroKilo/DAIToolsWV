@@ -35,8 +35,8 @@
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.hb1 = new Be.Windows.Forms.HexBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.rtb1 = new System.Windows.Forms.RichTextBox();
@@ -48,6 +48,7 @@
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.listBox3 = new System.Windows.Forms.ListBox();
             this.rtb3 = new System.Windows.Forms.RichTextBox();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -73,10 +74,11 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripTextBox1,
             this.toolStripButton1,
-            this.toolStripButton2});
+            this.toolStripButton2,
+            this.toolStripButton3});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(518, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(628, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -115,7 +117,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 25);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(518, 291);
+            this.tabControl1.Size = new System.Drawing.Size(628, 307);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPage1
@@ -124,21 +126,10 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(510, 265);
+            this.tabPage1.Size = new System.Drawing.Size(620, 281);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Data";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.splitContainer1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(510, 265);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "EBX";
-            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // hb1
             // 
@@ -150,11 +141,22 @@
             this.hb1.Location = new System.Drawing.Point(3, 3);
             this.hb1.Name = "hb1";
             this.hb1.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hb1.Size = new System.Drawing.Size(504, 259);
+            this.hb1.Size = new System.Drawing.Size(614, 275);
             this.hb1.StringViewVisible = true;
             this.hb1.TabIndex = 6;
             this.hb1.UseFixedBytesPerLine = true;
             this.hb1.VScrollBarVisible = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.splitContainer1);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(510, 265);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "EBX";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // splitContainer1
             // 
@@ -310,11 +312,21 @@
             this.rtb3.Text = "";
             this.rtb3.WordWrap = false;
             // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(118, 22);
+            this.toolStripButton3.Text = "Find by offset and cas";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
+            // 
             // SHA1Lookup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(518, 316);
+            this.ClientSize = new System.Drawing.Size(628, 332);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.toolStrip1);
             this.Name = "SHA1Lookup";
@@ -364,5 +376,6 @@
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.ListBox listBox3;
         private System.Windows.Forms.RichTextBox rtb3;
+        private System.Windows.Forms.ToolStripButton toolStripButton3;
     }
 }

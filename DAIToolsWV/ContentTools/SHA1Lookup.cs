@@ -6,9 +6,11 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DAILibWV;
+using DAILibWV.Frostbite;
 using Be.Windows.Forms;
 
 namespace DAIToolsWV.ContentTools
@@ -27,6 +29,11 @@ namespace DAIToolsWV.ContentTools
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
+            Search();
+        }
+
+        private void Search()
+        {
             rtb1.Text = rtb2.Text = rtb3.Text = "";
             string sha1 = toolStripTextBox1.Text.Trim().ToLower();
             if (sha1.Length != 40)
@@ -35,6 +42,11 @@ namespace DAIToolsWV.ContentTools
                 return;
             }
             byte[] data = SHA1Access.GetDataBySha1(Helpers.HexStringToByteArray(sha1));
+            if (data.Length == 0)
+            {
+                MessageBox.Show("SHA1 not found!");
+                return;
+            }
             hb1.ByteProvider = new DynamicByteProvider(data);
             el = DBAccess.GetEBXInformationBySHA1(sha1);
             rl = DBAccess.GetRESInformationBySHA1(sha1);
@@ -43,7 +55,7 @@ namespace DAIToolsWV.ContentTools
             int count = 0;
             int l = GlobalStuff.FindSetting("gamepath").Length;
             foreach (DBAccess.EBXInformation ei in el)
-                listBox1.Items.Add((count++) + " : " +  ei.ebxname);
+                listBox1.Items.Add((count++) + " : " + ei.ebxname);
             listBox2.Items.Clear();
             count = 0;
             foreach (DBAccess.RESInformation ri in rl)
@@ -115,6 +127,53 @@ namespace DAIToolsWV.ContentTools
             rtb3.AppendText("TOC Path    : " + ti.path + "\n");
             rtb3.AppendText("In CAS      : " + ti.incas + "\n");
             rtb3.AppendText("SHA1        : " + Helpers.ByteArrayToHexString(ci.sha1) + "\n");
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                string input = Microsoft.VisualBasic.Interaction.InputBox("Please enter offset in decimal", "Find by offset and cas number", "");
+                uint offset = Convert.ToUInt32(input);
+                input = Microsoft.VisualBasic.Interaction.InputBox("Please enter cas number decimal", "Find by offset and cas number", "");
+                uint casnr = Convert.ToUInt32(input);
+                input = Microsoft.VisualBasic.Interaction.InputBox("Search base(b) or patch(p)?", "Find by offset and cas number", "b");
+                CATFile cat = null;
+                if (input != "p")
+                    cat = new CATFile(GlobalStuff.FindSetting("gamepath") + "Data\\cas.cat");
+                else
+                    cat = new CATFile(GlobalStuff.FindSetting("gamepath") + "Update\\Patch\\Data\\cas.cat");
+                byte[] sha1 = new byte[0];
+                for (int i = 0; i < cat.lines.Count; i++)
+                    if (cat.lines[i][7] == casnr && cat.lines[i][5] <= offset && cat.lines[i][5] + cat.lines[i][6] > offset)
+                    {
+                        MemoryStream m = new MemoryStream();
+                        for (int j = 0; j < 5; j++)
+                            Helpers.WriteLEUInt(m, cat.lines[i][j]);
+                        sha1 = m.ToArray();
+                        break;
+                    }
+                cat = null;
+                if(sha1.Length == 0)
+                {
+                    MessageBox.Show("SHA1 not found!");
+                    return;
+                }
+                toolStripTextBox1.Text = Helpers.ByteArrayToHexString(sha1);
+                Thread t = new Thread(ThreadedSearch);
+                t.Start();
+                MessageBox.Show("Done.");
+                return;
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void ThreadedSearch(object obj)
+        {
+            this.Invoke((MethodInvoker)delegate() { Search(); });
         }
     }
 }
