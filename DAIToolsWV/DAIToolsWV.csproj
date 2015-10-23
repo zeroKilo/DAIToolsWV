@@ -135,6 +135,12 @@
     <Compile Include="FileTools\CASContainerCreator.Designer.cs">
       <DependentUpon>CASContainerCreator.cs</DependentUpon>
     </Compile>
+    <Compile Include="GeneralTools\FolderCompare.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GeneralTools\FolderCompare.Designer.cs">
+      <DependentUpon>FolderCompare.cs</DependentUpon>
+    </Compile>
     <Compile Include="FileTools\HexTool.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -243,6 +249,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FileTools\CASContainerCreator.resx">
       <DependentUpon>CASContainerCreator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GeneralTools\FolderCompare.resx">
+      <DependentUpon>FolderCompare.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FileTools\HexTool.resx">
       <DependentUpon>HexTool.cs</DependentUpon>

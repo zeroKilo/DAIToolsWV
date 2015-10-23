@@ -209,7 +209,7 @@ namespace DAIToolsWV.ModTools
             }
             DbgPrint("All found.");
             //create cas data
-            byte[] newsha1 = CreateCASContainer(mj);
+            byte[] newsha1 = CreateCASContainer(mj.data);
             if (newsha1.Length != 0x14)
             {
                 DbgPrint("Error: could not create CAS data, aborting!");
@@ -256,7 +256,29 @@ namespace DAIToolsWV.ModTools
                 }
                 //find out if base or delta
                 BJSON.Entry root = toc.lines[0];
-                BJSON.Field bundles = root.fields[0];
+                //BJSON.Field name = root.FindField("name");
+                //BJSON.Field super = root.FindField("alwaysEmitSuperbundle");
+                //if (name == null)
+                //{
+                //    BJSON.Field f = new BJSON.Field();
+                //    f.fieldname = "name";
+                //    f.type = 7;
+                //    string nstring = tocpath.Replace(".toc", "");
+                //    nstring = nstring.Replace("Data\\", "");
+                //    nstring = nstring.Replace("\\", "/");
+                //    f.data = nstring;
+                //    root.fields.Add(f);
+                //}
+                //if (super == null)
+                //{
+                //    BJSON.Field f = new BJSON.Field();
+                //    f.fieldname = "alwaysEmitSuperbundle";
+                //    f.type = 6;
+                //    f.data = true;
+                //    root.fields.Add(f);
+                //}
+                //toc.Save();
+                BJSON.Field bundles = root.FindField("bundles");
                 BJSON.Entry bun = ((List<BJSON.Entry>)bundles.data)[index];
                 BJSON.Field isDeltaField = bun.FindField("delta");
                 BJSON.Field isBaseField = bun.FindField("base");
@@ -280,40 +302,13 @@ namespace DAIToolsWV.ModTools
                     BJSON.Field ebx = bun.FindField("ebx");
                     BJSON.Field res = bun.FindField("res");
                     BJSON.Field chunks = bun.FindField("chunks");
+                    bun.RemoveField("chunkMeta");
                     BJSON.Field path = bun.FindField("path");
                     if (!(path != null && (string)path.data == bpath) || res == null || chunks == null)
                         continue;
                     bool found = false;
-                    ////find right ebx entry
-                    //foreach (BJSON.Entry ebx_e in ((List<BJSON.Entry>)ebx.data))
-                    //{
-                    //    BJSON.Field f_name = ebx_e.FindField("name");
-                    //    BJSON.Field f_casPatchType = ebx_e.FindField("casPatchType");
-                    //    if (f_name != null && (string)f_name.data == mj.respath)
-                    //    {
-                    //        DbgPrint("  Found ebx");
-                    //        found = true;
-                    //        if (f_casPatchType != null)
-                    //            f_casPatchType.data = BitConverter.GetBytes((int)1);
-                    //        else
-                    //        {
-                    //            f_casPatchType = new BJSON.Field();
-                    //            f_casPatchType.fieldname = "casPatchType";
-                    //            f_casPatchType.type = 8;
-                    //            f_casPatchType.data = BitConverter.GetBytes((int)1);
-                    //            ebx_e.fields.Add(f_casPatchType);
-                    //        }
-                    //        DbgPrint("  casPatchType set to 1");
-                    //    }
-                    //}
-                    //if (!found)
-                    //{
-                    //    DbgPrint("  Error: cant find ebx, skipping!");
-                    //    break;
-                    //}
-                    //
-                    //found = false;
                     byte[] chunkidbuff = new byte[16];
+                    byte[] newchunkid = new byte[16];
                     //find right res entry
                     foreach (BJSON.Entry res_e in ((List<BJSON.Entry>)res.data))
                     {
@@ -334,17 +329,32 @@ namespace DAIToolsWV.ModTools
                             for (int j = 0; j < 16; j++)
                                 chunkidbuff[j] = resdata[j + 0x1C];
                             DbgPrint("  Found chunk id : " + Helpers.ByteArrayToHexString(chunkidbuff));
-                            //if (f_casPatchType != null)
-                            //    f_casPatchType.data = BitConverter.GetBytes((int)1);
-                            //else
-                            //{
-                            //    f_casPatchType = new BJSON.Field();
-                            //    f_casPatchType.fieldname = "casPatchType";
-                            //    f_casPatchType.type = 8;
-                            //    f_casPatchType.data = BitConverter.GetBytes((int)1);
-                            //    res_e.fields.Add(f_casPatchType);
-                            //}
-                            //DbgPrint("  casPatchType set to 1");
+                            newchunkid = Guid.NewGuid().ToByteArray();
+                            DbgPrint("  Creating new chunk id : " + Helpers.ByteArrayToHexString(newchunkid));
+                            for (int j = 0; j < 16; j++)
+                                resdata[j + 0x1C] = newchunkid[j];
+                            byte[] newressha1 = CreateCASContainer(resdata);
+                            DbgPrint("  Creating new res sha1 : " + Helpers.ByteArrayToHexString(newressha1));
+                            f_sha1.data = newressha1;
+                            if (f_casPatchType != null)
+                            {
+                                if (BitConverter.ToInt32((byte[])f_casPatchType.data, 0) != 1)
+                                {
+                                    DbgPrint("  CasPatchType: found and set to 1!");
+                                    f_casPatchType.data = BitConverter.GetBytes((int)1);
+                                }
+                                else
+                                    DbgPrint("  CasPatchType: found and is fine!");
+                            }
+                            else
+                            {
+                                f_casPatchType = new BJSON.Field();
+                                f_casPatchType.fieldname = "casPatchType";
+                                f_casPatchType.type = 8;
+                                f_casPatchType.data = BitConverter.GetBytes((int)1);
+                                res_e.fields.Add(f_casPatchType);
+                                DbgPrint("  CasPatchType: added and set to 1!");
+                            }
                             found = true;
                         }
                     }
@@ -363,24 +373,27 @@ namespace DAIToolsWV.ModTools
                         if (f_id != null && Helpers.ByteArrayCompare((byte[])f_id.data, chunkidbuff))
                         {
                             DbgPrint("  Found chunk");
+                            f_id.data = newchunkid;
                             found = true;
                             if (f_casPatchType2 != null)
                             {
-                                if (chunk_e.RemoveField("casPatchType"))
-                                    DbgPrint("  casPatchType Propery found and removed");
+                                if (BitConverter.ToInt32((byte[])f_casPatchType2.data, 0) != 1)
+                                {
+                                    DbgPrint("  CasPatchType: found and set to 1!");
+                                    f_casPatchType2.data = BitConverter.GetBytes((int)1);
+                                }
                                 else
-                                    DbgPrint("  casPatchType Propery found but not removed");
-                                //f_casPatchType2.data = BitConverter.GetBytes((int)1);
+                                    DbgPrint("  CasPatchType: found and is fine!");
                             }
-                            //else
-                            //{
-                            //    DbgPrint("  casPatchType added and set to 0");
-                            //    f_casPatchType2 = new BJSON.Field();
-                            //    f_casPatchType2.fieldname = "casPatchType";
-                            //    f_casPatchType2.type = 8;
-                            //    f_casPatchType2.data = BitConverter.GetBytes((int)0);
-                            //    chunk_e.fields.Add(f_casPatchType2);
-                            //}
+                            else
+                            {
+                                f_casPatchType2 = new BJSON.Field();
+                                f_casPatchType2.fieldname = "casPatchType";
+                                f_casPatchType2.type = 8;
+                                f_casPatchType2.data = BitConverter.GetBytes((int)1);
+                                chunk_e.fields.Add(f_casPatchType2);
+                                DbgPrint("  CasPatchType: added and set to 1!");
+                            }
                             f2_sha1.data = newsha1;
                             sb.Save();
                             found = true;
@@ -510,11 +523,11 @@ namespace DAIToolsWV.ModTools
             s_out.Write(buff, 0, size);
         }
 
-        public byte[] CreateCASContainer(Mod.ModJob mj)
+        public byte[] CreateCASContainer(byte[] newdata)
         {
             //generating cas data
             DbgPrint("Creating CAS container for new data");
-            byte[] data = CASFile.MakeHeaderAndContainer(mj.data);
+            byte[] data = CASFile.MakeHeaderAndContainer(newdata);
             DbgPrint("Finding free CAS...");
             int casindex = 99;
             FileStream fs;

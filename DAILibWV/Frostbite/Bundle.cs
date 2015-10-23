@@ -51,6 +51,9 @@ namespace DAILibWV.Frostbite
             public byte[] size;
             public byte[] osize;
             public byte[] rtype;
+            public int casPatchType;
+            public byte[] baseSha1;
+            public byte[] deltaSha1;
             public BJSON.Entry link;
         }
         public struct chunktype
@@ -58,6 +61,9 @@ namespace DAILibWV.Frostbite
             public byte[] id;
             public byte[] SHA1;
             public byte[] size;
+            public int casPatchType;
+            public byte[] baseSha1;
+            public byte[] deltaSha1;
             public BJSON.Entry link;
         }
 
@@ -239,6 +245,15 @@ namespace DAILibWV.Frostbite
                         case "resType":
                             r.rtype = (byte[])f2.data;
                             break;
+                        case "casPatchType":
+                            r.casPatchType = Helpers.ReadInt(new MemoryStream((byte[])f2.data));
+                            break;
+                        case "baseSha1":
+                            r.baseSha1 = (byte[])f2.data;
+                            break;
+                        case "deltaSha1":
+                            r.deltaSha1 = (byte[])f2.data;
+                            break;
                     }
                 res.Add(r);
             }
@@ -264,6 +279,15 @@ namespace DAILibWV.Frostbite
                             break;
                         case "size":
                             c.size = (byte[])f2.data;
+                            break;
+                        case "casPatchType":
+                            c.casPatchType = Helpers.ReadInt(new MemoryStream((byte[])f2.data));
+                            break;
+                        case "baseSha1":
+                            c.baseSha1 = (byte[])f2.data;
+                            break;
+                        case "deltaSha1":
+                            c.deltaSha1 = (byte[])f2.data;
                             break;
                     }
                 res.Add(c);

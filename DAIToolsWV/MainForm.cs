@@ -189,5 +189,10 @@ namespace DAIToolsWV
         {
             OpenMaxed(new GeneralTools.CATrepair());
         }
+
+        private void folderCompareToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new GeneralTools.FolderCompare());
+        }
     }
 }

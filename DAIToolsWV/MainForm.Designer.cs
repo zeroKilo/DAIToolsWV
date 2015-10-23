@@ -37,6 +37,7 @@ namespace DAIToolsWV
             this.sHA1LookupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cASContainerCreatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hexToStringToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cATRepairToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tOCToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sBToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,7 +57,7 @@ namespace DAIToolsWV
             this.modEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cATRepairToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.folderCompareToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -82,7 +83,8 @@ namespace DAIToolsWV
             this.sHA1LookupToolStripMenuItem,
             this.cASContainerCreatorToolStripMenuItem,
             this.hexToStringToolToolStripMenuItem,
-            this.cATRepairToolStripMenuItem});
+            this.cATRepairToolStripMenuItem,
+            this.folderCompareToolStripMenuItem});
             this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
             this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
             this.generalToolsToolStripMenuItem.Text = "General Tools";
@@ -114,6 +116,13 @@ namespace DAIToolsWV
             this.hexToStringToolToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.hexToStringToolToolStripMenuItem.Text = "Hex To String Tool";
             this.hexToStringToolToolStripMenuItem.Click += new System.EventHandler(this.hexToStringToolToolStripMenuItem_Click);
+            // 
+            // cATRepairToolStripMenuItem
+            // 
+            this.cATRepairToolStripMenuItem.Name = "cATRepairToolStripMenuItem";
+            this.cATRepairToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.cATRepairToolStripMenuItem.Text = "CAT Repair";
+            this.cATRepairToolStripMenuItem.Click += new System.EventHandler(this.cATRepairToolStripMenuItem_Click);
             // 
             // fileToolsToolStripMenuItem
             // 
@@ -263,12 +272,12 @@ namespace DAIToolsWV
             this.rESETALLToolStripMenuItem.Text = "RESET ALL";
             this.rESETALLToolStripMenuItem.Click += new System.EventHandler(this.rESETALLToolStripMenuItem_Click);
             // 
-            // cATRepairToolStripMenuItem
+            // folderCompareToolStripMenuItem
             // 
-            this.cATRepairToolStripMenuItem.Name = "cATRepairToolStripMenuItem";
-            this.cATRepairToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.cATRepairToolStripMenuItem.Text = "CAT Repair";
-            this.cATRepairToolStripMenuItem.Click += new System.EventHandler(this.cATRepairToolStripMenuItem_Click);
+            this.folderCompareToolStripMenuItem.Name = "folderCompareToolStripMenuItem";
+            this.folderCompareToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.folderCompareToolStripMenuItem.Text = "Folder Compare";
+            this.folderCompareToolStripMenuItem.Click += new System.EventHandler(this.folderCompareToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -317,6 +326,7 @@ namespace DAIToolsWV
         private ToolStripMenuItem sHA1LookupToolStripMenuItem;
         private ToolStripMenuItem hexToStringToolToolStripMenuItem;
         private ToolStripMenuItem cATRepairToolStripMenuItem;
+        private ToolStripMenuItem folderCompareToolStripMenuItem;
     }
 }
 

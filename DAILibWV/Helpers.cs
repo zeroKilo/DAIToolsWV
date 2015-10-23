@@ -55,7 +55,7 @@ namespace DAILibWV
 
         public static bool ByteArrayCompare(byte[] b1, byte[] b2)
         {
-            if (b1.Length != b2.Length)
+            if(b1 == null || b2 == null || b1.Length != b2.Length)
                 return false;
             for (int i = 0; i < b1.Length; i++)
                 if (b1[i] != b2[i])
