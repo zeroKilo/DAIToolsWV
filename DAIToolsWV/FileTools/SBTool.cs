@@ -39,6 +39,7 @@ namespace DAIToolsWV.FileTools
 
         public void LoadFile(string path)
         {
+            this.Text = "SB Tool - " + path;
             toc = new TOCFile(Helpers.GetFileNameWithOutExtension(path) + ".toc");
             if (toc.iscas)
             {

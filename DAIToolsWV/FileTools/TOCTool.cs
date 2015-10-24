@@ -33,6 +33,7 @@ namespace DAIToolsWV.FileTools
             {
                 toc = new TOCFile(d.FileName);
                 RefreshTree();
+                this.Text = "TOC Tool - " + d.FileName;
             }
         }
 

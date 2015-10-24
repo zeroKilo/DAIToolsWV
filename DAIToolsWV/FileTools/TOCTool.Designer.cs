@@ -71,14 +71,14 @@
             // openSingleToolStripMenuItem
             // 
             this.openSingleToolStripMenuItem.Name = "openSingleToolStripMenuItem";
-            this.openSingleToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.openSingleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openSingleToolStripMenuItem.Text = "Open";
             this.openSingleToolStripMenuItem.Click += new System.EventHandler(this.openSingleToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
@@ -88,9 +88,9 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.treeView1.HideSelection = false;
-            this.treeView1.Location = new System.Drawing.Point(0, 25);
+            this.treeView1.Location = new System.Drawing.Point(0, 49);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(583, 463);
+            this.treeView1.Size = new System.Drawing.Size(583, 439);
             this.treeView1.TabIndex = 2;
             this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
             // 
@@ -139,7 +139,7 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripTextBox1,
             this.toolStripButton1});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(583, 25);
             this.toolStrip1.TabIndex = 3;

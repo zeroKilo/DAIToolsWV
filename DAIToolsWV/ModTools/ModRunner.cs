@@ -209,7 +209,8 @@ namespace DAIToolsWV.ModTools
             }
             DbgPrint("All found.");
             //create cas data
-            byte[] newsha1 = CreateCASContainer(mj.data);
+            int newcompressedsize = 0;
+            byte[] newsha1 = CreateCASContainer(mj.data, out newcompressedsize);
             if (newsha1.Length != 0x14)
             {
                 DbgPrint("Error: could not create CAS data, aborting!");
@@ -218,10 +219,10 @@ namespace DAIToolsWV.ModTools
             //walk through affected toc files
             foreach (string tocpath in mj.tocPaths)
                 if (!tocpath.ToLower().Contains("\\patch\\"))
-                    RunRessourceJob(mj, tocpath, newsha1);
+                    RunRessourceJob(mj, tocpath, newsha1, newcompressedsize);
         }
 
-        public void RunRessourceJob(Mod.ModJob mj, string tocpath, byte[] newsha1)
+        public void RunRessourceJob(Mod.ModJob mj, string tocpath, byte[] newsha1, int newcompressedsize)
         {
             if (!tocpath.ToLower().StartsWith("update"))
             DbgPrint("Loading : " + tocpath);
@@ -232,10 +233,11 @@ namespace DAIToolsWV.ModTools
                 toc = new TOCFile(outputPath + Helpers.SkipSubFolder(tocpath, 2));
             //walk through affected bundles
             foreach (string bpath in mj.bundlePaths)
-                RunRessourceJobOnBundle(mj, toc, tocpath, newsha1, bpath);
+                RunRessourceJobOnBundle(mj, toc, tocpath, newsha1, bpath, newcompressedsize);
+            UpdateTOC(toc);
         }
 
-        public void RunRessourceJobOnBundle(Mod.ModJob mj, TOCFile toc, string tocpath, byte[] newsha1, string bpath)
+        public void RunRessourceJobOnBundle(Mod.ModJob mj, TOCFile toc, string tocpath, byte[] newsha1, string bpath, int newcompressedsize)
         {
             int count = 0;
             int index = -1;
@@ -256,28 +258,6 @@ namespace DAIToolsWV.ModTools
                 }
                 //find out if base or delta
                 BJSON.Entry root = toc.lines[0];
-                //BJSON.Field name = root.FindField("name");
-                //BJSON.Field super = root.FindField("alwaysEmitSuperbundle");
-                //if (name == null)
-                //{
-                //    BJSON.Field f = new BJSON.Field();
-                //    f.fieldname = "name";
-                //    f.type = 7;
-                //    string nstring = tocpath.Replace(".toc", "");
-                //    nstring = nstring.Replace("Data\\", "");
-                //    nstring = nstring.Replace("\\", "/");
-                //    f.data = nstring;
-                //    root.fields.Add(f);
-                //}
-                //if (super == null)
-                //{
-                //    BJSON.Field f = new BJSON.Field();
-                //    f.fieldname = "alwaysEmitSuperbundle";
-                //    f.type = 6;
-                //    f.data = true;
-                //    root.fields.Add(f);
-                //}
-                //toc.Save();
                 BJSON.Field bundles = root.FindField("bundles");
                 BJSON.Entry bun = ((List<BJSON.Entry>)bundles.data)[index];
                 BJSON.Field isDeltaField = bun.FindField("delta");
@@ -293,16 +273,15 @@ namespace DAIToolsWV.ModTools
                 string SBpath = outputPath + Path.GetDirectoryName(tocpath) + "\\" + Path.GetFileNameWithoutExtension(tocpath) + ".sb";
                 SBFile sb = new SBFile(SBpath);
                 root = sb.lines[0];
-                bundles = root.fields[0];
-                count = ((List<BJSON.Entry>)bundles.data).Count;
+                bundles = root.FindField("bundles");
+                List<BJSON.Entry> bundle_list =(List<BJSON.Entry>)bundles.data;
                 //find right bundle
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < bundle_list.Count; i++)
                 {
-                    bun = ((List<BJSON.Entry>)bundles.data)[i];
+                    bun = bundle_list[i];
                     BJSON.Field ebx = bun.FindField("ebx");
                     BJSON.Field res = bun.FindField("res");
                     BJSON.Field chunks = bun.FindField("chunks");
-                    bun.RemoveField("chunkMeta");
                     BJSON.Field path = bun.FindField("path");
                     if (!(path != null && (string)path.data == bpath) || res == null || chunks == null)
                         continue;
@@ -310,10 +289,14 @@ namespace DAIToolsWV.ModTools
                     byte[] chunkidbuff = new byte[16];
                     byte[] newchunkid = new byte[16];
                     //find right res entry
-                    foreach (BJSON.Entry res_e in ((List<BJSON.Entry>)res.data))
+                    List<BJSON.Entry> res_list = (List<BJSON.Entry>)res.data;
+                    for (int j = 0; j < res_list.Count; j++) 
                     {
+                        BJSON.Entry res_e = res_list[j];
                         BJSON.Field f_sha1 = res_e.FindField("sha1");
                         BJSON.Field f_name = res_e.FindField("name");
+                        BJSON.Field f_size = res_e.FindField("size");
+                        BJSON.Field f_osize = res_e.FindField("originalSize");
                         BJSON.Field f_casPatchType = res_e.FindField("casPatchType");
                         if (f_name != null && (string)f_name.data == mj.respath && f_sha1 != null)
                         {
@@ -326,16 +309,20 @@ namespace DAIToolsWV.ModTools
                                 DbgPrint("  Error: cant find res data, skipping!");
                                 break;
                             }
-                            for (int j = 0; j < 16; j++)
-                                chunkidbuff[j] = resdata[j + 0x1C];
+                            for (int k = 0; k < 16; k++)
+                                chunkidbuff[k] = resdata[k + 0x1C];
                             DbgPrint("  Found chunk id : " + Helpers.ByteArrayToHexString(chunkidbuff));
                             newchunkid = Guid.NewGuid().ToByteArray();
                             DbgPrint("  Creating new chunk id : " + Helpers.ByteArrayToHexString(newchunkid));
-                            for (int j = 0; j < 16; j++)
-                                resdata[j + 0x1C] = newchunkid[j];
-                            byte[] newressha1 = CreateCASContainer(resdata);
+                            for (int k = 0; k < 16; k++)
+                                resdata[k + 0x1C] = newchunkid[k];
+                            int newrescompsize = 0;
+                            byte[] newressha1 = CreateCASContainer(resdata, out newrescompsize, "  ");
                             DbgPrint("  Creating new res sha1 : " + Helpers.ByteArrayToHexString(newressha1));
                             f_sha1.data = newressha1;
+                            DbgPrint("  Updating res size : " + resdata.Length);
+                            f_size.data = BitConverter.GetBytes((long)newrescompsize);
+                            f_osize.data = BitConverter.GetBytes((long)resdata.Length);
                             if (f_casPatchType != null)
                             {
                                 if (BitConverter.ToInt32((byte[])f_casPatchType.data, 0) != 1)
@@ -365,9 +352,16 @@ namespace DAIToolsWV.ModTools
                     }
                     found = false;
                     //find right chunk entry
-                    foreach (BJSON.Entry chunk_e in ((List<BJSON.Entry>)chunks.data))
+                    List<BJSON.Entry> chunk_list = (List<BJSON.Entry>)chunks.data;
+                    for (int j = 0; j < chunk_list.Count; j++) 
                     {
+                        BJSON.Entry chunk_e = chunk_list[j];
                         BJSON.Field f_id = chunk_e.FindField("id");
+                        BJSON.Field f_size = chunk_e.FindField("size");
+                        BJSON.Field f_rangeStart = chunk_e.FindField("rangeStart");
+                        BJSON.Field f_rangeEnd = chunk_e.FindField("rangeEnd");
+                        BJSON.Field f_logicalOffset = chunk_e.FindField("logicalOffset");
+                        BJSON.Field f_logicalSize = chunk_e.FindField("logicalSize");
                         BJSON.Field f2_sha1 = chunk_e.FindField("sha1");
                         BJSON.Field f_casPatchType2 = chunk_e.FindField("casPatchType");
                         if (f_id != null && Helpers.ByteArrayCompare((byte[])f_id.data, chunkidbuff))
@@ -394,7 +388,18 @@ namespace DAIToolsWV.ModTools
                                 chunk_e.fields.Add(f_casPatchType2);
                                 DbgPrint("  CasPatchType: added and set to 1!");
                             }
+                            f_size.data = BitConverter.GetBytes(newcompressedsize);
+                            if (f_rangeStart != null)
+                                f_rangeStart.data = BitConverter.GetBytes((int)0);
+                            if (f_rangeEnd != null)
+                                f_rangeEnd.data = BitConverter.GetBytes(newcompressedsize);
+                            if (f_logicalOffset != null)
+                                f_logicalOffset.data = BitConverter.GetBytes((int)0);
+                            if (f_logicalSize != null)
+                                f_logicalSize.data = BitConverter.GetBytes(mj.data.Length);
                             f2_sha1.data = newsha1;
+                            DbgPrint("  Updated chunk size : " + mj.data.Length);
+                            CalcTotalSize(bun);
                             sb.Save();
                             found = true;
                             DbgPrint("  Replaced chunk sha1 and saved SB file");
@@ -406,6 +411,60 @@ namespace DAIToolsWV.ModTools
                         DbgPrint("  Error: Could not find Chunk by id");
                 }
             }
+        }
+
+        public void CalcTotalSize(BJSON.Entry bun)
+        {
+            BJSON.Field totalsize = bun.FindField("totalSize");
+            BJSON.Field ebx = bun.FindField("ebx");
+            BJSON.Field res = bun.FindField("res");
+            BJSON.Field chunks = bun.FindField("chunks");
+            long size = 0;
+            foreach (BJSON.Entry e in (List<BJSON.Entry>)ebx.data)
+                size += BitConverter.ToInt64((byte[])e.FindField("size").data, 0);
+            foreach (BJSON.Entry e in (List<BJSON.Entry>)res.data)
+                size += BitConverter.ToInt64((byte[])e.FindField("size").data, 0);
+            foreach (BJSON.Entry e in (List<BJSON.Entry>)chunks.data)
+                size += BitConverter.ToInt32((byte[])e.FindField("size").data, 0);
+            totalsize.data = BitConverter.GetBytes(size);
+            DbgPrint("  Total size calculated: " + size.ToString("X"));
+        }
+
+        public void UpdateTOC(TOCFile toc)
+        {
+            string path = toc.MyPath;
+            path = path.ToLower().Replace(".toc",".sb");
+            if (!toc.iscas)
+                return;
+            SBFile sb = new SBFile(path);
+            BJSON.Entry root = sb.lines[0];
+            BJSON.Field bundles = root.FindField("bundles");
+            BJSON.Entry tocroot = toc.lines[0];
+            BJSON.Field tocbundles = tocroot.FindField("bundles");
+            foreach (BJSON.Entry bun in (List<BJSON.Entry>)bundles.data)
+            {
+                BJSON.Field f = bun.FindField("path");
+                string bunpath = (string)f.data;
+                foreach (BJSON.Entry tocbun in (List<BJSON.Entry>)tocbundles.data)
+                {
+                    BJSON.Field f2 = tocbun.FindField("id");
+                    string bunpath2 = (string)f2.data;
+                    if (bunpath == bunpath2)
+                    {
+                        BJSON.Field offset = tocbun.FindField("offset");
+                        offset.data = BitConverter.GetBytes(bun.offset);
+                        MemoryStream m = new MemoryStream();
+                        BJSON.WriteEntry(m, bun);
+                        string p = Path.GetDirectoryName(path);
+                        File.WriteAllBytes(p + "\\" + Path.GetFileName(bunpath) + ".bin", m.ToArray());
+                        BJSON.Field size = tocbun.FindField("size");
+                        size.data = BitConverter.GetBytes((uint)m.Length);
+                    }
+                }
+            }
+            toc.Save();
+            DbgPrint("  TOC file offsets updated.");
+
         }
 
         public bool ImportBundleFromBase(TOCFile toc, string tocpath, int index, string bpath)
@@ -486,6 +545,20 @@ namespace DAIToolsWV.ModTools
             int rel_off = (int)oldSB.Position;
             oldSB.Write(newSB.ToArray(), 0, (int)newSB.Length);
             oldSB.Close();
+            //removing idata
+            DbgPrint("  removing idata...");
+            SBFile sb = new SBFile(oldSBpath);
+            BJSON.Entry newroot = sb.lines[0];
+            BJSON.Field newbundles = newroot.FindField("bundles");
+            List<BJSON.Entry> newbun_list = (List<BJSON.Entry>)newbundles.data;
+            for (int i = 0; i < newbun_list.Count; i++)
+            {
+                BJSON.Field f_res = newbun_list[i].FindField("res");
+                List<BJSON.Entry> newres_list = (List<BJSON.Entry>)f_res.data;
+                for (int j = 0; j < newres_list.Count; j++)
+                    newres_list[j].RemoveField("idata");
+            }
+            sb.Save();
             DbgPrint("  Recompiling TOC...");
             //correct offsets in toc by new adding header offset
             count = ((List<BJSON.Entry>)bundles.data).Count();
@@ -523,12 +596,13 @@ namespace DAIToolsWV.ModTools
             s_out.Write(buff, 0, size);
         }
 
-        public byte[] CreateCASContainer(byte[] newdata)
+        public byte[] CreateCASContainer(byte[] newdata, out int compressedsize, string tab= "")
         {
             //generating cas data
-            DbgPrint("Creating CAS container for new data");
+            DbgPrint(tab + "Creating CAS container for new data");
             byte[] data = CASFile.MakeHeaderAndContainer(newdata);
-            DbgPrint("Finding free CAS...");
+            compressedsize = data.Length - 0x20;
+            DbgPrint(tab + "Finding free CAS...");
             int casindex = 99;
             FileStream fs;
             long pos;
@@ -545,7 +619,7 @@ namespace DAIToolsWV.ModTools
             string caspath = outputPath + "Data\\cas_" + casindex.ToString("D2") + ".cas";
             if (!File.Exists(caspath))
                 File.WriteAllBytes(caspath, new byte[0]);
-            DbgPrint("Choosing : cas_" + casindex.ToString("D2") + ".cas");
+            DbgPrint(tab + "Choosing : cas_" + casindex.ToString("D2") + ".cas");
             fs = new FileStream(caspath, FileMode.Open, FileAccess.Read);
             //get new offset
             fs.Seek(0, SeekOrigin.End);
@@ -555,10 +629,10 @@ namespace DAIToolsWV.ModTools
             fs.Write(data, 0, data.Length);
             fs.Close();
             //creating new CAT entry with new SHA1
-            DbgPrint("Appended Data, updating CAT file...");
+            DbgPrint(tab + "Appended Data, updating CAT file...");
             if (!File.Exists(outputPath + "Data\\cas.cat"))
             {
-                DbgPrint("Error: cant find CAT file, skipping!");
+                DbgPrint(tab + "Error: cant find CAT file, skipping!");
                 return new byte[0];
             }
             fs = new FileStream(outputPath + "Data\\cas.cat", FileMode.Append, FileAccess.Write);

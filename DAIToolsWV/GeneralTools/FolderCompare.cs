@@ -245,7 +245,7 @@ namespace DAIToolsWV.GeneralTools
             }
             if (ebx.casPatchType != ebx2.casPatchType)
             {
-                sb.AppendFormat("  D:-ebx caspathtype is different - ({0}) vs ({1})\n", ebx.casPatchType, ebx2.casPatchType);
+                sb.AppendFormat("  D:-ebx caspatchtype is different - ({0}) vs ({1})\n", ebx.casPatchType, ebx2.casPatchType);
                 tdiff = true;
             }
             if (tdiff)
@@ -285,19 +285,19 @@ namespace DAIToolsWV.GeneralTools
                 sb.AppendFormat("  D:-res sha1 is different - ({0}) vs ({1})\n", Helpers.ByteArrayToHexString(res.SHA1), Helpers.ByteArrayToHexString(res2.SHA1));
                 tdiff = true;
             }
-            if (res.size != null && !Helpers.ByteArrayCompare(res.size, res2.size))
+            if (res.size != null && res2.size != null && !Helpers.ByteArrayCompare(res.size, res2.size))
             {
                 sb.AppendFormat("  D:-res size is different - ({0}) vs ({1})\n", BitConverter.ToInt32(res.size, 0), BitConverter.ToInt32(res2.size, 0));
                 tdiff = true;
             }
-            if (res.osize != null && !Helpers.ByteArrayCompare(res.osize, res2.osize))
+            if (res.osize != null && res2.osize != null && !Helpers.ByteArrayCompare(res.osize, res2.osize))
             {
                 sb.AppendFormat("  D:-res original size is different - ({0}) vs ({1})\n", BitConverter.ToInt32(res.osize, 0), BitConverter.ToInt32(res2.osize, 0));
                 tdiff = true;
             }
             if (res.casPatchType != res2.casPatchType)
             {
-                sb.AppendFormat("  D:-res caspathtype is different - ({0}) vs ({1})\n", res.casPatchType, res2.casPatchType);
+                sb.AppendFormat("  D:-res caspatchtype is different - ({0}) vs ({1})\n", res.casPatchType, res2.casPatchType);
                 tdiff = true;
             }
             if (tdiff)
@@ -339,7 +339,7 @@ namespace DAIToolsWV.GeneralTools
             }
             if (chunk.casPatchType != chunk2.casPatchType)
             {
-                sb.AppendFormat("  D:-chunk caspathtype is different - ({0}) vs ({1})\n", chunk.casPatchType, chunk2.casPatchType);
+                sb.AppendFormat("  D:-chunk caspatchtype is different - ({0}) vs ({1})\n", chunk.casPatchType, chunk2.casPatchType);
                 tdiff = true;
             }
             if (tdiff)

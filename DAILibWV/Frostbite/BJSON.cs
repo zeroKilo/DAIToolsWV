@@ -13,6 +13,7 @@ namespace DAILibWV.Frostbite
         public class Entry
         {
             public int type;
+            public long offset;
             public List<Field> fields;
             public string type87name;
             public Field FindField(string name)
@@ -55,9 +56,10 @@ namespace DAILibWV.Frostbite
             long len = s.Length;
             while (s.Position < len)
             {
+                Entry e = new Entry();
+                e.offset = s.Position;
                 byte type1 = (byte)s.ReadByte();
                 ulong size;
-                Entry e = new Entry();
                 e.type = type1;
                 switch (type1)
                 {
@@ -111,18 +113,13 @@ namespace DAILibWV.Frostbite
         {
             ulong size;
             ulong count;
-            long pos;
             byte[] buff;
             switch (result.type)
             {
                 case 0x01:
                     size = Helpers.ReadLEB128(s);
                     result.data = new List<Entry>();
-                    pos = s.Position;
-                    buff = new byte[size - 1];
-                    s.Read(buff, 0, (int)size - 1);
-                    ReadEntries(new MemoryStream(buff), (List<Entry>)result.data);
-                    s.ReadByte();
+                    ReadEntries(s, (List<Entry>)result.data);
                     break;
                 case 0x07:
                     count = Helpers.ReadLEB128(s);
@@ -231,7 +228,11 @@ namespace DAILibWV.Frostbite
                     s.WriteByte(((bool)f.data) ? (byte)1 : (byte)0);
                     break;
                 case 0x08:
+                    s.Write((byte[])f.data, 0, 4);
+                    break;
                 case 0x09:
+                    s.Write((byte[])f.data, 0, 8);
+                    break;
                 case 0xf:
                 case 0x10:
                     s.Write((byte[])f.data, 0, (int)((byte[])f.data).Length);
@@ -285,7 +286,7 @@ namespace DAILibWV.Frostbite
                         List<Entry> listb = (List<Entry>)f.data;
                         int count = 0;
                         foreach (Entry e in listb)
-                            t.Nodes.Add(MakeEntry(new TreeNode(count++ + " : [" + e.type.ToString("X") + "]"), e));
+                            t.Nodes.Add(MakeEntry(new TreeNode(count++ + " : [" + e.type.ToString("X") + "][@0x" + e.offset.ToString("X") + "]"), e));
                         break;
                     case 2:
                         List<Field> listf = (List<Field>)f.data;
