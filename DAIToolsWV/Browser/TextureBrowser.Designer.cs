@@ -32,14 +32,15 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextureBrowser));
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.treeView5 = new System.Windows.Forms.TreeView();
+            this.texcontext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.openInTextureToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nOPEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.listBox2 = new System.Windows.Forms.ListBox();
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.hb2 = new Be.Windows.Forms.HexBox();
             this.pb1 = new System.Windows.Forms.PictureBox();
             this.hb3 = new Be.Windows.Forms.HexBox();
-            this.statusStrip3 = new System.Windows.Forms.StatusStrip();
-            this.statustextures = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip4 = new System.Windows.Forms.ToolStrip();
             this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripButton19 = new System.Windows.Forms.ToolStripButton();
@@ -47,13 +48,13 @@
             this.toolStripButton18 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton17 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton16 = new System.Windows.Forms.ToolStripButton();
-            this.texcontext = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.openInTextureToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.nOPEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statustextures = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip3 = new System.Windows.Forms.StatusStrip();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).BeginInit();
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
+            this.texcontext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).BeginInit();
             this.splitContainer5.Panel1.SuspendLayout();
             this.splitContainer5.Panel2.SuspendLayout();
@@ -63,9 +64,8 @@
             this.splitContainer6.Panel2.SuspendLayout();
             this.splitContainer6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb1)).BeginInit();
-            this.statusStrip3.SuspendLayout();
             this.toolStrip4.SuspendLayout();
-            this.texcontext.SuspendLayout();
+            this.statusStrip3.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer4
@@ -96,6 +96,28 @@
             this.treeView5.Size = new System.Drawing.Size(369, 439);
             this.treeView5.TabIndex = 1;
             this.treeView5.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView5_AfterSelect);
+            // 
+            // texcontext
+            // 
+            this.texcontext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openInTextureToolToolStripMenuItem,
+            this.nOPEToolStripMenuItem});
+            this.texcontext.Name = "texcontext";
+            this.texcontext.Size = new System.Drawing.Size(176, 48);
+            this.texcontext.Paint += new System.Windows.Forms.PaintEventHandler(this.texcontext_Paint);
+            // 
+            // openInTextureToolToolStripMenuItem
+            // 
+            this.openInTextureToolToolStripMenuItem.Name = "openInTextureToolToolStripMenuItem";
+            this.openInTextureToolToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.openInTextureToolToolStripMenuItem.Text = "Open in Texture Tool";
+            this.openInTextureToolToolStripMenuItem.Click += new System.EventHandler(this.openInTextureToolToolStripMenuItem_Click);
+            // 
+            // nOPEToolStripMenuItem
+            // 
+            this.nOPEToolStripMenuItem.Name = "nOPEToolStripMenuItem";
+            this.nOPEToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.nOPEToolStripMenuItem.Text = "N.O.P.E.";
             // 
             // splitContainer5
             // 
@@ -192,23 +214,6 @@
             this.hb3.UseFixedBytesPerLine = true;
             this.hb3.VScrollBarVisible = true;
             // 
-            // statusStrip3
-            // 
-            this.statusStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statustextures});
-            this.statusStrip3.Location = new System.Drawing.Point(0, 464);
-            this.statusStrip3.Name = "statusStrip3";
-            this.statusStrip3.Size = new System.Drawing.Size(756, 22);
-            this.statusStrip3.TabIndex = 4;
-            this.statusStrip3.Text = "statusStrip3";
-            // 
-            // statustextures
-            // 
-            this.statustextures.Font = new System.Drawing.Font("Courier New", 10F);
-            this.statustextures.Name = "statustextures";
-            this.statustextures.Size = new System.Drawing.Size(176, 17);
-            this.statustextures.Text = "toolStripStatusLabel1";
-            // 
             // toolStrip4
             // 
             this.toolStrip4.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -277,27 +282,22 @@
             this.toolStripButton16.Text = "HEX Preview";
             this.toolStripButton16.Click += new System.EventHandler(this.toolStripButton16_Click);
             // 
-            // texcontext
+            // statustextures
             // 
-            this.texcontext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openInTextureToolToolStripMenuItem,
-            this.nOPEToolStripMenuItem});
-            this.texcontext.Name = "texcontext";
-            this.texcontext.Size = new System.Drawing.Size(176, 70);
-            this.texcontext.Paint += new System.Windows.Forms.PaintEventHandler(this.texcontext_Paint);
+            this.statustextures.Font = new System.Drawing.Font("Courier New", 10F);
+            this.statustextures.Name = "statustextures";
+            this.statustextures.Size = new System.Drawing.Size(176, 17);
+            this.statustextures.Text = "toolStripStatusLabel1";
             // 
-            // openInTextureToolToolStripMenuItem
+            // statusStrip3
             // 
-            this.openInTextureToolToolStripMenuItem.Name = "openInTextureToolToolStripMenuItem";
-            this.openInTextureToolToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.openInTextureToolToolStripMenuItem.Text = "Open in Texture Tool";
-            this.openInTextureToolToolStripMenuItem.Click += new System.EventHandler(this.openInTextureToolToolStripMenuItem_Click);
-            // 
-            // nOPEToolStripMenuItem
-            // 
-            this.nOPEToolStripMenuItem.Name = "nOPEToolStripMenuItem";
-            this.nOPEToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.nOPEToolStripMenuItem.Text = "N.O.P.E.";
+            this.statusStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statustextures});
+            this.statusStrip3.Location = new System.Drawing.Point(0, 464);
+            this.statusStrip3.Name = "statusStrip3";
+            this.statusStrip3.Size = new System.Drawing.Size(756, 22);
+            this.statusStrip3.TabIndex = 4;
+            this.statusStrip3.Text = "statusStrip3";
             // 
             // TextureBrowser
             // 
@@ -314,6 +314,7 @@
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
+            this.texcontext.ResumeLayout(false);
             this.splitContainer5.Panel1.ResumeLayout(false);
             this.splitContainer5.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).EndInit();
@@ -323,11 +324,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer6)).EndInit();
             this.splitContainer6.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pb1)).EndInit();
-            this.statusStrip3.ResumeLayout(false);
-            this.statusStrip3.PerformLayout();
             this.toolStrip4.ResumeLayout(false);
             this.toolStrip4.PerformLayout();
-            this.texcontext.ResumeLayout(false);
+            this.statusStrip3.ResumeLayout(false);
+            this.statusStrip3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -343,8 +343,6 @@
         private Be.Windows.Forms.HexBox hb2;
         private System.Windows.Forms.PictureBox pb1;
         private Be.Windows.Forms.HexBox hb3;
-        private System.Windows.Forms.StatusStrip statusStrip3;
-        private System.Windows.Forms.ToolStripStatusLabel statustextures;
         private System.Windows.Forms.ToolStrip toolStrip4;
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox1;
         private System.Windows.Forms.ToolStripButton toolStripButton19;
@@ -355,5 +353,7 @@
         private System.Windows.Forms.ContextMenuStrip texcontext;
         private System.Windows.Forms.ToolStripMenuItem openInTextureToolToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nOPEToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel statustextures;
+        private System.Windows.Forms.StatusStrip statusStrip3;
     }
 }

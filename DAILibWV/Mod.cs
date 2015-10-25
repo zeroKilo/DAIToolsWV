@@ -14,6 +14,7 @@ namespace DAILibWV
         {
             public int type;//0 = texture replacement
             public string respath;
+            public string restype;
             public List<string> bundlePaths;
             public List<string> tocPaths;
             public byte[] data;
@@ -29,6 +30,8 @@ namespace DAILibWV
             {
                 case 0:
                     return "Texture Mod";
+                case 1:
+                    return "Binary Ressource Mod";
                 default:
                     return "Unknown Modtype";
             }
@@ -91,18 +94,46 @@ namespace DAILibWV
             r.ReadToFollowing("job");
             r.ReadToFollowing("type");
             mj.type = Convert.ToInt32(r.ReadElementContentAsString());
+            int index, countbundles, counttocs;
             switch (mj.type)
             {
                 case 0:
                     r.ReadToFollowing("dataindex");
-                    int index = Convert.ToInt32(r.ReadElementContentAsString());
+                    index = Convert.ToInt32(r.ReadElementContentAsString());
                     mj.data = dataList[index];
                     r.ReadToFollowing("respath");
                     mj.respath = r.ReadElementContentAsString();
                     r.ReadToFollowing("countbundles");
-                    int countbundles = Convert.ToInt32(r.ReadElementContentAsString());
+                    countbundles = Convert.ToInt32(r.ReadElementContentAsString());
                     r.ReadToFollowing("counttocs");
-                    int counttocs = Convert.ToInt32(r.ReadElementContentAsString());
+                    counttocs = Convert.ToInt32(r.ReadElementContentAsString());
+                    r.ReadToFollowing("bundles");
+                    mj.bundlePaths = new List<string>();
+                    for (int i = 0; i < countbundles; i++)
+                    {
+                        r.ReadToFollowing("path");
+                        mj.bundlePaths.Add(r.ReadElementContentAsString());
+                    }
+                    r.ReadToFollowing("tocfiles");
+                    mj.tocPaths = new List<string>();
+                    for (int i = 0; i < counttocs; i++)
+                    {
+                        r.ReadToFollowing("path");
+                        mj.tocPaths.Add(r.ReadElementContentAsString());
+                    }
+                    break;
+                case 1:
+                    r.ReadToFollowing("dataindex");
+                    index = Convert.ToInt32(r.ReadElementContentAsString());
+                    mj.data = dataList[index];
+                    r.ReadToFollowing("respath");
+                    mj.respath = r.ReadElementContentAsString();
+                    r.ReadToFollowing("restype");
+                    mj.restype = r.ReadElementContentAsString();
+                    r.ReadToFollowing("countbundles");
+                    countbundles = Convert.ToInt32(r.ReadElementContentAsString());
+                    r.ReadToFollowing("counttocs");
+                    counttocs = Convert.ToInt32(r.ReadElementContentAsString());
                     r.ReadToFollowing("bundles");
                     mj.bundlePaths = new List<string>();
                     for (int i = 0; i < countbundles; i++)
@@ -142,6 +173,10 @@ namespace DAILibWV
                         Helpers.WriteInt(m, mj.data.Length);
                         m.Write(mj.data, 0, mj.data.Length);
                         break;
+                    case 1: 
+                        Helpers.WriteInt(m, mj.data.Length);
+                        m.Write(mj.data, 0, mj.data.Length);
+                        break;
                 }
             return m.ToArray();
         }
@@ -174,6 +209,21 @@ namespace DAILibWV
                     case 0:
                         w.WriteElementString("dataindex", (datacount++).ToString());
                         w.WriteElementString("respath", mj.respath);
+                        w.WriteElementString("countbundles", mj.bundlePaths.Count.ToString());
+                        w.WriteElementString("counttocs", mj.tocPaths.Count.ToString());
+                        w.WriteStartElement("bundles");
+                        foreach (string p in mj.bundlePaths)
+                            w.WriteElementString("path", p);
+                        w.WriteFullEndElement();
+                        w.WriteStartElement("tocfiles");
+                        foreach (string p in mj.tocPaths)
+                            w.WriteElementString("path", p);
+                        w.WriteFullEndElement();
+                        break;
+                    case 1:
+                        w.WriteElementString("dataindex", (datacount++).ToString());
+                        w.WriteElementString("respath", mj.respath);
+                        w.WriteElementString("restype", mj.restype);
                         w.WriteElementString("countbundles", mj.bundlePaths.Count.ToString());
                         w.WriteElementString("counttocs", mj.tocPaths.Count.ToString());
                         w.WriteStartElement("bundles");

@@ -87,6 +87,12 @@
     <Compile Include="Browser\FileBrowser.Designer.cs">
       <DependentUpon>FileBrowser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Browser\RESBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Browser\RESBrowser.Designer.cs">
+      <DependentUpon>RESBrowser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Browser\TextureBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -224,6 +230,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Browser\FileBrowser.resx">
       <DependentUpon>FileBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Browser\RESBrowser.resx">
+      <DependentUpon>RESBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Browser\TextureBrowser.resx">
       <DependentUpon>TextureBrowser.cs</DependentUpon>

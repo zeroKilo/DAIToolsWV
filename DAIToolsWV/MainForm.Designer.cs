@@ -38,6 +38,7 @@ namespace DAIToolsWV
             this.cASContainerCreatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hexToStringToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cATRepairToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.folderCompareToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tOCToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sBToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,7 +58,7 @@ namespace DAIToolsWV
             this.modEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.folderCompareToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rESBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -123,6 +124,13 @@ namespace DAIToolsWV
             this.cATRepairToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.cATRepairToolStripMenuItem.Text = "CAT Repair";
             this.cATRepairToolStripMenuItem.Click += new System.EventHandler(this.cATRepairToolStripMenuItem_Click);
+            // 
+            // folderCompareToolStripMenuItem
+            // 
+            this.folderCompareToolStripMenuItem.Name = "folderCompareToolStripMenuItem";
+            this.folderCompareToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.folderCompareToolStripMenuItem.Text = "Folder Compare";
+            this.folderCompareToolStripMenuItem.Click += new System.EventHandler(this.folderCompareToolStripMenuItem_Click);
             // 
             // fileToolsToolStripMenuItem
             // 
@@ -208,6 +216,7 @@ namespace DAIToolsWV
             this.fileBrowserToolStripMenuItem,
             this.bundleBrowserToolStripMenuItem,
             this.eBXBrowserToolStripMenuItem,
+            this.rESBrowserToolStripMenuItem,
             this.textureBrowserToolStripMenuItem});
             this.browserToolStripMenuItem.Name = "browserToolStripMenuItem";
             this.browserToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
@@ -272,12 +281,12 @@ namespace DAIToolsWV
             this.rESETALLToolStripMenuItem.Text = "RESET ALL";
             this.rESETALLToolStripMenuItem.Click += new System.EventHandler(this.rESETALLToolStripMenuItem_Click);
             // 
-            // folderCompareToolStripMenuItem
+            // rESBrowserToolStripMenuItem
             // 
-            this.folderCompareToolStripMenuItem.Name = "folderCompareToolStripMenuItem";
-            this.folderCompareToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.folderCompareToolStripMenuItem.Text = "Folder Compare";
-            this.folderCompareToolStripMenuItem.Click += new System.EventHandler(this.folderCompareToolStripMenuItem_Click);
+            this.rESBrowserToolStripMenuItem.Name = "rESBrowserToolStripMenuItem";
+            this.rESBrowserToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.rESBrowserToolStripMenuItem.Text = "RES Browser";
+            this.rESBrowserToolStripMenuItem.Click += new System.EventHandler(this.rESBrowserToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -327,6 +336,7 @@ namespace DAIToolsWV
         private ToolStripMenuItem hexToStringToolToolStripMenuItem;
         private ToolStripMenuItem cATRepairToolStripMenuItem;
         private ToolStripMenuItem folderCompareToolStripMenuItem;
+        private ToolStripMenuItem rESBrowserToolStripMenuItem;
     }
 }
 

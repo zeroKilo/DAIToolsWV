@@ -194,5 +194,10 @@ namespace DAIToolsWV
         {
             OpenMaxed(new GeneralTools.FolderCompare());
         }
+
+        private void rESBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new Browser.RESBrowser());
+        }
     }
 }

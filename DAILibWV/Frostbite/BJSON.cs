@@ -48,8 +48,16 @@ namespace DAILibWV.Frostbite
             public string fieldname;
             public List<Field> fields;
             public object data;
-        }
-
+            public Field()
+            {
+            }
+            public Field(byte t, string n, object d)
+            {
+                type = t;
+                fieldname = n;
+                data = d;
+            }
+        }    
 
         public static void ReadEntries(Stream s, List<Entry> list)
         {

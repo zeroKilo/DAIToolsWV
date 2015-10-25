@@ -23,6 +23,8 @@ namespace DAIToolsWV.FileTools
         public BinaryBundle binBundle;
         public string basepath;
         public string lastsearch = "";
+        public string[] types;
+
 
         public SBTool()
         {
@@ -115,14 +117,22 @@ namespace DAIToolsWV.FileTools
             int n = toolStripComboBox1.SelectedIndex;
             if (n == -1)
                 return;
-            Helpers.SelectNext(toolStripComboBox1.Items[n].ToString(), treeView1);
+            Helpers.SelectNext(toolStripComboBox1.Items[n].ToString().Split(' ')[0].Trim(), treeView1);
         }
 
         private void SBTool_Load(object sender, EventArgs e)
         {
+            types = DBAccess.GetUsedRESTypes();
+            List<string> tmp = new List<string>();
+            foreach (string type in types)
+                if (type != "")
+                    tmp.Add(BitConverter.ToInt32(Helpers.HexStringToByteArray(type), 0).ToString("X8"));//reversed it
             toolStripComboBox1.Items.Clear();
-            foreach (KeyValuePair<uint, string> entry in Helpers.ResTypes)
-                toolStripComboBox1.Items.Add("0x" + entry.Key.ToString("X8") + " " + entry.Value);
+            int count=0;
+            foreach (string type in types)
+                if (type != "")
+                toolStripComboBox1.Items.Add("0x" + tmp[count++] + " " + Helpers.GetResType(BitConverter.ToUInt32(Helpers.HexStringToByteArray(type), 0)));
+            types = tmp.ToArray();
             toolStripComboBox1.SelectedIndex = 0;
         }
 

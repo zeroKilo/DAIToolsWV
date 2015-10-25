@@ -628,7 +628,7 @@ namespace DAILibWV
             List<BundleInformation> result = new List<BundleInformation>();
             SQLiteConnection con = GetConnection();
             con.Open();
-            SQLiteDataReader reader = getAllJoinedWhere("bundles", "tocfiles", "tocfile", "id", "lower(bundles.frostid) = '" + path + "'", con);
+            SQLiteDataReader reader = getAllJoinedWhere("bundles", "tocfiles", "tocfile", "id", "lower(bundles.frostid) = '" + path.ToLower() + "'", con);
             int count = 0;
             while (reader.Read())
             {
@@ -795,6 +795,58 @@ namespace DAILibWV
             return result.ToArray();
         }
 
+        public static string[] GetUsedRESTypes()
+        {
+            List<string> result = new List<string>();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteCommand command = new SQLiteCommand("SELECT DISTINCT rtype FROM res", con);
+            SQLiteDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+                result.Add(reader.GetString(0));
+            con.Close();
+            return result.ToArray();
+        }
+
+        public static RESInformation[] GetRESInformationsByType(string type)
+        {
+            List<RESInformation> result = new List<RESInformation>();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllJoined3Where("res", "bundles", "tocfiles", "bundle", "id", "tocfile", "id", "res.rtype='" + type + "'", con);
+            int count = 0;
+            while (reader.Read())
+            {
+                RESInformation res = new RESInformation();
+                res.resname = reader.GetString(0);
+                res.sha1 = reader.GetString(1);
+                res.rtype = reader.GetString(2);
+                res.bundlepath = reader.GetString(6);
+                res.offset = reader.GetInt32(7);
+                res.size = reader.GetInt32(8);
+                res.isbase = reader.GetString(9) == "True";
+                res.isdelta = reader.GetString(10) == "True";
+                res.tocfilepath = reader.GetString(12);
+                res.incas = reader.GetString(14) == "True";
+                   switch (reader.GetString(15))
+                {
+                    default:
+                        res.isbasegamefile = true;
+                        break;
+                    case "u":
+                        res.isDLC = true;
+                        break;
+                    case "p":
+                        res.isPatch = true;
+                        break;
+                }
+                result.Add(res);
+                if (count++ % 1000 == 0)
+                    Application.DoEvents();
+            }
+            con.Close();
+            return result.ToArray();
+        }
 
         public static TextureInformation[] GetTextureInformations()
         {
@@ -817,6 +869,7 @@ namespace DAILibWV
             return result.ToArray();
         }
 
+        
         public static TextureInformation[] GetTextureInformationsById(string id)
         {
             List<TextureInformation> result = new List<TextureInformation>();
