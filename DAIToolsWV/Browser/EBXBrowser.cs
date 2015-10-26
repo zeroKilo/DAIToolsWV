@@ -324,5 +324,64 @@ namespace DAIToolsWV.Browser
         {
             Helpers.SelectNext(toolStripTextBox2.Text, treeView4);
         }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            TreeNode t = treeView4.SelectedNode;
+            if (t == null || t.Nodes == null || t.Nodes.Count != 0)
+                return;
+            string path = Helpers.GetPathFromNode(t, "/");
+            path = path.Substring(1, path.Length - 1);
+            MessageBox.Show("Please select replacement data");
+            OpenFileDialog d = new OpenFileDialog();
+            d.Filter = "*.bin|*.bin";
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                byte[] data = File.ReadAllBytes(d.FileName);
+                MessageBox.Show("Please select mod save location");
+                SaveFileDialog d2 = new SaveFileDialog();
+                d2.Filter = "*.DAIMWV|*.DAIMWV";
+                if (d2.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    Mod mod = new Mod();
+                    mod.jobs = new List<Mod.ModJob>();
+                    Mod.ModJob mj = new Mod.ModJob();
+                    mj.type = 2;
+                    mj.respath = path;
+                    mj.data = data;
+                    mj.bundlePaths = new List<string>();
+                    mj.tocPaths = new List<string>();
+                    int plen = GlobalStuff.FindSetting("gamepath").Length;
+                    ebxstatus.Text = "Finding All References...";
+                    DBAccess.EBXInformation[] ebxl = DBAccess.GetEBXInformationByPath(path);
+                    ebxstatus.Text = "Creating Mod...";
+                    foreach (DBAccess.EBXInformation ebx in ebxl)
+                    {
+                        bool found = false;
+                        foreach (string p in mj.bundlePaths)
+                            if (p == ebx.bundlepath)
+                            {
+                                found = true;
+                                break;
+                            }
+                        if (!found)
+                            mj.bundlePaths.Add(ebx.bundlepath);
+                        found = false;
+                        foreach(string p in mj.tocPaths)
+                            if (p == ebx.tocfilepath.Substring(plen))
+                            {
+                                found = true;
+                                break;
+                            }
+                        if (!found && !ebx.tocfilepath.ToLower().Contains("\\patch\\"))
+                            mj.tocPaths.Add(ebx.tocfilepath.Substring(plen));
+                    }
+                    mod.jobs.Add(mj);
+                    mod.Save(d2.FileName);
+                    ebxstatus.Text = "Ready.";
+                    MessageBox.Show("Done.");
+                }
+            }
+        }
     }
 }

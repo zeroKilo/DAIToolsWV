@@ -32,6 +32,8 @@ namespace DAILibWV
                     return "Texture Mod";
                 case 1:
                     return "Binary Ressource Mod";
+                case 2:
+                    return "Binary Ebx Mod";
                 default:
                     return "Unknown Modtype";
             }
@@ -98,6 +100,7 @@ namespace DAILibWV
             switch (mj.type)
             {
                 case 0:
+                case 2:
                     r.ReadToFollowing("dataindex");
                     index = Convert.ToInt32(r.ReadElementContentAsString());
                     mj.data = dataList[index];
@@ -170,6 +173,7 @@ namespace DAILibWV
                 switch (mj.type)
                 {
                     case 0:
+                    case 2:
                         Helpers.WriteInt(m, mj.data.Length);
                         m.Write(mj.data, 0, mj.data.Length);
                         break;
@@ -207,6 +211,7 @@ namespace DAILibWV
                 switch (mj.type)
                 {
                     case 0:
+                    case 2:
                         w.WriteElementString("dataindex", (datacount++).ToString());
                         w.WriteElementString("respath", mj.respath);
                         w.WriteElementString("countbundles", mj.bundlePaths.Count.ToString());

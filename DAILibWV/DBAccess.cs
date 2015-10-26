@@ -754,6 +754,50 @@ namespace DAILibWV
             return result.ToArray();
         }
 
+        public static EBXInformation[] GetEBXInformationByPath(string path)
+        {
+            List<EBXInformation> result = new List<EBXInformation>();
+            path = path.ToLower();
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllWhere("ebxlut", "lower(path) = '" + path + "'", con);
+            int count = 0;
+            while (reader.Read())
+            {
+                EBXInformation ebx = new EBXInformation();
+                ebx.ebxname = reader.GetString(1);
+                ebx.sha1 = reader.GetString(2);
+                ebx.basesha1 = reader.GetString(3);
+                ebx.deltasha1 = reader.GetString(4);
+                ebx.casPatchType = reader.GetInt32(5);
+                ebx.guid = reader.GetString(6);
+                ebx.bundlepath = reader.GetString(7);
+                ebx.offset = reader.GetInt32(8);
+                ebx.size = reader.GetInt32(9);
+                ebx.isbase = reader.GetString(10) == "True";
+                ebx.isdelta = reader.GetString(11) == "True";
+                ebx.tocfilepath = reader.GetString(12);
+                ebx.incas = reader.GetString(13) == "True";
+                switch (reader.GetString(14))
+                {
+                    default:
+                        ebx.isbasegamefile = true;
+                        break;
+                    case "u":
+                        ebx.isDLC = true;
+                        break;
+                    case "p":
+                        ebx.isPatch = true;
+                        break;
+                }
+                result.Add(ebx);
+                if (count++ % 1000 == 0)
+                    Application.DoEvents();
+            }
+            con.Close();
+            return result.ToArray();
+        }
+
         public static RESInformation[] GetRESInformationBySHA1(string sha1)
         {
             List<RESInformation> result = new List<RESInformation>();

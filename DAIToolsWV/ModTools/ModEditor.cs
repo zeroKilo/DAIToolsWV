@@ -47,6 +47,7 @@ namespace DAIToolsWV.ModTools
                 {
                     case 0:
                     case 1:
+                    case 2:
                         dataList.Add(mj.data);
                         listBox1.Items.Add("Data Blob #" + (count++));
                         break;

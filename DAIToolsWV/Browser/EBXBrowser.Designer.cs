@@ -46,6 +46,7 @@
             this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton14 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton15 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip2 = new System.Windows.Forms.StatusStrip();
             this.ebxstatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.ebxpb1 = new System.Windows.Forms.ToolStripProgressBar();
@@ -72,8 +73,8 @@
             // 
             this.splitContainer3.Panel2.Controls.Add(this.rtb2);
             this.splitContainer3.Panel2.Controls.Add(this.hb1);
-            this.splitContainer3.Size = new System.Drawing.Size(885, 387);
-            this.splitContainer3.SplitterDistance = 395;
+            this.splitContainer3.Size = new System.Drawing.Size(1058, 387);
+            this.splitContainer3.SplitterDistance = 472;
             this.splitContainer3.TabIndex = 3;
             // 
             // treeView4
@@ -84,7 +85,7 @@
             this.treeView4.HideSelection = false;
             this.treeView4.Location = new System.Drawing.Point(0, 0);
             this.treeView4.Name = "treeView4";
-            this.treeView4.Size = new System.Drawing.Size(395, 387);
+            this.treeView4.Size = new System.Drawing.Size(472, 387);
             this.treeView4.TabIndex = 0;
             this.treeView4.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView4_AfterSelect);
             // 
@@ -109,7 +110,7 @@
             this.rtb2.Font = new System.Drawing.Font("Courier New", 10F);
             this.rtb2.Location = new System.Drawing.Point(0, 0);
             this.rtb2.Name = "rtb2";
-            this.rtb2.Size = new System.Drawing.Size(486, 387);
+            this.rtb2.Size = new System.Drawing.Size(582, 387);
             this.rtb2.TabIndex = 1;
             this.rtb2.Text = "";
             this.rtb2.WordWrap = false;
@@ -124,7 +125,7 @@
             this.hb1.Location = new System.Drawing.Point(0, 0);
             this.hb1.Name = "hb1";
             this.hb1.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hb1.Size = new System.Drawing.Size(486, 387);
+            this.hb1.Size = new System.Drawing.Size(582, 387);
             this.hb1.StringViewVisible = true;
             this.hb1.TabIndex = 0;
             this.hb1.UseFixedBytesPerLine = true;
@@ -141,10 +142,11 @@
             this.toolStripComboBox1,
             this.toolStripButton13,
             this.toolStripButton14,
-            this.toolStripButton15});
+            this.toolStripButton15,
+            this.toolStripButton1});
             this.toolStrip3.Location = new System.Drawing.Point(0, 0);
             this.toolStrip3.Name = "toolStrip3";
-            this.toolStrip3.Size = new System.Drawing.Size(885, 25);
+            this.toolStrip3.Size = new System.Drawing.Size(1058, 25);
             this.toolStrip3.TabIndex = 5;
             this.toolStrip3.Text = "toolStrip3";
             // 
@@ -226,6 +228,16 @@
             this.toolStripButton15.Text = "Export All as XML...";
             this.toolStripButton15.Click += new System.EventHandler(this.toolStripButton15_Click);
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(74, 22);
+            this.toolStripButton1.Text = "Make MOD...";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
             // statusStrip2
             // 
             this.statusStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -233,7 +245,7 @@
             this.ebxpb1});
             this.statusStrip2.Location = new System.Drawing.Point(0, 412);
             this.statusStrip2.Name = "statusStrip2";
-            this.statusStrip2.Size = new System.Drawing.Size(885, 22);
+            this.statusStrip2.Size = new System.Drawing.Size(1058, 22);
             this.statusStrip2.TabIndex = 4;
             this.statusStrip2.Text = "statusStrip2";
             // 
@@ -253,7 +265,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(885, 434);
+            this.ClientSize = new System.Drawing.Size(1058, 434);
             this.Controls.Add(this.splitContainer3);
             this.Controls.Add(this.toolStrip3);
             this.Controls.Add(this.statusStrip2);
@@ -296,5 +308,6 @@
         private System.Windows.Forms.StatusStrip statusStrip2;
         private System.Windows.Forms.ToolStripStatusLabel ebxstatus;
         private System.Windows.Forms.ToolStripProgressBar ebxpb1;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }
