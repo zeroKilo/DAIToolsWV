@@ -61,8 +61,11 @@ namespace DAIToolsWV.FileTools
         public void RefreshBinary()
         {
             listBox1.Items.Clear();
-            foreach(TOCFile.TOCBundleInfoStruct info in toc.bundles)
-                listBox1.Items.Add(info.id + (info.isbase ? " (B)" : "") + (info.isdelta ? " (D)" : ""));
+            if (toc != null)
+                foreach (TOCFile.TOCBundleInfoStruct info in toc.bundles)
+                    listBox1.Items.Add(info.id + (info.isbase ? " (B)" : "") + (info.isdelta ? " (D)" : ""));
+            else
+                listBox1.Items.Add("unknown");
         }
         public void RefreshBinaryBundle()
         {
@@ -161,13 +164,29 @@ namespace DAIToolsWV.FileTools
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!toc.iscas)
-                return;
             SaveFileDialog d = new SaveFileDialog();
-            d.Filter = "*.sb|*.sb";
+            if (toc != null)
+                d.Filter = "*.sb|*.sb";
+            else
+                d.Filter = "*.bundle|*.bundle";
             if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                sb.Save(d.FileName);
+
+                if (toc != null && !toc.iscas)
+                {
+                    sb.Save(d.FileName);
+                }
+                else
+                {
+                    if (toc != null)
+                    {
+                        //TODO save entire sb back nad update toc
+                    }
+                    else
+                    {
+                        binBundle.Save(d.FileName);
+                    }
+                }
                 MessageBox.Show("Done.");
             }
         }
@@ -279,6 +298,8 @@ namespace DAIToolsWV.FileTools
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (toc == null)
+                return;
             int n = listBox1.SelectedIndex;
             if (n == -1)
                 return;
@@ -338,8 +359,7 @@ namespace DAIToolsWV.FileTools
         }
 
         private void openRawBundleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
+        {            
             OpenFileDialog d = new OpenFileDialog();
             d.Filter = "*.bundle|*.bundle";
             if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -383,6 +403,24 @@ namespace DAIToolsWV.FileTools
                     listBox4.SelectedIndex = i;
                     return;
                 }
+        }
+
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog d = new OpenFileDialog();
+            d.Filter = "*.bundle|*.bundle";
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                toc = null;
+                toolStrip1.Visible = true;
+                splitContainer2.BringToFront();
+                MemoryStream m = new MemoryStream(File.ReadAllBytes(d.FileName));
+                binBundle = new BinaryBundle(m);
+                tabControl1.BringToFront();
+                RefreshBinary();
+                RefreshBinaryBundle();
+                return;
+            }
         }
     }
 }

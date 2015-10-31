@@ -188,7 +188,7 @@ namespace DAIToolsWV.ModTools
                     reducedTocPaths.Add(p);
             }
             mj.tocPaths = reducedTocPaths;
-            List<string> reducedBundlePaths = new List<string>();            
+            List<string> reducedBundlePaths = new List<string>();
             foreach (string p in mj.bundlePaths)
             {
                 found = false;
@@ -235,8 +235,7 @@ namespace DAIToolsWV.ModTools
             }
             //walk through affected toc files
             foreach (string tocpath in mj.tocPaths)
-                if (!tocpath.ToLower().Contains("\\patch\\"))
-                    RunTextureResJob(mj, tocpath, newsha1, newcompressedsize);
+                RunTextureResJob(mj, tocpath, newsha1, newcompressedsize);
         }
 
         public void RunBinaryResJob(Mod.ModJob mj)
@@ -381,7 +380,6 @@ namespace DAIToolsWV.ModTools
 
         public void RunTextureResJob(Mod.ModJob mj, string tocpath, byte[] newsha1, int newcompressedsize)
         {
-            if (!tocpath.ToLower().StartsWith("update"))
             DbgPrint("Loading : " + tocpath);
             TOCFile toc = null;
             if (!tocpath.ToLower().StartsWith("update"))
@@ -389,8 +387,12 @@ namespace DAIToolsWV.ModTools
             else
                 toc = new TOCFile(outputPath + Helpers.SkipSubFolder(tocpath, 2));
             //walk through affected bundles
-            foreach (string bpath in mj.bundlePaths)
-                RunTextureResJobOnBundle(mj, toc, tocpath, newsha1, bpath, newcompressedsize);
+            if (toc.iscas)
+                foreach (string bpath in mj.bundlePaths)
+                    RunTextureResJobOnBundle(mj, toc, tocpath, newsha1, bpath, newcompressedsize);
+            else
+                foreach (string bpath in mj.bundlePaths)
+                    RunTextureResJobOnBundleBinary(mj, toc, tocpath, bpath);
             UpdateTOC(toc);
         }
 
@@ -597,6 +599,132 @@ namespace DAIToolsWV.ModTools
                     if (!found)
                         DbgPrint("  Error: Could not find Chunk by id");
                 }
+            }
+        }
+
+        public void RunTextureResJobOnBundleBinary(Mod.ModJob mj, TOCFile toc, string tocpath, string bpath)
+        {
+            int count = 0;
+            int index = -1;
+            foreach (TOCFile.TOCBundleInfoStruct buni in toc.bundles)
+                if (count++ > -1 && bpath.ToLower() == buni.id.ToLower())
+                {
+                    DbgPrint(" Found bundle : " + bpath);
+                    index = count - 1;
+                    break;
+                }
+            //if bundle found
+            if (index != -1)
+            {
+                //find out if base, delta or nothing
+                BJSON.Entry root = toc.lines[0];
+                BJSON.Field bundles = root.FindField("bundles");
+                BJSON.Entry bun = ((List<BJSON.Entry>)bundles.data)[index];
+                BJSON.Field isDeltaField = bun.FindField("delta");
+                BJSON.Field isBaseField = bun.FindField("base");
+                //if has base or delta prop, still from patch
+                if (isBaseField != null || isDeltaField != null)
+                {
+                    DbgPrint("  Still from old patch, importing from base");
+                    if (!ImportBundleBinaryFromBase(toc, tocpath, bpath))
+                        return;
+                }
+                DbgPrint("  Updating SB file with new data...");
+                toc = new TOCFile(toc.MyPath);//reload toc
+                byte[] bundledataraw = toc.ExportBundleDataByPath(bpath);
+                BinaryBundle bundle = new BinaryBundle(new MemoryStream(bundledataraw));
+                bool found = false;
+                byte[] chunkidbuff = new byte[16];
+                byte[] newchunkid = new byte[16];
+                //find right res entry
+                for (int j = 0; j < bundle.ResList.Count; j++)
+                    if (bundle.ResList[j]._name.ToLower() == mj.respath.ToLower())
+                    {
+                        //get res data and extract chunk id
+                        for (int k = 0; k < 16; k++)
+                            chunkidbuff[k] = bundle.ResList[j]._data[k + 0x1C];
+                        DbgPrint("  Found chunk id : " + Helpers.ByteArrayToHexString(chunkidbuff));
+                        newchunkid = Guid.NewGuid().ToByteArray();
+                        DbgPrint("  Creating new chunk id : " + Helpers.ByteArrayToHexString(newchunkid));
+                        for (int k = 0; k < 16; k++)
+                            bundle.ResList[j]._data[k + 0x1C] = newchunkid[k];
+                        found = true;
+                    }
+                if (!found)
+                {
+                    DbgPrint("  Error: cant find res, skipping!");
+                    return;
+                }
+                found = false;
+                //find right chunk entry
+                MemoryStream m3 = new MemoryStream();
+                Helpers.WriteLEInt(m3, BitConverter.ToInt32(chunkidbuff, 0));
+                Helpers.WriteLEUShort(m3, BitConverter.ToUInt16(chunkidbuff, 4));
+                Helpers.WriteLEUShort(m3, BitConverter.ToUInt16(chunkidbuff, 6));
+                m3.Write(chunkidbuff, 8, 8);
+                byte[] chunkidswapped = m3.ToArray();
+                for (int j = 0; j < bundle.ChunkList.Count; j++)
+                    if (Helpers.ByteArrayCompare(bundle.ChunkList[j].id, chunkidswapped))
+                    {
+                        DbgPrint("  Found chunk");
+                        found = true;
+                        BinaryBundle.ChunkEntry chunk = bundle.ChunkList[j];
+                        m3 = new MemoryStream();
+                        Helpers.WriteLEInt(m3, BitConverter.ToInt32(newchunkid, 0));
+                        Helpers.WriteLEUShort(m3, BitConverter.ToUInt16(newchunkid, 4));
+                        Helpers.WriteLEUShort(m3, BitConverter.ToUInt16(newchunkid, 6));
+                        m3.Write(newchunkid, 8, 8);
+                        chunk.id = m3.ToArray();
+                        chunk._data = mj.data;
+                        bundle.ChunkList[j] = chunk;
+                        break;
+                    }
+                if (!found)
+                {
+                    DbgPrint("  Error: Could not find Chunk by id");
+                    return;
+                }
+                DbgPrint("  Recompiling bundle...");
+                MemoryStream m = new MemoryStream();
+                bundle.Save(m);
+                DbgPrint("  Recompiling sb...");
+                MemoryStream m2 = new MemoryStream();
+                List<BJSON.Entry> list = ((List<BJSON.Entry>)bundles.data);
+                foreach (TOCFile.TOCBundleInfoStruct buni in toc.bundles)
+                    if (!buni.isbase)
+                    {
+                        byte[] buff = new byte[0];
+                        if (bpath.ToLower() != buni.id.ToLower())
+                            buff = toc.ExportBundleDataByPath(buni.id);
+                        else
+                            buff = m.ToArray();
+                        for (int i = 0; i < list.Count; i++)
+                            if ((string)list[i].FindField("id").data == buni.id)
+                            {
+                                BJSON.Entry e = list[i];
+                                BJSON.Field f = e.fields[e.FindFieldIndex("offset")];
+                                f.data = BitConverter.GetBytes(m2.Position);
+                                e.fields[e.FindFieldIndex("offset")] = f;
+                                f = e.fields[e.FindFieldIndex("size")];
+                                f.data = BitConverter.GetBytes(buff.Length);
+                                e.fields[e.FindFieldIndex("size")] = f;
+                                list[i] = e;
+                                break;
+                            }
+                        m2.Write(buff, 0, buff.Length);
+                    }
+                bundles.data = list;
+                root.fields[root.FindFieldIndex("bundles")] = bundles;
+                toc.lines[0] = root;
+                DbgPrint("  Updating TOC...");
+                toc.Save();
+                toc = new TOCFile(toc.MyPath);//reload toc
+                DbgPrint("  Saving sb...");
+                if (tocpath.ToLower().Contains("update"))
+                    File.WriteAllBytes(outputPath + Helpers.SkipSubFolder(tocpath.ToLower().Replace(".toc", ".sb"), 2), m2.ToArray());
+                else
+                    File.WriteAllBytes(outputPath + tocpath.ToLower().Replace(".toc", ".sb"), m2.ToArray());
+                DbgPrint("  Job successfull!");
             }
         }
 
@@ -995,6 +1123,83 @@ namespace DAIToolsWV.ModTools
                     f_offset.data = BitConverter.GetBytes(off);
                 }
             }
+            toc.Save();
+            DbgPrint("  Bundle imported");
+            return true;
+        }
+
+        public bool ImportBundleBinaryFromBase(TOCFile toc, string tocpath, string bpath)
+        {
+            DbgPrint("  Its a base reference! Copying in from base...");
+            //Find base toc
+            string basepath = GlobalStuff.FindSetting("gamepath");
+            if (!File.Exists(basepath + tocpath))
+            {
+                DbgPrint("Error: base TOC file not found, skipping!");
+                return false;
+            }
+            TOCFile otoc = new TOCFile(basepath + tocpath);
+            //get base bundle data
+            byte[] buff = otoc.ExportBundleDataByPath(bpath);
+            if (buff.Length == 0)
+            {
+                DbgPrint("Error: base bundle not found, skipping!");
+                return false;
+            }
+            //get old sb file
+            string ttocpath = tocpath;
+            if (tocpath.ToLower().Contains("update"))
+                ttocpath = Helpers.SkipSubFolder(tocpath, 2);
+            string oldSBpath = outputPath + Path.GetDirectoryName(ttocpath) + "\\" + Path.GetFileNameWithoutExtension(ttocpath) + ".sb";
+            if (!File.Exists(oldSBpath))
+            {
+                DbgPrint("Error: patch SB file not found, skipping!");
+                return false;
+            }
+            DbgPrint("  Got copy, recompiling...");
+            //recompiling new sb in memory
+            MemoryStream newSB = new MemoryStream();
+            FileStream oldSB = new FileStream(oldSBpath, FileMode.Open, FileAccess.Read);
+            long glob_off = 0;
+            BJSON.Entry root = toc.lines[0];
+            BJSON.Field bundles = root.fields[0];
+            int count = ((List<BJSON.Entry>)bundles.data).Count();
+            DbgPrint("  Recompiling SB...");
+            //put one bundle after another that is not base as defined in toc
+            for (int i = 0; i < count; i++)
+            {
+                //get entry infos
+                BJSON.Entry b = ((List<BJSON.Entry>)bundles.data)[i];
+                BJSON.Field f_id = b.FindField("id");
+                BJSON.Field f_offset = b.FindField("offset");
+                BJSON.Field f_size = b.FindField("size");
+                BJSON.Field f_isBase = b.FindField("base");
+                BJSON.Field f_isDelta = b.FindField("delta");
+                //if not our target and not copied from base, copy from old SB
+                if (((string)f_id.data).ToLower() != bpath && f_isBase == null)
+                {
+                    int size = BitConverter.ToInt32((byte[])f_size.data, 0);
+                    CopyFileStream(oldSB, newSB, BitConverter.ToInt64((byte[])f_offset.data, 0), size);
+                    f_offset.data = BitConverter.GetBytes(glob_off);
+                    glob_off += size;
+                }
+                //if target, replace data, make delta
+                if (((string)f_id.data).ToLower() == bpath)
+                {
+                    f_offset.data = BitConverter.GetBytes(glob_off);
+                    f_size.data = BitConverter.GetBytes(buff.Length);
+                    b.RemoveField("base");
+                    b.RemoveField("delta");
+                    newSB.Write(buff, 0, buff.Length);
+                    glob_off += buff.Length;
+                }
+            }
+            oldSB.Close();
+            //rebuilding new SB
+            oldSB = new FileStream(oldSBpath, FileMode.Create, FileAccess.Write);
+            oldSB.Write(newSB.ToArray(), 0, (int)newSB.Length);
+            oldSB.Close();            
+            DbgPrint("  Recompiling TOC...");            
             toc.Save();
             DbgPrint("  Bundle imported");
             return true;

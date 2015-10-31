@@ -73,6 +73,11 @@ namespace DAILibWV.Frostbite
             Load(data, fast);
         }
 
+        public BinaryBundle()
+        {
+            // TODO: Complete member initialization
+        }
+
         public void Load(Stream data, bool fast = false)
         {
             uint headersize = Helpers.ReadLEUInt(data);
@@ -291,6 +296,181 @@ namespace DAILibWV.Frostbite
                     ChunkList[count - (int)(Header.ebxCount + Header.resCount)] = e;
                 }
                 count++;
+            }
+        }
+        
+        public void Save(string path)
+        {
+            FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+            Save(fs);
+            fs.Close();
+        }
+
+        public void Save(Stream s)
+        {
+            Helpers.WriteLEUInt(s, 0);
+            Helpers.WriteLEUInt(s, Header.magic);
+            Helpers.WriteLEInt(s, Sha1List.Count);            
+            Helpers.WriteLEInt(s, EbxList.Count);
+            Helpers.WriteLEInt(s, ResList.Count);
+            Helpers.WriteLEInt(s, ChunkList.Count);
+            Helpers.WriteLEUInt(s, 0);
+            Helpers.WriteLEUInt(s, 0);
+            Helpers.WriteLEUInt(s, 0);
+            WriteSha1List(s);
+            long ebxpos = s.Position;
+            WriteEbxList(s);
+            WriteResList(s);
+            WriteChunkList(s);
+            long ch_start = s.Position - 4;
+            if (Header.chunkCount != 0)
+                BJSON.WriteField(s, ChunkMeta);
+            long st_start = s.Position - 4;
+            WriteStringTable(s);
+            long tpos = s.Position;
+            //Name Fix Up
+            s.Seek(ebxpos, 0);
+            WriteEbxList(s);
+            //Header Size Fix Up
+            s.Seek(0, 0);
+            Helpers.WriteLEUInt(s, (uint)tpos - 4);
+            s.Seek(0x18, 0);
+            Helpers.WriteLEUInt(s, (uint)st_start);//String Table Offset
+            Helpers.WriteLEUInt(s, (uint)ch_start);//chunkMeta Offset
+            Helpers.WriteLEUInt(s, (uint)(st_start - ch_start));//chunkMeta Size
+            s.Seek(tpos, 0);
+            WriteEbxListData(s);
+            WriteResListData(s);
+            WriteChunkListData(s);
+        }
+
+        private void WriteSha1List(Stream s)
+        {
+            foreach (byte[] sha1 in Sha1List)
+                s.Write(sha1, 0, 0x14);
+        }
+
+        private void WriteEbxList(Stream s)
+        {
+            foreach (EbxEntry b in EbxList)
+            {
+                Helpers.WriteLEInt(s, b.nameOffset);
+                Helpers.WriteLEInt(s, b._data.Length);
+            }
+        }
+
+        private void WriteResList(Stream s)
+        {
+            foreach(ResEntry b in ResList)
+            {
+                Helpers.WriteLEInt(s, b.nameOffset);
+                Helpers.WriteLEInt(s, b._data.Length);
+            }
+            foreach(ResEntry b in ResList)
+                Helpers.WriteLEInt(s, b.type);
+            foreach(ResEntry b in ResList)
+                s.Write(b.meta, 0, b.meta.Length);
+            foreach(ResEntry b in ResList)
+                s.Write(b.id, 0, b.id.Length);
+        }
+
+        private void WriteChunkList(Stream s)
+        {
+            foreach(ChunkEntry e in ChunkList)
+            {
+                s.Write(e.id, 0, 16);
+                Helpers.WriteLEUShort(s, 0);
+                Helpers.WriteLEUShort(s, 0);
+                Helpers.WriteLEInt(s, e._data.Length);
+            }
+        }
+
+        private void WriteStringTable(Stream s)
+        {
+            List<string> list = new List<string>();
+            bool found;
+            foreach (EbxEntry e in EbxList)
+            {
+                found = false;
+                foreach(string str in list)
+                    if (e._name == str)
+                    {
+                        found = true;
+                        break;
+                    }
+                if (!found)
+                    list.Add(e._name);
+            }
+            foreach (ResEntry e in ResList)
+            {
+                found = false;
+                foreach (string str in list)
+                    if (e._name == str)
+                    {
+                        found = true;
+                        break;
+                    }
+                if (!found)
+                    list.Add(e._name);
+            }
+            int pos = 0;
+            foreach (string str in list)
+            {
+                Helpers.WriteNullString(s, str);
+                for (int i = 0; i < EbxList.Count; i++)
+                    if (EbxList[i]._name == str)
+                    {
+                        EbxEntry e = EbxList[i];
+                        e.nameOffset = pos;
+                        EbxList[i] = e;
+                    }
+                for (int i = 0; i < ResList.Count; i++)
+                    if (ResList[i]._name == str)
+                    {
+                        ResEntry e = ResList[i];
+                        e.nameOffset = pos;
+                        ResList[i] = e;
+                    }
+                pos += 1 + str.Length;
+            }
+            while (s.Position % 0x10 != 0)
+                s.WriteByte(0);
+        }
+
+        private void WriteEbxListData(Stream s)
+        {
+            foreach (EbxEntry e in EbxList)
+                WritePayload(s, e._data);
+        }
+
+        private void WriteResListData(Stream s)
+        {
+            foreach (ResEntry e in ResList)
+                WritePayload(s, e._data);
+        }
+
+        private void WriteChunkListData(Stream s)
+        {
+            foreach (ChunkEntry e in ChunkList)
+                WritePayload(s, e._data);
+        }
+
+        private void WritePayload(Stream s, byte[] data)
+        {
+            int tmppos = 0;
+            while (tmppos < data.Length)
+            {
+                int size = data.Length - tmppos;
+                if (size > 0x10000)
+                    size = 0x10000;
+                Helpers.WriteLEInt(s, size);
+                Helpers.WriteLEUShort(s, 0x0270);
+                MemoryStream m = new MemoryStream();
+                m.Write(data, tmppos, size);
+                byte[] tmp = Helpers.CompressZlib(m.ToArray());
+                Helpers.WriteLEUShort(s, (ushort)tmp.Length);
+                s.Write(tmp, 0, tmp.Length);
+                tmppos += size;
             }
         }
     }

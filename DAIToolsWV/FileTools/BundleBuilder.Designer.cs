@@ -33,6 +33,8 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.opnSingleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.invertDeletionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
@@ -45,8 +47,6 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.rtb1 = new System.Windows.Forms.RichTextBox();
             this.rtb2 = new System.Windows.Forms.RichTextBox();
-            this.selectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.invertDeletionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -93,6 +93,21 @@
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.saveAsToolStripMenuItem.Text = "Build and Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // selectToolStripMenuItem
+            // 
+            this.selectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.invertDeletionToolStripMenuItem});
+            this.selectToolStripMenuItem.Name = "selectToolStripMenuItem";
+            this.selectToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.selectToolStripMenuItem.Text = "Select";
+            // 
+            // invertDeletionToolStripMenuItem
+            // 
+            this.invertDeletionToolStripMenuItem.Name = "invertDeletionToolStripMenuItem";
+            this.invertDeletionToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.invertDeletionToolStripMenuItem.Text = "Invert Deletion";
+            this.invertDeletionToolStripMenuItem.Click += new System.EventHandler(this.invertDeletionToolStripMenuItem_Click);
             // 
             // toolStrip1
             // 
@@ -236,21 +251,6 @@
             this.rtb2.TabIndex = 1;
             this.rtb2.Text = "";
             this.rtb2.WordWrap = false;
-            // 
-            // selectToolStripMenuItem
-            // 
-            this.selectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.invertDeletionToolStripMenuItem});
-            this.selectToolStripMenuItem.Name = "selectToolStripMenuItem";
-            this.selectToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
-            this.selectToolStripMenuItem.Text = "Select";
-            // 
-            // invertDeletionToolStripMenuItem
-            // 
-            this.invertDeletionToolStripMenuItem.Name = "invertDeletionToolStripMenuItem";
-            this.invertDeletionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.invertDeletionToolStripMenuItem.Text = "Invert Deletion";
-            this.invertDeletionToolStripMenuItem.Click += new System.EventHandler(this.invertDeletionToolStripMenuItem_Click);
             // 
             // BundleBuilder
             // 

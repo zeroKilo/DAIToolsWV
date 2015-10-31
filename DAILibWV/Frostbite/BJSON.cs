@@ -30,6 +30,13 @@ namespace DAILibWV.Frostbite
                         }
                 return null;
             }
+            public int FindFieldIndex(string name)
+            {
+                for (int i = 0; i < fields.Count; i++)
+                    if (fields[i].fieldname == name)
+                        return i;
+                return -1;
+            }
             public bool RemoveField(string name)
             {
                 for (int i = 0; i < fields.Count; i++)

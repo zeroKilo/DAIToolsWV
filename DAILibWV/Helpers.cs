@@ -87,6 +87,13 @@ namespace DAILibWV
             s.Write(t.ToArray(), 0, 4);
         }
 
+        public static void WriteLEUShort(Stream s, ushort u)
+        {
+            byte[] buff = BitConverter.GetBytes(u);
+            buff = buff.Reverse().ToArray();
+            s.Write(buff, 0, 2);
+        }
+
         public static int ReadInt(Stream s)
         {
             byte[] buff = new byte[4];

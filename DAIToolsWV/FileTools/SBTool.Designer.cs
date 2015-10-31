@@ -54,23 +54,24 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.listBox2 = new System.Windows.Forms.ListBox();
+            this.findconextmenu1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hb2 = new Be.Windows.Forms.HexBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.listBox3 = new System.Windows.Forms.ListBox();
+            this.findconextmenu2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.hb3 = new Be.Windows.Forms.HexBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.listBox4 = new System.Windows.Forms.ListBox();
+            this.findconextmenu3 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.hb4 = new Be.Windows.Forms.HexBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.treeView2 = new System.Windows.Forms.TreeView();
-            this.findconextmenu1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.findconextmenu2 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.findconextmenu3 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.contextmenu.SuspendLayout();
@@ -89,20 +90,20 @@
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
+            this.findconextmenu1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).BeginInit();
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
+            this.findconextmenu2.SuspendLayout();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).BeginInit();
             this.splitContainer5.Panel1.SuspendLayout();
             this.splitContainer5.Panel2.SuspendLayout();
             this.splitContainer5.SuspendLayout();
-            this.tabPage5.SuspendLayout();
-            this.findconextmenu1.SuspendLayout();
-            this.findconextmenu2.SuspendLayout();
             this.findconextmenu3.SuspendLayout();
+            this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -121,6 +122,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.opnSingleToolStripMenuItem,
             this.openRawBundleToolStripMenuItem,
+            this.toolStripMenuItem3,
             this.saveAsToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
@@ -129,21 +131,21 @@
             // opnSingleToolStripMenuItem
             // 
             this.opnSingleToolStripMenuItem.Name = "opnSingleToolStripMenuItem";
-            this.opnSingleToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.opnSingleToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.opnSingleToolStripMenuItem.Text = "Open";
             this.opnSingleToolStripMenuItem.Click += new System.EventHandler(this.opnSingleToolStripMenuItem_Click);
             // 
             // openRawBundleToolStripMenuItem
             // 
             this.openRawBundleToolStripMenuItem.Name = "openRawBundleToolStripMenuItem";
-            this.openRawBundleToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.openRawBundleToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.openRawBundleToolStripMenuItem.Text = "Open Raw Bundle";
             this.openRawBundleToolStripMenuItem.Click += new System.EventHandler(this.openRawBundleToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
@@ -377,6 +379,20 @@
             this.listBox2.TabIndex = 1;
             this.listBox2.SelectedIndexChanged += new System.EventHandler(this.listBox2_SelectedIndexChanged);
             // 
+            // findconextmenu1
+            // 
+            this.findconextmenu1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.findToolStripMenuItem});
+            this.findconextmenu1.Name = "findconextmenu1";
+            this.findconextmenu1.Size = new System.Drawing.Size(95, 26);
+            // 
+            // findToolStripMenuItem
+            // 
+            this.findToolStripMenuItem.Name = "findToolStripMenuItem";
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
+            this.findToolStripMenuItem.Text = "Find";
+            this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+            // 
             // hb2
             // 
             this.hb2.BoldFont = null;
@@ -434,6 +450,20 @@
             this.listBox3.Size = new System.Drawing.Size(268, 386);
             this.listBox3.TabIndex = 1;
             this.listBox3.SelectedIndexChanged += new System.EventHandler(this.listBox3_SelectedIndexChanged);
+            // 
+            // findconextmenu2
+            // 
+            this.findconextmenu2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+            this.findconextmenu2.Name = "findconextmenu1";
+            this.findconextmenu2.Size = new System.Drawing.Size(95, 26);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(94, 22);
+            this.toolStripMenuItem1.Text = "Find";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // hb3
             // 
@@ -493,6 +523,20 @@
             this.listBox4.TabIndex = 1;
             this.listBox4.SelectedIndexChanged += new System.EventHandler(this.listBox4_SelectedIndexChanged);
             // 
+            // findconextmenu3
+            // 
+            this.findconextmenu3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem2});
+            this.findconextmenu3.Name = "findconextmenu1";
+            this.findconextmenu3.Size = new System.Drawing.Size(95, 26);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(94, 22);
+            this.toolStripMenuItem2.Text = "Find";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
             // hb4
             // 
             this.hb4.BoldFont = null;
@@ -515,7 +559,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(650, 417);
+            this.tabPage5.Size = new System.Drawing.Size(650, 392);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "CHUNK Meta";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -527,50 +571,15 @@
             this.treeView2.HideSelection = false;
             this.treeView2.Location = new System.Drawing.Point(3, 3);
             this.treeView2.Name = "treeView2";
-            this.treeView2.Size = new System.Drawing.Size(644, 411);
+            this.treeView2.Size = new System.Drawing.Size(644, 386);
             this.treeView2.TabIndex = 1;
             // 
-            // findconextmenu1
+            // toolStripMenuItem3
             // 
-            this.findconextmenu1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.findToolStripMenuItem});
-            this.findconextmenu1.Name = "findconextmenu1";
-            this.findconextmenu1.Size = new System.Drawing.Size(95, 26);
-            // 
-            // findToolStripMenuItem
-            // 
-            this.findToolStripMenuItem.Name = "findToolStripMenuItem";
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
-            this.findToolStripMenuItem.Text = "Find";
-            this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
-            // 
-            // findconextmenu2
-            // 
-            this.findconextmenu2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1});
-            this.findconextmenu2.Name = "findconextmenu1";
-            this.findconextmenu2.Size = new System.Drawing.Size(95, 26);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(94, 22);
-            this.toolStripMenuItem1.Text = "Find";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
-            // 
-            // findconextmenu3
-            // 
-            this.findconextmenu3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem2});
-            this.findconextmenu3.Name = "findconextmenu1";
-            this.findconextmenu3.Size = new System.Drawing.Size(153, 48);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem2.Text = "Find";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(192, 22);
+            this.toolStripMenuItem3.Text = "Open Binary Raw Bundle";
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
             // 
             // SBTool
             // 
@@ -605,20 +614,20 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            this.findconextmenu1.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.splitContainer4.Panel1.ResumeLayout(false);
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
+            this.findconextmenu2.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.splitContainer5.Panel1.ResumeLayout(false);
             this.splitContainer5.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).EndInit();
             this.splitContainer5.ResumeLayout(false);
-            this.tabPage5.ResumeLayout(false);
-            this.findconextmenu1.ResumeLayout(false);
-            this.findconextmenu2.ResumeLayout(false);
             this.findconextmenu3.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -667,5 +676,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ContextMenuStrip findconextmenu3;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
     }
 }

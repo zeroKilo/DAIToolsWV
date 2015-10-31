@@ -67,7 +67,8 @@ namespace DAIToolsWV.FileTools
             {
                 rtb2.Text = "Start Compiling...\n";
                 if (!PrepareBJSON()) return;
-                if (!BuildSB(d.FileName)) return;
+                if (toc.iscas && !BuildSB(d.FileName)) return;
+                if (!toc.iscas && !BuildSBBinary(d.FileName)) return;
                 rtb2.AppendText("Writing " + Path.GetFileName(d.FileName) + " ...\n");
                 toc.Save(d.FileName);
                 rtb2.AppendText("Saved " + Path.GetFileName(d.FileName) + "\n");
@@ -81,7 +82,7 @@ namespace DAIToolsWV.FileTools
             try
             {
                 BJSON.Entry root = toc.lines[0];
-                BJSON.Field bundles = root.fields[0];
+                BJSON.Field bundles = root.FindField("bundles");
                 BJSON.Field tbun = bundles;
                 List<BJSON.Entry> list = new List<BJSON.Entry>();
                 list.AddRange((List<BJSON.Entry>)bundles.data);
@@ -102,7 +103,7 @@ namespace DAIToolsWV.FileTools
                         i--;
                     }
                 rtb2.AppendText("Copied: " + countcopy + " / " + list.Count + "\n");
-                root.fields[0] = tbun;
+                root.fields[root.FindFieldIndex("bundles")] = tbun;
             }
             catch (Exception ex)
             {
@@ -123,7 +124,7 @@ namespace DAIToolsWV.FileTools
             try
             {
                 BJSON.Entry root = toc.lines[0];
-                BJSON.Field bundles = root.fields[0];
+                BJSON.Field bundles = root.FindField("bundles");
                 BJSON.Field tbun = bundles;
                 List<BJSON.Entry> list = (List<BJSON.Entry>)bundles.data;
                 FileStream fs = new FileStream(dir + filename, FileMode.Create, FileAccess.Write);
@@ -169,7 +170,7 @@ namespace DAIToolsWV.FileTools
                         if (isbase)
                             isbase_field.data = false;
                         offset_field.data = BitConverter.GetBytes(gl_off);
-                        size_field.data = BitConverter.GetBytes(size);
+                        size_field.data = BitConverter.GetBytes((long)size);
                         m.Write(buf, 0, size);
                     }
                     gl_off += size;
@@ -248,7 +249,112 @@ namespace DAIToolsWV.FileTools
                 rtb2.AppendText("ERROR: " + ex.Message);
                 return false;
             }
-            rtb2.AppendText("");
+            return true;
+        }
+
+        private bool BuildSBBinary(string tocname)
+        {
+            rtb2.AppendText("Building SB file...\n");
+            string dir = Path.GetDirectoryName(tocname) + "\\";
+            string filename = Path.GetFileNameWithoutExtension(tocname) + ".sb";
+            string odir = Path.GetDirectoryName(toc.MyPath) + "\\";
+            string ofilename = Path.GetFileNameWithoutExtension(toc.MyPath) + ".sb";
+            rtb2.AppendText("Writing " + filename + " ...\n");
+            try
+            {
+                BJSON.Entry root = toc.lines[0];
+                BJSON.Field bundles = root.FindField("bundles");
+                BJSON.Field tbun = bundles;
+                List<BJSON.Entry> list = (List<BJSON.Entry>)bundles.data;
+                FileStream fs = new FileStream(dir + filename, FileMode.Create, FileAccess.Write);
+                FileStream ofs = new FileStream(odir + ofilename, FileMode.Open, FileAccess.Read);
+                long gl_off = 0;
+                for (int i = 0; i < list.Count; i++)
+                {
+                    BJSON.Entry e = list[i];
+                    long offset = 0;
+                    int size = 0;
+                    bool isbase = false;
+                    BJSON.Field offset_field = new BJSON.Field();
+                    BJSON.Field size_field = new BJSON.Field();
+                    BJSON.Field isbase_field = new BJSON.Field();
+                    foreach (BJSON.Field f in e.fields)
+                        switch (f.fieldname)
+                        {
+                            case "offset":
+                                offset = BitConverter.ToInt64((byte[])f.data, 0);
+                                offset_field = f;
+                                break;
+                            case "size":
+                                size = BitConverter.ToInt32((byte[])f.data, 0);
+                                size_field = f;
+                                break;
+                            case "base":
+                                isbase = (bool)f.data;
+                                isbase_field = f;
+                                break;
+                        }
+                    if (SelectForReplacement[i] == null)
+                    {
+                        if (isbase)
+                            continue;
+                        offset_field.data = BitConverter.GetBytes(gl_off);
+                        CopyFileStream(ofs, fs, offset, size);
+                    }
+                    else
+                    {
+                        byte[] buf = File.ReadAllBytes(SelectForReplacement[i]);
+                        size = buf.Length;
+                        if (isbase)
+                            isbase_field.data = false;
+                        offset_field.data = BitConverter.GetBytes(gl_off);
+                        size_field.data = BitConverter.GetBytes((long)size);
+                        fs.Write(buf, 0, size);
+                    }
+                    gl_off += size;
+                    if (SelectForDuplication[i])
+                    {
+                        BJSON.Entry te = new BJSON.Entry();
+                        te.type = e.type;
+                        te.type87name = e.type87name;
+                        te.fields = new List<BJSON.Field>();
+                        foreach (BJSON.Field f in e.fields)
+                        {
+                            BJSON.Field tf = new BJSON.Field();
+                            tf.fieldname = f.fieldname;
+                            tf.type = f.type;
+                            switch (f.fieldname)
+                            {
+                                case "offset":
+                                    tf.data = BitConverter.GetBytes(BitConverter.ToInt64((byte[])f.data, 0));
+                                    break;
+                                case "size":
+                                    tf.data = BitConverter.GetBytes(BitConverter.ToInt32((byte[])f.data, 0));
+                                    break;
+                                case "base":
+                                    tf.data = (bool)f.data;
+                                    break;
+                                default:
+                                    tf.data = f.data;
+                                    break;
+                            }
+                            te.fields.Add(tf);
+                        }
+                        list.Insert(i + 1, te);
+                        bundles.data = list;
+                        SelectForDuplication.Insert(i + 1, false);
+                        SelectForReplacement.Insert(i + 1, null);
+                    }
+                }
+                ofs.Close();
+                fs.Close();
+                rtb2.AppendText("Saved " + filename + "\n");                
+            }
+            catch (Exception ex)
+            {
+                rtb2.AppendText("ERROR: " + ex.Message);
+                return false;
+            }
             return true;
         }
 
