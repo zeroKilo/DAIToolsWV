@@ -211,16 +211,58 @@ namespace DAIToolsWV.ModTools
                 {
                     if (!File.Exists(outputPath + tocpath))
                     {
-                        DbgPrint("Error: TOC file not found, aborting!");
-                        return;
+                        string from = GlobalStuff.FindSetting("gamepath") + tocpath;
+                        string to = outputPath + tocpath;
+                        DbgPrint("TOC file not found, copying from base!");
+                        try
+                        {
+                            File.Copy(from, to);
+                        }
+                        catch (Exception)
+                        {
+                            DbgPrint("Error: TOC file not found, can not copy from base!\n Tried to copy from:\n\t" + from + "\n to:\n\t" + to);
+                            return;
+                        }
+                        from = GlobalStuff.FindSetting("gamepath") + tocpath.ToLower().Replace(".toc",".sb");
+                        to = outputPath + tocpath.ToLower().Replace(".toc", ".sb");
+                        try
+                        {
+                            File.Copy(from, to);
+                        }
+                        catch (Exception)
+                        {
+                            DbgPrint("Error: SB file not found, can not copy from base!\n Tried to copy from:\n\t" + from + "\n to:\n\t" + to);
+                            return;
+                        }
                     }
                 }
                 else
                 {
                     if (!File.Exists(outputPath + Helpers.SkipSubFolder(tocpath, 2)))
                     {
-                        DbgPrint("Error: TOC file not found, aborting!");
-                        return;
+                        string from = GlobalStuff.FindSetting("gamepath") + tocpath;
+                        string to = outputPath + Helpers.SkipSubFolder(tocpath, 2);
+                        DbgPrint("TOC file not found, copying from base!");
+                        try
+                        {
+                            File.Copy(from, to);
+                        }
+                        catch (Exception)
+                        {
+                            DbgPrint("Error: TOC file not found, can not copy from base!\n Tried to copy from:\n\t" + from + "\n to:\n\t" + to);
+                            return;
+                        }
+                        from = GlobalStuff.FindSetting("gamepath") + tocpath.ToLower().Replace(".toc", ".sb");
+                        to = outputPath + Helpers.SkipSubFolder(tocpath, 2).ToLower().Replace(".toc", ".sb");
+                        try
+                        {
+                            File.Copy(from, to);
+                        }
+                        catch (Exception)
+                        {
+                            DbgPrint("Error: SB file not found, can not copy from base!\n Tried to copy from:\n\t" + from + "\n to:\n\t" + to);
+                            return;
+                        }
                     }
                 }
             }
