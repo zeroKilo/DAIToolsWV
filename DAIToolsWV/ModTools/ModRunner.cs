@@ -234,6 +234,20 @@ namespace DAIToolsWV.ModTools
                             DbgPrint("Error: SB file not found, can not copy from base!\n Tried to copy from:\n\t" + from + "\n to:\n\t" + to);
                             return;
                         }
+                        DbgPrint("Fixing layout.toc...");
+                        TOCFile toc = new TOCFile(outputPath + "Data\\layout.toc");
+                        BJSON.Entry root = toc.lines[0];
+                        BJSON.Field sbun = root.FindField("superBundles");
+                        List<BJSON.Entry> list = (List<BJSON.Entry>)sbun.data;
+                        BJSON.Entry ne = new BJSON.Entry();
+                        ne.type = 0x82;
+                        ne.fields = new List<BJSON.Field>();
+                        ne.fields.Add(new BJSON.Field(7, "name", tocpath.Replace(".toc", "")));
+                        ne.fields.Add(new BJSON.Field(6, "delta", true));
+                        list.Add(ne);
+                        sbun.data = list;
+                        toc.Save();
+                        DbgPrint("SuperBundle added");
                     }
                 }
                 else
@@ -263,6 +277,20 @@ namespace DAIToolsWV.ModTools
                             DbgPrint("Error: SB file not found, can not copy from base!\n Tried to copy from:\n\t" + from + "\n to:\n\t" + to);
                             return;
                         }
+                        DbgPrint("Fixing layout.toc...");
+                        TOCFile toc = new TOCFile(outputPath + "Data\\layout.toc");
+                        BJSON.Entry root = toc.lines[0];
+                        BJSON.Field sbun = root.FindField("superBundles");
+                        List<BJSON.Entry> list = (List<BJSON.Entry>)sbun.data;
+                        BJSON.Entry ne = new BJSON.Entry();
+                        ne.type = 0x82;
+                        ne.fields = new List<BJSON.Field>();
+                        ne.fields.Add(new BJSON.Field(7, "name", Helpers.SkipSubFolder(tocpath, 2).Replace(".toc", "")));
+                        ne.fields.Add(new BJSON.Field(6, "delta", true));
+                        list.Add(ne);
+                        sbun.data = list;
+                        toc.Save();
+                        DbgPrint("SuperBundle added");
                     }
                 }
             }
