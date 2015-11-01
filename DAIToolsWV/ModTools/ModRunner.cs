@@ -623,12 +623,9 @@ namespace DAIToolsWV.ModTools
                 BJSON.Field isDeltaField = bun.FindField("delta");
                 BJSON.Field isBaseField = bun.FindField("base");
                 //if has base or delta prop, still from patch
-                if (isBaseField != null || isDeltaField != null)
-                {
-                    DbgPrint("  Still from old patch, importing from base");
+                if (isBaseField != null)
                     if (!ImportBundleBinaryFromBase(toc, tocpath, bpath))
                         return;
-                }
                 DbgPrint("  Updating SB file with new data...");
                 toc = new TOCFile(toc.MyPath);//reload toc
                 byte[] bundledataraw = toc.ExportBundleDataByPath(bpath);
@@ -1188,8 +1185,8 @@ namespace DAIToolsWV.ModTools
                 {
                     f_offset.data = BitConverter.GetBytes(glob_off);
                     f_size.data = BitConverter.GetBytes(buff.Length);
-                    b.RemoveField("base");
-                    b.RemoveField("delta");
+                    if (f_isBase != null)
+                        f_isBase.fieldname = "delta";
                     newSB.Write(buff, 0, buff.Length);
                     glob_off += buff.Length;
                 }
