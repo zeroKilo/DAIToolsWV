@@ -213,6 +213,7 @@ namespace DAIToolsWV.ModTools
                     {
                         string from = GlobalStuff.FindSetting("gamepath") + tocpath;
                         string to = outputPath + tocpath;
+                        Directory.CreateDirectory(Path.GetDirectoryName(to) + "\\");
                         DbgPrint("TOC file not found, copying from base!");
                         try
                         {
@@ -225,6 +226,7 @@ namespace DAIToolsWV.ModTools
                         }
                         from = GlobalStuff.FindSetting("gamepath") + tocpath.ToLower().Replace(".toc",".sb");
                         to = outputPath + tocpath.ToLower().Replace(".toc", ".sb");
+                        Directory.CreateDirectory(Path.GetDirectoryName(to) + "\\");
                         try
                         {
                             File.Copy(from, to);
@@ -256,6 +258,7 @@ namespace DAIToolsWV.ModTools
                     {
                         string from = GlobalStuff.FindSetting("gamepath") + tocpath;
                         string to = outputPath + Helpers.SkipSubFolder(tocpath, 2);
+                        Directory.CreateDirectory(Path.GetDirectoryName(to) + "\\");
                         DbgPrint("TOC file not found, copying from base!");
                         try
                         {
@@ -268,6 +271,7 @@ namespace DAIToolsWV.ModTools
                         }
                         from = GlobalStuff.FindSetting("gamepath") + tocpath.ToLower().Replace(".toc", ".sb");
                         to = outputPath + Helpers.SkipSubFolder(tocpath, 2).ToLower().Replace(".toc", ".sb");
+                        Directory.CreateDirectory(Path.GetDirectoryName(to) + "\\");
                         try
                         {
                             File.Copy(from, to);
