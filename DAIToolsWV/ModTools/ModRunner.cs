@@ -145,6 +145,7 @@ namespace DAIToolsWV.ModTools
             rtb2.SelectionStart = rtb2.Text.Length;
             rtb2.SelectionLength = 0;
             rtb2.ScrollToCaret();
+            Application.DoEvents();
         }
 
         public void RunJob(int i)
@@ -700,9 +701,19 @@ namespace DAIToolsWV.ModTools
                 if (isBaseField != null)
                     if (!ImportBundleBinaryFromBase(toc, tocpath, bpath))
                         return;
-                DbgPrint("  Updating SB file with new data...");
                 toc = new TOCFile(toc.MyPath);//reload toc
                 byte[] bundledataraw = toc.ExportBundleDataByPath(bpath);
+                uint test = BitConverter.ToUInt32(bundledataraw, 4);
+                if (test != 0xD58E799D)
+                {
+                    DbgPrint("  Its a real delta bundle, importing from base...");
+                    if (!ImportBundleBinaryFromBase(toc, tocpath, bpath, false))
+                        return;
+                    toc.Save();
+                    toc = new TOCFile(toc.MyPath);//reload toc
+                }
+                DbgPrint("  Updating SB file with new data...");
+                bundledataraw = toc.ExportBundleDataByPath(bpath);
                 BinaryBundle bundle = new BinaryBundle(new MemoryStream(bundledataraw));
                 bool found = false;
                 byte[] chunkidbuff = new byte[16];
@@ -1199,9 +1210,10 @@ namespace DAIToolsWV.ModTools
             return true;
         }
 
-        public bool ImportBundleBinaryFromBase(TOCFile toc, string tocpath, string bpath)
+        public bool ImportBundleBinaryFromBase(TOCFile toc, string tocpath, string bpath, bool isbase = true)
         {
-            DbgPrint("  Its a base reference! Copying in from base...");
+            if(isbase)
+                DbgPrint("  Its a base reference! Copying in from base...");
             //Find base toc
             string basepath = GlobalStuff.FindSetting("gamepath");
             if (!File.Exists(basepath + tocpath))
