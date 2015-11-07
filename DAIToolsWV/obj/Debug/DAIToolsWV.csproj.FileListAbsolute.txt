@@ -128,3 +128,4 @@ C:\_CODE\Git\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.Browser.RESBrowser.resou
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.Browser.RESBrowser.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.Browser.MeshBrowser.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ContentTools.MeshTool.resources
+D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.FileTools.DAIMODSupportTool.resources

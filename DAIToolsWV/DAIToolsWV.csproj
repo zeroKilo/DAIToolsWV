@@ -153,6 +153,12 @@
     <Compile Include="FileTools\CASContainerCreator.Designer.cs">
       <DependentUpon>CASContainerCreator.cs</DependentUpon>
     </Compile>
+    <Compile Include="FileTools\DAIMODSupportTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FileTools\DAIMODSupportTool.Designer.cs">
+      <DependentUpon>DAIMODSupportTool.cs</DependentUpon>
+    </Compile>
     <Compile Include="GeneralTools\FolderCompare.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -276,6 +282,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FileTools\CASContainerCreator.resx">
       <DependentUpon>CASContainerCreator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileTools\DAIMODSupportTool.resx">
+      <DependentUpon>DAIMODSupportTool.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GeneralTools\FolderCompare.resx">
       <DependentUpon>FolderCompare.cs</DependentUpon>

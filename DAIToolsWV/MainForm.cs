@@ -209,5 +209,10 @@ namespace DAIToolsWV
         {
             OpenMaxed(new ContentTools.MeshTool());
         }
+
+        private void supportDAIMODToolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new FileTools.DAIMODSupportTool());
+        }
     }
 }

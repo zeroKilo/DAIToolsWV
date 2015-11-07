@@ -49,6 +49,7 @@ namespace DAIToolsWV
             this.eBXToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.talktableToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.meshToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.browserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bundleBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,7 +61,7 @@ namespace DAIToolsWV
             this.modEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rESETALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.meshToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.supportDAIMODToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -141,7 +142,8 @@ namespace DAIToolsWV
             this.sBToolToolStripMenuItem,
             this.mFTToolToolStripMenuItem,
             this.initFsToolToolStripMenuItem,
-            this.bundleBuilderToolStripMenuItem});
+            this.bundleBuilderToolStripMenuItem,
+            this.supportDAIMODToolToolStripMenuItem});
             this.fileToolsToolStripMenuItem.Name = "fileToolsToolStripMenuItem";
             this.fileToolsToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.fileToolsToolStripMenuItem.Text = "File Tools";
@@ -149,35 +151,35 @@ namespace DAIToolsWV
             // tOCToolToolStripMenuItem
             // 
             this.tOCToolToolStripMenuItem.Name = "tOCToolToolStripMenuItem";
-            this.tOCToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tOCToolToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.tOCToolToolStripMenuItem.Text = "TOC Tool";
             this.tOCToolToolStripMenuItem.Click += new System.EventHandler(this.tOCToolToolStripMenuItem_Click);
             // 
             // sBToolToolStripMenuItem
             // 
             this.sBToolToolStripMenuItem.Name = "sBToolToolStripMenuItem";
-            this.sBToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sBToolToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.sBToolToolStripMenuItem.Text = "SB Tool";
             this.sBToolToolStripMenuItem.Click += new System.EventHandler(this.sBToolToolStripMenuItem_Click);
             // 
             // mFTToolToolStripMenuItem
             // 
             this.mFTToolToolStripMenuItem.Name = "mFTToolToolStripMenuItem";
-            this.mFTToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mFTToolToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.mFTToolToolStripMenuItem.Text = "MFT Tool";
             this.mFTToolToolStripMenuItem.Click += new System.EventHandler(this.mFTToolToolStripMenuItem_Click);
             // 
             // initFsToolToolStripMenuItem
             // 
             this.initFsToolToolStripMenuItem.Name = "initFsToolToolStripMenuItem";
-            this.initFsToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.initFsToolToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.initFsToolToolStripMenuItem.Text = "InitFs Tool";
             this.initFsToolToolStripMenuItem.Click += new System.EventHandler(this.initFsToolToolStripMenuItem_Click);
             // 
             // bundleBuilderToolStripMenuItem
             // 
             this.bundleBuilderToolStripMenuItem.Name = "bundleBuilderToolStripMenuItem";
-            this.bundleBuilderToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bundleBuilderToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.bundleBuilderToolStripMenuItem.Text = "Bundle Builder";
             this.bundleBuilderToolStripMenuItem.Click += new System.EventHandler(this.bundleBuilderToolStripMenuItem_Click);
             // 
@@ -195,23 +197,30 @@ namespace DAIToolsWV
             // eBXToolToolStripMenuItem
             // 
             this.eBXToolToolStripMenuItem.Name = "eBXToolToolStripMenuItem";
-            this.eBXToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.eBXToolToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.eBXToolToolStripMenuItem.Text = "EBX Tool";
             this.eBXToolToolStripMenuItem.Click += new System.EventHandler(this.eBXToolToolStripMenuItem_Click);
             // 
             // textureToolToolStripMenuItem
             // 
             this.textureToolToolStripMenuItem.Name = "textureToolToolStripMenuItem";
-            this.textureToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.textureToolToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.textureToolToolStripMenuItem.Text = "Texture Tool";
             this.textureToolToolStripMenuItem.Click += new System.EventHandler(this.textureToolToolStripMenuItem_Click);
             // 
             // talktableToolToolStripMenuItem
             // 
             this.talktableToolToolStripMenuItem.Name = "talktableToolToolStripMenuItem";
-            this.talktableToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.talktableToolToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.talktableToolToolStripMenuItem.Text = "Talktable Tool";
             this.talktableToolToolStripMenuItem.Click += new System.EventHandler(this.talktableToolToolStripMenuItem_Click);
+            // 
+            // meshToolToolStripMenuItem
+            // 
+            this.meshToolToolStripMenuItem.Name = "meshToolToolStripMenuItem";
+            this.meshToolToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.meshToolToolStripMenuItem.Text = "Mesh Tool";
+            this.meshToolToolStripMenuItem.Click += new System.EventHandler(this.meshToolToolStripMenuItem_Click);
             // 
             // browserToolStripMenuItem
             // 
@@ -299,12 +308,12 @@ namespace DAIToolsWV
             this.rESETALLToolStripMenuItem.Text = "RESET ALL";
             this.rESETALLToolStripMenuItem.Click += new System.EventHandler(this.rESETALLToolStripMenuItem_Click);
             // 
-            // meshToolToolStripMenuItem
+            // supportDAIMODToolToolStripMenuItem
             // 
-            this.meshToolToolStripMenuItem.Name = "meshToolToolStripMenuItem";
-            this.meshToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.meshToolToolStripMenuItem.Text = "Mesh Tool";
-            this.meshToolToolStripMenuItem.Click += new System.EventHandler(this.meshToolToolStripMenuItem_Click);
+            this.supportDAIMODToolToolStripMenuItem.Name = "supportDAIMODToolToolStripMenuItem";
+            this.supportDAIMODToolToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.supportDAIMODToolToolStripMenuItem.Text = "Support DAIMOD Tool";
+            this.supportDAIMODToolToolStripMenuItem.Click += new System.EventHandler(this.supportDAIMODToolToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -357,6 +366,7 @@ namespace DAIToolsWV
         private ToolStripMenuItem rESBrowserToolStripMenuItem;
         private ToolStripMenuItem meshBrowserToolStripMenuItem;
         private ToolStripMenuItem meshToolToolStripMenuItem;
+        private ToolStripMenuItem supportDAIMODToolToolStripMenuItem;
     }
 }
 
