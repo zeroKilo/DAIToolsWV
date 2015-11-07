@@ -67,7 +67,7 @@
             this.toolStripSeparator3,
             this.toolStripComboBox1,
             this.toolStripButton18});
-            this.toolStrip4.Location = new System.Drawing.Point(0, 24);
+            this.toolStrip4.Location = new System.Drawing.Point(0, 0);
             this.toolStrip4.Name = "toolStrip4";
             this.toolStrip4.Size = new System.Drawing.Size(736, 25);
             this.toolStrip4.TabIndex = 4;
@@ -86,6 +86,7 @@
             this.toolStripButton19.Name = "toolStripButton19";
             this.toolStripButton19.Size = new System.Drawing.Size(57, 22);
             this.toolStripButton19.Text = "Find Next";
+            this.toolStripButton19.Click += new System.EventHandler(this.toolStripButton19_Click);
             // 
             // toolStripSeparator3
             // 
@@ -111,7 +112,7 @@
             // splitContainer4
             // 
             this.splitContainer4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer4.Location = new System.Drawing.Point(0, 49);
+            this.splitContainer4.Location = new System.Drawing.Point(0, 25);
             this.splitContainer4.Name = "splitContainer4";
             // 
             // splitContainer4.Panel1
@@ -121,7 +122,7 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.splitContainer5);
-            this.splitContainer4.Size = new System.Drawing.Size(736, 202);
+            this.splitContainer4.Size = new System.Drawing.Size(736, 226);
             this.splitContainer4.SplitterDistance = 359;
             this.splitContainer4.TabIndex = 6;
             // 
@@ -132,7 +133,7 @@
             this.treeView5.HideSelection = false;
             this.treeView5.Location = new System.Drawing.Point(0, 0);
             this.treeView5.Name = "treeView5";
-            this.treeView5.Size = new System.Drawing.Size(359, 202);
+            this.treeView5.Size = new System.Drawing.Size(359, 226);
             this.treeView5.TabIndex = 1;
             this.treeView5.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView5_AfterSelect);
             // 
@@ -150,8 +151,8 @@
             // splitContainer5.Panel2
             // 
             this.splitContainer5.Panel2.Controls.Add(this.hb2);
-            this.splitContainer5.Size = new System.Drawing.Size(373, 202);
-            this.splitContainer5.SplitterDistance = 58;
+            this.splitContainer5.Size = new System.Drawing.Size(373, 226);
+            this.splitContainer5.SplitterDistance = 64;
             this.splitContainer5.TabIndex = 0;
             // 
             // listBox2
@@ -165,7 +166,7 @@
             this.listBox2.Location = new System.Drawing.Point(0, 0);
             this.listBox2.Name = "listBox2";
             this.listBox2.ScrollAlwaysVisible = true;
-            this.listBox2.Size = new System.Drawing.Size(373, 58);
+            this.listBox2.Size = new System.Drawing.Size(373, 64);
             this.listBox2.TabIndex = 2;
             this.listBox2.SelectedIndexChanged += new System.EventHandler(this.listBox2_SelectedIndexChanged);
             // 
@@ -179,7 +180,7 @@
             this.hb2.Location = new System.Drawing.Point(0, 0);
             this.hb2.Name = "hb2";
             this.hb2.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hb2.Size = new System.Drawing.Size(373, 140);
+            this.hb2.Size = new System.Drawing.Size(373, 158);
             this.hb2.StringViewVisible = true;
             this.hb2.TabIndex = 3;
             this.hb2.UseFixedBytesPerLine = true;

@@ -29,4 +29,3 @@ C:\_CODE\Git\DAIToolsWV\DAILibWV\bin\Debug\System.Data.SQLite.xml
 C:\_CODE\Git\DAIToolsWV\DAILibWV\obj\Debug\DAILibWV.csprojResolveAssemblyReference.cache
 C:\_CODE\Git\DAIToolsWV\DAILibWV\obj\Debug\DAILibWV.dll
 C:\_CODE\Git\DAIToolsWV\DAILibWV\obj\Debug\DAILibWV.pdb
-D:\CODE\GitHub\DAIToolsWV\DAILibWV\obj\Debug\DAILibWV.csprojResolveAssemblyReference.cache

@@ -199,5 +199,15 @@ namespace DAIToolsWV
         {
             OpenMaxed(new Browser.RESBrowser());
         }
+
+        private void meshBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new Browser.MeshBrowser());
+        }
+
+        private void meshToolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenMaxed(new ContentTools.MeshTool());
+        }
     }
 }

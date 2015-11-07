@@ -110,7 +110,7 @@
             this.toolStripButton1,
             this.toolStripButton2,
             this.toolStripButton3});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(704, 25);
             this.toolStrip1.TabIndex = 1;
@@ -157,9 +157,9 @@
             // 
             this.panel1.Controls.Add(this.splitContainer1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 49);
+            this.panel1.Location = new System.Drawing.Point(0, 25);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(704, 455);
+            this.panel1.Size = new System.Drawing.Size(704, 479);
             this.panel1.TabIndex = 2;
             // 
             // splitContainer1
@@ -167,7 +167,6 @@
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer1.Panel1
             // 
@@ -176,8 +175,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.pb1);
-            this.splitContainer1.Size = new System.Drawing.Size(704, 455);
-            this.splitContainer1.SplitterDistance = 179;
+            this.splitContainer1.Size = new System.Drawing.Size(704, 479);
+            this.splitContainer1.SplitterDistance = 375;
             this.splitContainer1.TabIndex = 0;
             // 
             // tabControl1
@@ -190,7 +189,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(704, 179);
+            this.tabControl1.Size = new System.Drawing.Size(375, 479);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -199,7 +198,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(696, 153);
+            this.tabPage1.Size = new System.Drawing.Size(367, 453);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Information";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -211,7 +210,7 @@
             this.rtb1.Font = new System.Drawing.Font("Courier New", 10F);
             this.rtb1.Location = new System.Drawing.Point(3, 3);
             this.rtb1.Name = "rtb1";
-            this.rtb1.Size = new System.Drawing.Size(690, 147);
+            this.rtb1.Size = new System.Drawing.Size(361, 447);
             this.rtb1.TabIndex = 2;
             this.rtb1.Text = "";
             this.rtb1.WordWrap = false;
@@ -301,16 +300,16 @@
             this.pb1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pb1.Location = new System.Drawing.Point(0, 0);
             this.pb1.Name = "pb1";
-            this.pb1.Size = new System.Drawing.Size(704, 272);
+            this.pb1.Size = new System.Drawing.Size(325, 479);
             this.pb1.TabIndex = 0;
             this.pb1.TabStop = false;
             // 
             // panel2
             // 
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 49);
+            this.panel2.Location = new System.Drawing.Point(0, 25);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(704, 455);
+            this.panel2.Size = new System.Drawing.Size(704, 479);
             this.panel2.TabIndex = 3;
             // 
             // statusStrip1

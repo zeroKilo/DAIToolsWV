@@ -16,15 +16,16 @@ namespace DAIToolsWV.ContentTools
 {
     public partial class TextureTool : Form
     {
-        public TextureTool()
-        {
-            InitializeComponent();
-        }
 
         public DBAccess.TextureInformation[] til;
         public DBAccess.BundleInformation[] bil;
         public DBAccess.TOCInformation[] tocil;
         bool allInCas, hasBase, hasPatch, hasDLC;
+
+        public TextureTool()
+        {
+            InitializeComponent();
+        }
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {

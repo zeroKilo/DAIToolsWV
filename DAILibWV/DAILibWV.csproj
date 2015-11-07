@@ -54,6 +54,7 @@
     <Compile Include="Frostbite\CASFile.cs" />
     <Compile Include="Frostbite\CATFile.cs" />
     <Compile Include="Frostbite\EBXStream.cs" />
+    <Compile Include="Frostbite\Mesh.cs" />
     <Compile Include="Frostbite\SBFile.cs" />
     <Compile Include="Frostbite\Talktable.cs" />
     <Compile Include="Frostbite\TextureMetaResource.cs" />

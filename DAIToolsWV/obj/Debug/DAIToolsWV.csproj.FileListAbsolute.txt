@@ -126,3 +126,5 @@ C:\_CODE\Git\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.csproj.GenerateResource.
 C:\_CODE\Git\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.pdb
 C:\_CODE\Git\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.Browser.RESBrowser.resources
 D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.Browser.RESBrowser.resources
+D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.Browser.MeshBrowser.resources
+D:\CODE\GitHub\DAIToolsWV\DAIToolsWV\obj\Debug\DAIToolsWV.ContentTools.MeshTool.resources

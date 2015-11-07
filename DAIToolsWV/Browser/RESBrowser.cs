@@ -130,10 +130,6 @@ namespace DAIToolsWV.Browser
                     return;
                 status.Text = "Getting header infos from db...";
                 Application.DoEvents();
-                if (!Directory.Exists("tmp"))
-                    Directory.CreateDirectory("tmp");
-                if (File.Exists("tmp\\tmp.dds"))
-                    File.Delete("tmp\\tmp.dds");
                 DBAccess.RESInformation ti = ttprevlist[n];
                 DBAccess.BundleInformation buni = DBAccess.GetBundleInformationById(ti.bundlepath)[0];
                 DBAccess.TOCInformation toci = DBAccess.GetTocInformationByIndex(buni.tocIndex);
@@ -327,6 +323,11 @@ namespace DAIToolsWV.Browser
                     MessageBox.Show("Done.");
                 }
             }
+        }
+
+        private void toolStripButton19_Click(object sender, EventArgs e)
+        {
+            Helpers.SelectNext(toolStripTextBox1.Text, treeView5);
         }
     }
 }

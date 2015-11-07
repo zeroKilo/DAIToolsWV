@@ -87,6 +87,12 @@
     <Compile Include="Browser\FileBrowser.Designer.cs">
       <DependentUpon>FileBrowser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Browser\MeshBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Browser\MeshBrowser.Designer.cs">
+      <DependentUpon>MeshBrowser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Browser\RESBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,6 +110,12 @@
     </Compile>
     <Compile Include="ContentTools\EBXTool.Designer.cs">
       <DependentUpon>EBXTool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ContentTools\MeshTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ContentTools\MeshTool.Designer.cs">
+      <DependentUpon>MeshTool.cs</DependentUpon>
     </Compile>
     <Compile Include="ContentTools\SHA1Lookup.cs">
       <SubType>Form</SubType>
@@ -231,6 +243,9 @@
     <EmbeddedResource Include="Browser\FileBrowser.resx">
       <DependentUpon>FileBrowser.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Browser\MeshBrowser.resx">
+      <DependentUpon>MeshBrowser.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Browser\RESBrowser.resx">
       <DependentUpon>RESBrowser.cs</DependentUpon>
     </EmbeddedResource>
@@ -239,6 +254,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ContentTools\EBXTool.resx">
       <DependentUpon>EBXTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContentTools\MeshTool.resx">
+      <DependentUpon>MeshTool.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ContentTools\SHA1Lookup.resx">
       <DependentUpon>SHA1Lookup.cs</DependentUpon>
