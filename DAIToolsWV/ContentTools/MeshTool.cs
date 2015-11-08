@@ -203,6 +203,8 @@ namespace DAIToolsWV.ContentTools
 
         private void pictureBox1_Resize(object sender, EventArgs e)
         {
+            if (renderer == null)
+                return;
             timer1.Enabled = false;
             renderer.Init(pictureBox1.Handle, pictureBox1.Width, pictureBox1.Height);
             timer1.Enabled = true;
