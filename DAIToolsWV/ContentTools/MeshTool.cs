@@ -59,7 +59,12 @@ namespace DAIToolsWV.ContentTools
             }
             ));
             ttlist = new List<DBAccess.RESInformation>();
-            ttlist.AddRange(DBAccess.GetRESInformationsByType(type));
+            ttlist.AddRange(DBAccess.GetRESInformationsByType(type)); 
+            List<DBAccess.RESInformation> tmp = new List<DBAccess.RESInformation>();
+            foreach (DBAccess.RESInformation res in ttlist)
+                if (!res.isPatch)
+                    tmp.Add(res);
+            ttlist = tmp;
             this.Invoke(new Action(delegate
             {
                 status.Text = "Loaded " + ttlist.Count + " mesh information";
@@ -127,6 +132,7 @@ namespace DAIToolsWV.ContentTools
                 DBAccess.RESInformation ti = ttprevlist[n];
                 DBAccess.BundleInformation buni = DBAccess.GetBundleInformationById(ti.bundlepath)[0];
                 DBAccess.TOCInformation toci = DBAccess.GetTocInformationByIndex(buni.tocIndex);
+                BinaryBundle b = new BinaryBundle();
                 byte[] resdata = new byte[0];
                 if (toci.incas)
                 {
@@ -140,7 +146,7 @@ namespace DAIToolsWV.ContentTools
                     Application.DoEvents();
                     TOCFile toc = new TOCFile(toci.path);
                     byte[] bundledata = toc.ExportBundleDataByPath(buni.bundlepath);
-                    BinaryBundle b = new BinaryBundle(new MemoryStream(bundledata));
+                    b = new BinaryBundle(new MemoryStream(bundledata));
                     foreach (BinaryBundle.ResEntry res in b.ResList)
                         if (res._name == ti.resname)
                         {
@@ -151,14 +157,43 @@ namespace DAIToolsWV.ContentTools
                 hb1.ByteProvider = new DynamicByteProvider(resdata);
                 mesh = new Mesh(new MemoryStream(resdata));
                 rtb1.Text = mesh.HeaderToStr();
-                rtb2.Text = mesh.LODsToString();                
+                rtb2.Text = mesh.LODsToString();
                 foreach (Mesh.MeshLOD lod in mesh.header.LODs)
                 {
                     byte[] id = lod.ChunkID;
-                    DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(id);
-                    if (ci.sha1 == null)
-                        continue;
-                    byte[] data = SHA1Access.GetDataBySha1(ci.sha1);
+                    byte[] data = new byte[0];
+                    if (toci.incas)
+                    {
+                        DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(id);
+                        if (ci.sha1 == null)
+                            continue;
+                        data = SHA1Access.GetDataBySha1(ci.sha1);
+                    }
+                    else
+                    {
+                        byte t = id[0];
+                        id[0] = id[3];
+                        id[3] = t;
+                        t = id[1];
+                        id[1] = id[2];
+                        id[2] = t;
+                        t = id[6];
+                        id[6] = id[7];
+                        id[7] = t;
+                        t = id[4];
+                        id[4] = id[5];
+                        id[5] = t;
+                        foreach (BinaryBundle.ChunkEntry c in b.ChunkList)
+                            if (Helpers.ByteArrayCompare(id, c.id))
+                                data = c._data;
+                        if (data.Length == 0)
+                        {
+                            DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(id);
+                            if (ci.sha1 == null)
+                                continue;
+                            data = SHA1Access.GetDataBySha1(ci.sha1);
+                        }
+                    }
                     mesh.LoadChunkData(lod, new MemoryStream(data));
                 }
                 MeshRenderObject mro = new MeshRenderObject(mesh);
