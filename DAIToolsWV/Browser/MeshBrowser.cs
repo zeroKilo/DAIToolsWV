@@ -128,6 +128,7 @@ namespace DAIToolsWV.Browser
                     mesh.LoadChunkData(lod, new MemoryStream(data));
                 }
                 MeshRenderObject mro = new MeshRenderObject(mesh);
+                renderer.list.Clear();
                 renderer.list.Add(mro);
                 renderer.worldoffset = -mro.center;
                 renderer.CamDistance = mro.min.Length() + mro.max.Length();
