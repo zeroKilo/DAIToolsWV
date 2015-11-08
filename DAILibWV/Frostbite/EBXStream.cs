@@ -131,6 +131,7 @@ namespace DAILibWV.Frostbite
         {
             public StreamingPartitionFieldDescriptor Descriptor;
             public object data;
+            public long offset;
         }
 
         public struct Type
@@ -416,6 +417,7 @@ namespace DAILibWV.Frostbite
             res.Descriptor = fieldDescriptors[idx];
             List<Field> list;
             byte[] buff;
+            res.offset = s.Position;
             switch (res.Descriptor._type)
             {
                 case 0:
@@ -615,7 +617,7 @@ namespace DAILibWV.Frostbite
             StreamingPartitionFieldDescriptor desc = field.Descriptor;
             if (desc._name == "$")
                 return MakeComplexFieldXML((Type)field.data, tab);
-            sb.AppendFormat(tabs + "<{0}>\n", desc._name);
+            sb.AppendFormat(tabs + "<{0} @0x{1}>\n", desc._name, field.offset.ToString("X"));
             byte realtype = (byte)((field.Descriptor.flagBits >> 4) & 0x1F);
             if (field.data == null)
                 return "";
