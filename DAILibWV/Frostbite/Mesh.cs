@@ -9,9 +9,33 @@ namespace DAILibWV.Frostbite
 {
     public class Mesh
     {
+        public class Vector2
+        {
+            public float x, y;
+            public Vector2()
+            {
+            }
+            public Vector2(float _x, float _y)
+            {
+                x = _x;
+                y = _y;
+            }
+            public float Length()
+            {
+                return (float)Math.Sqrt(x * x + y * y);
+            }
+            public override string ToString()
+            {
+                return "[" + x + " ; " + y + "]";
+            }
+        }
+        
         public class Vector3
         {
             public float x, y, z;
+            public Vector3()
+            {
+            }
             public Vector3(float _x, float _y, float _z)
             {
                 x = _x;
@@ -22,19 +46,46 @@ namespace DAILibWV.Frostbite
             {
                 return (float)Math.Sqrt(x * x + y * y + z * z);
             }
-
             public override string ToString()
             {
                 return "[" + x + " ; " + y + " ; " + z + "]";
             }
-
         }
 
-        public class Vertex
+        public class Triangle
+        {
+            public int i0, i1, i2;
+            public Triangle()
+            {
+            }
+            public Triangle(int _i0, int _i1, int _i2)
+            {
+                i0 = _i0;
+                i1 = _i1;
+                i2 = _i2;
+            }
+            public override string ToString()
+            {
+                return "[" + i0 + " ; " + i1 + " ; " + i2 + "]";
+            }
+        }
+
+        public class VertexDescriptor
         {
             public int VertexType;
             public int Offset;
             public int Unknown01;
+        }
+
+        public class Vertex
+        {
+            public Vector3 Bitangents = new Vector3();
+            public int[] BoneIndices;
+            public float[] BoneWeights;
+            public Vector3 Normals = new Vector3();
+            public Vector3 Position = new Vector3();
+            public Vector3 Tangents = new Vector3();
+            public Vector2 TexCoords = new Vector2();
         }
 
         public class MeshSection
@@ -51,9 +102,12 @@ namespace DAILibWV.Frostbite
             public int Unknown04;
             public int Unknown05;
             public int Unknown06;
-            public List<Vertex> VertexEntries;
+            public List<VertexDescriptor> VertexEntries;
             public int[] Unknowns2;
             public ushort[] SubBoneList;
+
+            public List<Vertex> VertexBuffer;
+            public List<Triangle> IndexBuffer;
         }
 
         public class MeshLOD
@@ -107,6 +161,72 @@ namespace DAILibWV.Frostbite
         public Mesh(Stream s)
         {
             ReadHeader(s);
+        }
+
+        public void LoadChunkData(MeshLOD lod, Stream s)
+        {
+            foreach (MeshSection sec in lod.Sections)
+            {
+                s.Seek(sec.VertexBufferOffset, 0);
+                sec.VertexBuffer = new List<Vertex>();
+                for (int i = 0; i < sec.VertexCount; i++)
+                {
+                    Vertex v = new Vertex();
+                    long pos = s.Position;
+                    foreach (VertexDescriptor desc in sec.VertexEntries)
+                    {
+                        s.Seek(pos + desc.Offset, 0);
+                        switch (desc.VertexType)
+                        {
+                            case 0x301:
+                                v.Position.x = Helpers.ReadFloat(s);
+                                v.Position.y = Helpers.ReadFloat(s);
+                                v.Position.z = Helpers.ReadFloat(s);
+                                break;
+                            case 0x701:
+                                v.Position.x = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                v.Position.y = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                v.Position.z = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                break;
+                            case 0x806:
+                                v.Normals.x = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                v.Normals.y = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                v.Normals.z = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                break;
+                            case 0x807:
+                                v.Tangents.x = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                v.Tangents.y = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                v.Tangents.z = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                break;
+                            case 0x808:
+                                v.Bitangents.x = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                v.Bitangents.y = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                v.Bitangents.z = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                break;
+                            case 0x621:
+                                v.TexCoords.x = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                v.TexCoords.y = HalfUtils.Unpack(Helpers.ReadUShort(s));
+                                break;
+                            case 0xd04:
+                                v.BoneWeights = new float[4];
+                                for (int k = 0; k < 4; k++)
+                                    v.BoneWeights[k] = ((float)s.ReadByte()) / 255f;
+                                break;
+                            case 0xc02:
+                                v.BoneIndices = new int[4];
+                                for (int m = 0; m < 4; m++)
+                                    v.BoneIndices[m] = s.ReadByte();
+                                break;
+                        }
+                        s.Seek(pos + sec.VertexStride, 0);
+                    }
+                    sec.VertexBuffer.Add(v);
+                }
+                sec.IndexBuffer = new List<Triangle>();
+                s.Seek(lod.VertexBufferSize + sec.StartIndex * 2, 0);
+                for (int i = 0; i < sec.TriangleCount; i++)
+                    sec.IndexBuffer.Add(new Triangle(Helpers.ReadUShort(s), Helpers.ReadUShort(s), Helpers.ReadUShort(s)));
+            }
         }
 
         public static string SerializeString(Stream s)
@@ -218,10 +338,10 @@ namespace DAILibWV.Frostbite
             r.Unknown04 = Helpers.ReadInt(s);
             r.Unknown05 = Helpers.ReadInt(s);
             r.Unknown06 = Helpers.ReadInt(s);
-            r.VertexEntries = new List<Vertex>();
+            r.VertexEntries = new List<VertexDescriptor>();
             for (int i = 0; i < 16; i++)
             {
-                Vertex VertexEntry = new Vertex();
+                VertexDescriptor VertexEntry = new VertexDescriptor();
                 VertexEntry.VertexType = Helpers.ReadShort(s);
                 VertexEntry.Offset = s.ReadByte();
                 VertexEntry.Unknown01 = s.ReadByte();
@@ -317,7 +437,7 @@ namespace DAILibWV.Frostbite
             sb.AppendFormat("..Unknown06          : 0x{0}\n", sec.Unknown06.ToString("X8"));
             sb.Append("..VertexEntries      : ");
             if (sec.VertexEntries != null) 
-            foreach (Vertex v in sec.VertexEntries)
+            foreach (VertexDescriptor v in sec.VertexEntries)
                 sb.AppendFormat("[Type 0x{0} ; Offset 0x{1} ; Unknown 0x{2}]", v.VertexType.ToString("X"), v.Offset.ToString("X"), v.Unknown01.ToString("X"));
             sb.Append("\n..Unknown List       : ");
             foreach (int u in sec.Unknowns2)

@@ -50,6 +50,7 @@
             this.toolStripButton19 = new System.Windows.Forms.ToolStripButton();
             this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
             this.toolStrip4 = new System.Windows.Forms.ToolStrip();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.statusStrip3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).BeginInit();
             this.splitContainer5.Panel1.SuspendLayout();
@@ -157,6 +158,7 @@
             this.pictureBox1.Size = new System.Drawing.Size(393, 241);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Resize += new System.EventHandler(this.pictureBox1_Resize);
             // 
             // tabPage2
             // 
@@ -279,6 +281,11 @@
             this.toolStrip4.TabIndex = 9;
             this.toolStrip4.Text = "toolStrip4";
             // 
+            // timer1
+            // 
+            this.timer1.Interval = 50;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // MeshBrowser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -334,5 +341,6 @@
         private System.Windows.Forms.ContextMenuStrip context;
         private System.Windows.Forms.ToolStripMenuItem openInTextureToolToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nOPEToolStripMenuItem;
+        private System.Windows.Forms.Timer timer1;
     }
 }

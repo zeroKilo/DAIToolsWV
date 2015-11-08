@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using DAILibWV.Frostbite;
 using Be.Windows.Forms;
 using DAILibWV;
+using DAIToolsWV.Render;
 
 namespace DAIToolsWV.ContentTools
 {
@@ -24,6 +25,7 @@ namespace DAIToolsWV.ContentTools
         private Thread TresRefresh = null;
         private bool hasLoaded = false;
         public Mesh mesh;
+        public Renderer renderer;
 
         public MeshTool()
         {
@@ -62,6 +64,9 @@ namespace DAIToolsWV.ContentTools
             {
                 status.Text = "Loaded " + ttlist.Count + " mesh information";
                 hasLoaded = true;
+                renderer = new Renderer();
+                renderer.Init(pictureBox1.Handle, pictureBox1.Width, pictureBox1.Height);                
+                timer1.Enabled = true;
             }
             ));
         }
@@ -146,7 +151,20 @@ namespace DAIToolsWV.ContentTools
                 hb1.ByteProvider = new DynamicByteProvider(resdata);
                 mesh = new Mesh(new MemoryStream(resdata));
                 rtb1.Text = mesh.HeaderToStr();
-                rtb2.Text = mesh.LODsToString();
+                rtb2.Text = mesh.LODsToString();                
+                foreach (Mesh.MeshLOD lod in mesh.header.LODs)
+                {
+                    byte[] id = lod.ChunkID;
+                    DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(id);
+                    if (ci.sha1 == null)
+                        continue;
+                    byte[] data = SHA1Access.GetDataBySha1(ci.sha1);
+                    mesh.LoadChunkData(lod, new MemoryStream(data));
+                }
+                MeshRenderObject mro = new MeshRenderObject(mesh);
+                renderer.list.Add(mro);
+                renderer.worldoffset = -mro.center;
+                renderer.CamDistance = mro.min.Length() + mro.max.Length();
                 listBox2.Items.Clear();
                 int count = 0;
                 foreach (Mesh.MeshLOD l in mesh.header.LODs)
@@ -176,6 +194,18 @@ namespace DAIToolsWV.ContentTools
                 return;
             byte[] data = SHA1Access.GetDataBySha1(ci.sha1);
             hb2.ByteProvider = new DynamicByteProvider(data);
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            renderer.Render();
+        }
+
+        private void pictureBox1_Resize(object sender, EventArgs e)
+        {
+            timer1.Enabled = false;
+            renderer.Init(pictureBox1.Handle, pictureBox1.Width, pictureBox1.Height);
+            timer1.Enabled = true;
         }
     }
 }

@@ -60,6 +60,7 @@
     <Compile Include="Frostbite\TextureMetaResource.cs" />
     <Compile Include="Frostbite\TOCFile.cs" />
     <Compile Include="GlobalStuff.cs" />
+    <Compile Include="HalfUtil.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="OldSupport\DAIMODFile.cs" />

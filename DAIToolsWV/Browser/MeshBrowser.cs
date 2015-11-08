@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using DAILibWV.Frostbite;
 using Be.Windows.Forms;
 using DAILibWV;
+using DAIToolsWV.Render;
 
 namespace DAIToolsWV.Browser
 {
@@ -20,6 +21,7 @@ namespace DAIToolsWV.Browser
         private List<DBAccess.RESInformation> ttlist = null;
         private List<DBAccess.RESInformation> ttprevlist = null;
         private Thread TresRefresh = null;
+        public Render.Renderer renderer;
 
         public MeshBrowser()
         {
@@ -62,7 +64,7 @@ namespace DAIToolsWV.Browser
                 {
                     status.Text = "Preparing...";
                     Application.DoEvents();
-                    MakeTextureTree();
+                    MakeMeshTree();
                 }
                 ));
                 this.Invoke(new Action(delegate
@@ -70,6 +72,9 @@ namespace DAIToolsWV.Browser
                     splitContainer4.Visible = true;
                     toolStrip4.Enabled = true;
                     status.Text = "Loaded " + ttlist.Count + " ressources";
+                    renderer = new Render.Renderer();
+                    renderer.Init(pictureBox1.Handle, pictureBox1.Width, pictureBox1.Height);
+                    timer1.Enabled = true;
                 }
                 ));
             }
@@ -112,6 +117,20 @@ namespace DAIToolsWV.Browser
                         }
                 }
                 hb2.ByteProvider = new DynamicByteProvider(resdata);
+                Mesh mesh = new Mesh(new MemoryStream(resdata));
+                foreach (Mesh.MeshLOD lod in mesh.header.LODs)
+                {
+                    byte[] id = lod.ChunkID;
+                    DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(id);
+                    if (ci.sha1 == null)
+                        continue;
+                    byte[] data = SHA1Access.GetDataBySha1(ci.sha1);
+                    mesh.LoadChunkData(lod, new MemoryStream(data));
+                }
+                MeshRenderObject mro = new MeshRenderObject(mesh);
+                renderer.list.Add(mro);
+                renderer.worldoffset = -mro.center;
+                renderer.CamDistance = mro.min.Length() + mro.max.Length();
                 status.Text = "Ready";
             }
             catch (Exception ex)
@@ -122,7 +141,7 @@ namespace DAIToolsWV.Browser
 
 
 
-        public void MakeTextureTree()
+        public void MakeMeshTree()
         {
             treeView5.Nodes.Clear();
             TreeNode t = new TreeNode();
@@ -258,6 +277,18 @@ namespace DAIToolsWV.Browser
             ttool.WindowState = FormWindowState.Maximized;
             ttool.Show();
             ttool.LoadById(path);
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            renderer.Render();
+        }
+
+        private void pictureBox1_Resize(object sender, EventArgs e)
+        {
+            timer1.Enabled = false;
+            renderer.Init(pictureBox1.Handle, pictureBox1.Width, pictureBox1.Height);
+            timer1.Enabled = true;
         }
     }
 }
