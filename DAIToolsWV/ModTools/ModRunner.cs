@@ -150,6 +150,7 @@ namespace DAIToolsWV.ModTools
 
         public void RunJob(int i)
         {
+            GC.Collect();
             Mod.ModJob mj = mod.jobs[i];
             DbgPrint("Starting job of type : " + mod.GetTypeName(mj.type));
             switch (mj.type)
@@ -503,6 +504,7 @@ namespace DAIToolsWV.ModTools
 
         public void RunTextureResJobOnBundle(Mod.ModJob mj, TOCFile toc, string tocpath, byte[] newsha1, string bpath, int newcompressedsize)
         {
+            GC.Collect();
             int count = 0;
             int index = -1;
             foreach (TOCFile.TOCBundleInfoStruct buni in toc.bundles)
@@ -679,6 +681,7 @@ namespace DAIToolsWV.ModTools
 
         public void RunTextureResJobOnBundleBinary(Mod.ModJob mj, TOCFile toc, string tocpath, string bpath)
         {
+            GC.Collect();
             int count = 0;
             int index = -1;
             foreach (TOCFile.TOCBundleInfoStruct buni in toc.bundles)
@@ -812,6 +815,7 @@ namespace DAIToolsWV.ModTools
 
         public void RunRessourceJobOnBundle(Mod.ModJob mj, TOCFile toc, string tocpath, byte[] newsha1, string bpath, int newcompressedsize)
         {
+            GC.Collect();
             int count = 0;
             int index = -1;
             foreach (TOCFile.TOCBundleInfoStruct buni in toc.bundles)
@@ -929,6 +933,7 @@ namespace DAIToolsWV.ModTools
 
         public void RunEbxResJobOnBundle(Mod.ModJob mj, TOCFile toc, string tocpath, byte[] newsha1, string bpath, int newcompressedsize)
         {
+            GC.Collect();
             int count = 0;
             int index = -1;
             foreach (TOCFile.TOCBundleInfoStruct buni in toc.bundles)
