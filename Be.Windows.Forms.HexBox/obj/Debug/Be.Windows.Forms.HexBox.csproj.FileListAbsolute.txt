@@ -95,3 +95,4 @@ C:\_CODE\Git\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.Prope
 C:\_CODE\Git\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox.csproj.GenerateResource.Cache
 C:\_CODE\Git\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox.dll
 C:\_CODE\Git\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox.pdb
+D:\CODE\GitHub\DAIToolsWV\Be.Windows.Forms.HexBox\obj\Debug\Be.Windows.Forms.HexBox.csprojResolveAssemblyReference.cache

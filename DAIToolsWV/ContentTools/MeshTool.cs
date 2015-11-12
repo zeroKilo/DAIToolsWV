@@ -245,5 +245,19 @@ namespace DAIToolsWV.ContentTools
             renderer.Init(pictureBox1.Handle, pictureBox1.Width, pictureBox1.Height);
             timer1.Enabled = true;
         }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            if (mesh == null)
+                return;
+            SaveFileDialog d = new SaveFileDialog();
+            d.Filter = "*.psk|*.psk";
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                PSKFile psk = new PSKFile(mesh);
+                psk.Export(d.FileName);
+                MessageBox.Show("Done.");
+            }
+        }
     }
 }
