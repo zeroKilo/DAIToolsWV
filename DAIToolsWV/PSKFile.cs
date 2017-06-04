@@ -258,7 +258,7 @@ namespace DAIToolsWV
             foreach (DAILibWV.Frostbite.Mesh.MeshLOD lod in m.header.LODs) 
                 if(l == null)
                 foreach(DAILibWV.Frostbite.Mesh.MeshSection sec in lod.Sections)
-                    if (sec.VertexBuffer.Count != 0)
+                    if (sec.VertexBuffer != null && sec.VertexBuffer.Count != 0)
                     {
                         l = lod;
                         break;

@@ -990,6 +990,23 @@ namespace DAILibWV
             return res.ToArray();
         }
 
+        public static ChunkInformation GetGlobalChunkInformationById(byte[] id)
+        {
+            ChunkInformation res = new ChunkInformation();
+            res.id = id;
+            res.bundleIndex = -1;
+            SQLiteConnection con = GetConnection();
+            con.Open();
+            SQLiteDataReader reader = getAllWhere("globalchunks", "id = '" + Helpers.ByteArrayToHexString(id) + "'", con);
+            if (reader.Read())
+            {
+                res.id = Helpers.HexStringToByteArray((string)reader["id"]);
+                res.sha1 = Helpers.HexStringToByteArray((string)reader["sha1"]);
+            }
+            con.Close();
+            return res;
+        }
+
         #endregion
 
         #region initial scan stuff

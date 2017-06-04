@@ -164,7 +164,7 @@ namespace DAIToolsWV.ContentTools
                     byte[] data = new byte[0];
                     if (toci.incas)
                     {
-                        DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(id);
+                        DBAccess.ChunkInformation ci = GetChunkById(id);
                         if (ci.sha1 == null)
                             continue;
                         data = SHA1Access.GetDataBySha1(ci.sha1);
@@ -188,7 +188,7 @@ namespace DAIToolsWV.ContentTools
                                 data = c._data;
                         if (data.Length == 0)
                         {
-                            DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(id);
+                            DBAccess.ChunkInformation ci = GetChunkById(id);
                             if (ci.sha1 == null)
                                 continue;
                             data = SHA1Access.GetDataBySha1(ci.sha1);
@@ -211,6 +211,16 @@ namespace DAIToolsWV.ContentTools
             {
                 status.Text = "General error, after state '" + status.Text + "' : " + ex.Message;
             }
+        }
+
+        private DBAccess.ChunkInformation GetChunkById(byte[] cid)
+        {
+            DBAccess.ChunkInformation ci = DBAccess.GetChunkInformationById(cid);
+            if (ci.sha1 == null)
+            {
+                ci = DBAccess.GetGlobalChunkInformationById(cid);
+            }
+            return ci;
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
